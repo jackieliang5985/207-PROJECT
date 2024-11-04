@@ -3,4 +3,4 @@
 ## Team Members
 * Ethan Chiu (ethanch1u)
 * Jackie Liang (jackieliang5985)
-* Sudharshan Palaniyappab (sudharshanpal)
+* Sudharshan Palaniyappan (sudharshanpal)
