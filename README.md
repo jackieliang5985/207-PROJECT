@@ -14,9 +14,18 @@
 
 **User Stories**
 
+**Creating, Saving, Loading Mind Maps:**
+* User Story: John opens new mind map, saves the current mind map and later loads it to continue brainstorming.
+* Assigned to: Team
+* Use Case: The user can open a new mind map and then save the current state of the mind map, including nodes and connections, and reload it to continue working in the future.
+
+* Interactor: Handles save/load requests.
+* Controller: Manages the state of the mind map data.
+* Presenter: Loads and displays the saved mind map data on request.
+
 **Adding Text-Based Nodes:**
 * User Story: John creates a text node, types in an idea, and positions it on the mind map board.
-* Assigned to: Team
+* Assigned to: Eric
 * Use Case: The user can create and position text nodes by typing in content and dragging nodes around the board to organize their mind map visually.
 
 * Interactor: Listens for user input to create text nodes.
@@ -59,11 +68,4 @@
 * Controller: Applies color changes to selected nodes or lines.
 * Presenter: Updates the display with the chosen colors.
 
-**Saving and Loading Mind Maps:**
-* User Story: John saves the current mind map and later loads it to continue brainstorming.
-* Assigned to: Eric
-* Use Case: The user can save the current state of the mind map, including nodes and connections, and reload it to continue working in the future.
 
-* Interactor: Handles save/load requests.
-* Controller: Manages the state of the mind map data.
-* Presenter: Loads and displays the saved mind map data on request.
