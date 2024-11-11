@@ -10,7 +10,7 @@
 **Mind Map Board Generator**
 
 **Project Overview**
-The Mind Map Board Generator is a virtual mind-mapping application designed to help users create, connect, and organize ideas through a graphical interface. The simulator allows users to add draggable text and image nodes, connect them with lines, categorize them by color, and save and load mind maps for later use. This project aims to provide a seamless and intuitive experience for brainstorming, planning, and organizing information visually.
+* The Mind Map Board Generator is a virtual mind-mapping application designed to help users create, connect, and organize ideas through a graphical interface. The simulator allows users to add draggable text and image nodes, connect them with lines, categorize them by color, and save and load mind maps for later use. This project aims to provide a seamless and intuitive experience for brainstorming, planning, and organizing information visually.
 
 **User Stories**
 
@@ -67,4 +67,3 @@ The Mind Map Board Generator is a virtual mind-mapping application designed to h
 * Interactor: Handles save/load requests.
 * Controller: Manages the state of the mind map data.
 * Presenter: Loads and displays the saved mind map data on request.
-* 
