@@ -16,9 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import interface_adapter.signup.SignupController;
-import interface_adapter.signup.SignupState;
-import interface_adapter.signup.SignupViewModel;
+import interface_adapter.create_MindMap.MindMapController;
+import interface_adapter.create_MindMap.MindMapState;
+import interface_adapter.create_MindMap.MindMapViewModel;
 
 /**
  * The View for the Signup Use Case.
@@ -26,85 +26,80 @@ import interface_adapter.signup.SignupViewModel;
 public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
     private final String viewName = "sign up";
 
-    private final SignupViewModel signupViewModel;
-    private final JTextField usernameInputField = new JTextField(15);
-    private final JPasswordField passwordInputField = new JPasswordField(15);
-    private final JPasswordField repeatPasswordInputField = new JPasswordField(15);
-    private SignupController signupController;
+    private final MindMapViewModel mindMapViewModel;
+    private final JTextField NameInputField = new JTextField(15);
+    private final JPasswordField DescriptionInputField = new JPasswordField(15);
+    private MindMapController mindMapController;
 
-    private final JButton signUp;
+    private final JButton toCreate;
     private final JButton cancel;
-    private final JButton toLogin;
+    private final JButton toLoad;
 
-    public SignupView(SignupViewModel signupViewModel) {
-        this.signupViewModel = signupViewModel;
-        signupViewModel.addPropertyChangeListener(this);
+    public SignupView(MindMapViewModel mindMapViewModel) {
+        this.mindMapViewModel = mindMapViewModel;
+        mindMapViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel(SignupViewModel.TITLE_LABEL);
+        final JLabel title = new JLabel(MindMapViewModel.TITLE_LABEL);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel usernameInfo = new LabelTextPanel(
-                new JLabel(SignupViewModel.USERNAME_LABEL), usernameInputField);
+                new JLabel(MindMapViewModel.NAME_LABEL), NameInputField);
         final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel(SignupViewModel.PASSWORD_LABEL), passwordInputField);
-        final LabelTextPanel repeatPasswordInfo = new LabelTextPanel(
-                new JLabel(SignupViewModel.REPEAT_PASSWORD_LABEL), repeatPasswordInputField);
+                new JLabel(MindMapViewModel.DESCRIPTION_LABEL), DescriptionInputField);
 
         final JPanel buttons = new JPanel();
-        toLogin = new JButton(SignupViewModel.TO_LOGIN_BUTTON_LABEL);
-        buttons.add(toLogin);
-        signUp = new JButton(SignupViewModel.SIGNUP_BUTTON_LABEL);
-        buttons.add(signUp);
-        cancel = new JButton(SignupViewModel.CANCEL_BUTTON_LABEL);
+        toLoad = new JButton(MindMapViewModel.TO_LOAD_BUTTON_LABEL);
+        buttons.add(toLoad);
+        toCreate = new JButton(MindMapViewModel.CREATE_BUTTON_LABEL);
+        buttons.add(toCreate);
+        cancel = new JButton(MindMapViewModel.CANCEL_BUTTON_LABEL);
         buttons.add(cancel);
 
-        signUp.addActionListener(
+        toCreate.addActionListener(
                 // This creates an anonymous subclass of ActionListener and instantiates it.
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(signUp)) {
-                            final SignupState currentState = signupViewModel.getState();
+                        if (evt.getSource().equals(toCreate)) {
+                            final MindMapState currentState = mindMapViewModel.getState();
 
-                            signupController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword(),
-                                    currentState.getRepeatPassword()
+                            mindMapController.execute(
+                                    currentState.getName(),
+                                    currentState.getDescription()
                             );
                         }
                     }
                 }
         );
 
-        toLogin.addActionListener(
+        toLoad.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        signupController.switchToLoginView();
+                        mindMapController.switchToLoginView();
                     }
                 }
         );
 
         cancel.addActionListener(this);
 
-        addUsernameListener();
-        addPasswordListener();
-        addRepeatPasswordListener();
+        addNameListener();
+        addDescriptionListener();
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(title);
         this.add(usernameInfo);
         this.add(passwordInfo);
-        this.add(repeatPasswordInfo);
+//        this.add(repeatPasswordInfo);
         this.add(buttons);
     }
 
-    private void addUsernameListener() {
-        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
+    private void addNameListener() {
+        NameInputField.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
-                final SignupState currentState = signupViewModel.getState();
-                currentState.setUsername(usernameInputField.getText());
-                signupViewModel.setState(currentState);
+                final MindMapState currentState = mindMapViewModel.getState();
+                currentState.setName(NameInputField.getText());
+                mindMapViewModel.setState(currentState);
             }
 
             @Override
@@ -124,13 +119,13 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         });
     }
 
-    private void addPasswordListener() {
-        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
+    private void addDescriptionListener() {
+        DescriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
-                final SignupState currentState = signupViewModel.getState();
-                currentState.setPassword(new String(passwordInputField.getPassword()));
-                signupViewModel.setState(currentState);
+                final MindMapState currentState = mindMapViewModel.getState();
+                currentState.setDescription(new String(DescriptionInputField.getPassword()));
+                mindMapViewModel.setState(currentState);
             }
 
             @Override
@@ -149,32 +144,32 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
             }
         });
     }
-
-    private void addRepeatPasswordListener() {
-        repeatPasswordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
-                final SignupState currentState = signupViewModel.getState();
-                currentState.setRepeatPassword(new String(repeatPasswordInputField.getPassword()));
-                signupViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-    }
+//
+//    private void addRepeatPasswordListener() {
+//        repeatPasswordInputField.getDocument().addDocumentListener(new DocumentListener() {
+//
+//            private void documentListenerHelper() {
+//                final SignupState currentState = signupViewModel.getState();
+//                currentState.setRepeatPassword(new String(repeatPasswordInputField.getPassword()));
+//                signupViewModel.setState(currentState);
+//            }
+//
+//            @Override
+//            public void insertUpdate(DocumentEvent e) {
+//                documentListenerHelper();
+//            }
+//
+//            @Override
+//            public void removeUpdate(DocumentEvent e) {
+//                documentListenerHelper();
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent e) {
+//                documentListenerHelper();
+//            }
+//        });
+//    }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
@@ -183,9 +178,9 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        final SignupState state = (SignupState) evt.getNewValue();
-        if (state.getUsernameError() != null) {
-            JOptionPane.showMessageDialog(this, state.getUsernameError());
+        final MindMapState state = (MindMapState) evt.getNewValue();
+        if (state.getNameError() != null) {
+            JOptionPane.showMessageDialog(this, state.getNameError());
         }
     }
 
@@ -193,7 +188,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         return viewName;
     }
 
-    public void setSignupController(SignupController controller) {
-        this.signupController = controller;
+    public void setSignupController(MindMapController controller) {
+        this.mindMapController = controller;
     }
 }

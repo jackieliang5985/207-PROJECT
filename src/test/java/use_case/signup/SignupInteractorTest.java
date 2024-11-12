@@ -5,8 +5,7 @@ import entity.CommonUserFactory;
 import entity.User;
 import entity.UserFactory;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
+import use_case.create_MindMap.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,13 +13,13 @@ class SignupInteractorTest {
 
     @Test
     void successTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "password");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        MindMapInputData inputData = new MindMapInputData("Paul", "password", "password");
+        MindMapUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // This creates a successPresenter that tests whether the test case is as we expect.
-        SignupOutputBoundary successPresenter = new SignupOutputBoundary() {
+        MindMapOutputBoundary successPresenter = new MindMapOutputBoundary() {
             @Override
-            public void prepareSuccessView(SignupOutputData user) {
+            public void prepareSuccessView(MindMapOutputData user) {
                 // 2 things to check: the output data is correct, and the user has been created in the DAO.
                 assertEquals("Paul", user.getUsername());
                 assertTrue(userRepository.existsByName("Paul"));
@@ -37,19 +36,19 @@ class SignupInteractorTest {
             }
         };
 
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, successPresenter, new CommonUserFactory());
+        MindMapInputBoundary interactor = new MindMapInteractor(userRepository, successPresenter, new CommonUserFactory());
         interactor.execute(inputData);
     }
 
     @Test
     void failurePasswordMismatchTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "wrong");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        MindMapInputData inputData = new MindMapInputData("Paul", "password", "wrong");
+        MindMapUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // This creates a presenter that tests whether the test case is as we expect.
-        SignupOutputBoundary failurePresenter = new SignupOutputBoundary() {
+        MindMapOutputBoundary failurePresenter = new MindMapOutputBoundary() {
             @Override
-            public void prepareSuccessView(SignupOutputData user) {
+            public void prepareSuccessView(MindMapOutputData user) {
                 // this should never be reached since the test case should fail
                 fail("Use case success is unexpected.");
             }
@@ -65,14 +64,14 @@ class SignupInteractorTest {
             }
         };
 
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, failurePresenter, new CommonUserFactory());
+        MindMapInputBoundary interactor = new MindMapInteractor(userRepository, failurePresenter, new CommonUserFactory());
         interactor.execute(inputData);
     }
 
     @Test
     void failureUserExistsTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "wrong");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        MindMapInputData inputData = new MindMapInputData("Paul", "password", "wrong");
+        MindMapUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // Add Paul to the repo so that when we check later they already exist
         UserFactory factory = new CommonUserFactory();
@@ -80,9 +79,9 @@ class SignupInteractorTest {
         userRepository.save(user);
 
         // This creates a presenter that tests whether the test case is as we expect.
-        SignupOutputBoundary failurePresenter = new SignupOutputBoundary() {
+        MindMapOutputBoundary failurePresenter = new MindMapOutputBoundary() {
             @Override
-            public void prepareSuccessView(SignupOutputData user) {
+            public void prepareSuccessView(MindMapOutputData user) {
                 // this should never be reached since the test case should fail
                 fail("Use case success is unexpected.");
             }
@@ -98,7 +97,7 @@ class SignupInteractorTest {
             }
         };
 
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, failurePresenter, new CommonUserFactory());
+        MindMapInputBoundary interactor = new MindMapInteractor(userRepository, failurePresenter, new CommonUserFactory());
         interactor.execute(inputData);
     }
 }

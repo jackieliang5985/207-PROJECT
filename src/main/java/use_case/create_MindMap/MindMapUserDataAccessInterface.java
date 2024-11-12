@@ -1,11 +1,11 @@
-package use_case.signup;
+package use_case.create_MindMap;
 
 import entity.User;
 
 /**
  * DAO for the Signup Use Case.
  */
-public interface SignupUserDataAccessInterface {
+public interface MindMapUserDataAccessInterface {
 
     /**
      * Checks if the given username exists.
