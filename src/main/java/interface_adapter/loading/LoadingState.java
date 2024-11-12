@@ -1,9 +1,9 @@
-package interface_adapter.login;
+package interface_adapter.loading;
 
 /**
  * The state for the Login View Model.
  */
-public class LoginState {
+public class LoadingState {
     private String name = "";
     private String loginError;
     private String description = "";

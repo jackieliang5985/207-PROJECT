@@ -1,11 +1,11 @@
-package use_case.login;
+package use_case.loading;
 
 import entity.User;
 
 /**
  * DAO for the Login Use Case.
  */
-public interface LoginUserDataAccessInterface {
+public interface LoadingUserDataAccessInterface {
 
     /**
      * Checks if the given username exists.

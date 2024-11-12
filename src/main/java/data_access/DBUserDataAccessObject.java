@@ -13,7 +13,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
-import use_case.login.LoginUserDataAccessInterface;
+import use_case.loading.LoadingUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.create_MindMap.MindMapUserDataAccessInterface;
 
@@ -21,7 +21,7 @@ import use_case.create_MindMap.MindMapUserDataAccessInterface;
  * The DAO for user data.
  */
 public class DBUserDataAccessObject implements MindMapUserDataAccessInterface,
-        LoginUserDataAccessInterface,
+        LoadingUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface {
     private static final int SUCCESS_CODE = 200;

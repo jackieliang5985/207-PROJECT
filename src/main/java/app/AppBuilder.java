@@ -17,9 +17,9 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
-import interface_adapter.login.LoginController;
-import interface_adapter.login.LoginPresenter;
-import interface_adapter.login.LoginViewModel;
+import interface_adapter.loading.LoadingController;
+import interface_adapter.loading.LoadingPresenter;
+import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import use_case.change_password.ChangePasswordInputBoundary;
@@ -28,16 +28,16 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
-import use_case.login.LoginInputBoundary;
-import use_case.login.LoginInteractor;
-import use_case.login.LoginOutputBoundary;
+import use_case.loading.LoadingInputBoundary;
+import use_case.loading.LoadingInteractor;
+import use_case.loading.LoadingOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import view.CreateNewMindMapView;
 import view.LoggedInView;
 import view.MindMapLoadingView;
 import view.MindMapView;
-import view.CreateNewMindMapView;
 import view.ViewManager;
 
 /**
@@ -54,7 +54,7 @@ public class AppBuilder {
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
-    private LoginViewModel loginViewModel;
+    private LoadingViewModel loadingViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private MindMapLoadingView mindMapLoadingView;
@@ -79,7 +79,7 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapLoadingView() {
-        loginViewModel = new LoginViewModel();  // Initialize loginViewModel here
+        loadingViewModel = new LoadingViewModel()
         final MindMapViewModel mindMapViewModel = new MindMapViewModel();
         mindMapLoadingView = new MindMapLoadingView(mindMapViewModel);
         cardPanel.add(mindMapLoadingView, mindMapLoadingView.getViewName());
@@ -103,7 +103,7 @@ public class AppBuilder {
      */
     public AppBuilder addSignupUseCase() {
         final MindMapOutputBoundary mindMapOutputBoundary =
-                new MindMapPresenter(viewManagerModel, mindMapViewModel, loginViewModel, loggedInViewModel);
+                new MindMapPresenter(viewManagerModel, mindMapViewModel, loadingViewModel, loggedInViewModel);
         final MindMapInputBoundary userSignupInteractor =
                 new MindMapInteractor(userDataAccessObject, mindMapOutputBoundary, userFactory);
         final MindMapController controller =
@@ -117,12 +117,12 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
-        loginViewModel = new LoginViewModel();  // Ensure loginViewModel is initialized
-        final LoginOutputBoundary loginOutputBoundary =
-                new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
-        final LoginInputBoundary loginInteractor = new LoginInteractor(userDataAccessObject, loginOutputBoundary);
-        final LoginController loginController = new LoginController(loginInteractor);
-        mindMapLoadingView.setLoginController(loginController);
+        loadingViewModel = new LoadingViewModel();
+        final LoadingOutputBoundary loadingOutputBoundary =
+                new LoadingPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
+        final LoadingInputBoundary loginInteractor = new LoadingInteractor(userDataAccessObject, loadingOutputBoundary);
+        final LoadingController loadingController = new LoadingController(loginInteractor);
+        mindMapLoadingView.setLoginController(loadingController);
         return this;
     }
 
@@ -147,7 +147,7 @@ public class AppBuilder {
      */
     public AppBuilder addLogoutUseCase() {
         final LogoutOutputBoundary logoutOutputBoundary =
-                new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+                new LogoutPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
         final LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         final LogoutController logoutController =

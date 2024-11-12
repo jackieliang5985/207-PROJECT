@@ -5,13 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapState;
 import interface_adapter.create_MindMap.MindMapViewModel;
-import interface_adapter.login.LoginController;
+import interface_adapter.loading.LoadingController;
 
 /**
  * The View for the Loading Use Case.
@@ -27,7 +29,7 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
     private final JButton loadMindMapButton;
     private final JButton cancelButton;
     private MindMapController mindMapController;
-    private LoginController loginController;
+    private LoadingController loadingController;
 
     public MindMapLoadingView(MindMapViewModel mindMapViewModel) {
         this.mindMapViewModel = mindMapViewModel;
@@ -51,7 +53,8 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
                         if (evt.getSource().equals(loadMindMapButton)) {
                             // Placeholder action, actual loading logic to be implemented later
                             JOptionPane.showMessageDialog(
-                                    MindMapLoadingView.this, "Attempting to load Mind Map with ID: " + idInputField.getText()
+                                    MindMapLoadingView.this,
+                                    "Attempting to load Mind Map with ID: " + idInputField.getText()
                             );
                         }
                     }
@@ -125,7 +128,8 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
     public void setMindMapController(MindMapController mindMapController) {
         this.mindMapController = mindMapController;
     }
-    public void setLoginController(LoginController loginController) {
-        this.loginController = loginController;
+
+    public void setLoginController(LoadingController loadingController) {
+        this.loadingController = loadingController;
     }
 }
