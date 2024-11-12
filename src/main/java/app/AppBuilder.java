@@ -14,26 +14,26 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.change_password.ChangePasswordController;
 import interface_adapter.change_password.ChangePasswordPresenter;
 import interface_adapter.change_password.LoggedInViewModel;
+import interface_adapter.create_MindMap.MindMapController;
+import interface_adapter.create_MindMap.MindMapPresenter;
+import interface_adapter.create_MindMap.MindMapViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
-import interface_adapter.create_MindMap.MindMapController;
-import interface_adapter.create_MindMap.MindMapPresenter;
-import interface_adapter.create_MindMap.MindMapViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.create_MindMap.MindMapInputBoundary;
+import use_case.create_MindMap.MindMapInteractor;
+import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
-import use_case.create_MindMap.MindMapInputBoundary;
-import use_case.create_MindMap.MindMapInteractor;
-import use_case.create_MindMap.MindMapOutputBoundary;
 import view.LoggedInView;
 import view.LoginView;
 import view.MindMapView;
@@ -159,7 +159,7 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel);
+        final MindMapView mindMap = new MindMapView();
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
