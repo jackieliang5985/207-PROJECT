@@ -4,65 +4,22 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * A view class for the Detective Board screen.
+ * A view class for the Mind Map screen.
  */
 public class MindMapView extends JPanel {
-    public static final String VIEW_NAME = "MINDMAP";
+    // Define a constant for identifying this view in the CardLayout
+    public static final String VIEW_NAME = "MindMapView";
 
     public MindMapView() {
         setLayout(new BorderLayout());
 
-        // Header label
-        final JLabel titleLabel = new JLabel("Mind Map", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setOpaque(true);
-        titleLabel.setBackground(Color.LIGHT_GRAY);
-        titleLabel.setForeground(Color.BLACK);
-        add(titleLabel, BorderLayout.NORTH);
+        // Add a simple label to indicate this is the MindMap view
+        JLabel label = new JLabel("Mind Map View", JLabel.CENTER);
+        label.setFont(new Font("Arial", Font.PLAIN, 24));
 
-        // Main center panel for the board area
-        final JPanel boardPanel = new JPanel();
-        boardPanel.setBackground(Color.LIGHT_GRAY);
-        boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3));
-        boardPanel.setLayout(new BorderLayout());
-        add(boardPanel, BorderLayout.CENTER);
-
-        // Bottom panel for buttons
-        final JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayout(1, 5, 10, 0));
-        bottomPanel.setBackground(new Color(230, 230, 250)); // Light purple background to match the photo
-
-        // Creating buttons with light purple background
-        final JButton addTextPostButton = createStyledButton("Add Text Post It");
-        final JButton addImageButton = createStyledButton("Add Image Post It");
-        final JButton attachStringButton = createStyledButton("Attach String");
-        final JButton saveButton = createStyledButton("SAVE");
-        final JButton logoutButton = createStyledButton("LOGOUT");
-
-        // Adding buttons
-        bottomPanel.add(addTextPostButton);
-        bottomPanel.add(addImageButton);
-        bottomPanel.add(attachStringButton);
-        bottomPanel.add(saveButton);
-        bottomPanel.add(logoutButton);
-
-        // Adding bottom panel to the main panel
-        add(bottomPanel, BorderLayout.SOUTH);
+        // Add the label to the center of the panel
+        add(label, BorderLayout.CENTER);
     }
-
-    /**
-     * Helper method to create styled buttons.
-     */
-    private JButton createStyledButton(String text) {
-        final JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(new Color(230, 230, 250)); // Light purple color
-        button.setForeground(Color.BLACK);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        return button;
-    }
-
     public String getViewName() {
         return "MindMapView";
     }
