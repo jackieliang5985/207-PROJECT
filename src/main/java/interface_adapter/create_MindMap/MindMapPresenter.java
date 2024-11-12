@@ -7,6 +7,7 @@ import interface_adapter.login.LoginViewModel;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.create_MindMap.MindMapOutputData;
 
+
 /**
  * The Presenter for the Signup Use Case.
  */
@@ -48,7 +49,13 @@ public class MindMapPresenter implements MindMapOutputBoundary {
 
     @Override
     public void switchToLoginView() {
-        viewManagerModel.setState(loginViewModel.getViewName());
-        viewManagerModel.firePropertyChanged();
+        if (viewManagerModel != null) {
+            // Assuming viewManagerModel is responsible for switching views
+            viewManagerModel.setState(loginViewModel.getViewName());
+            viewManagerModel.firePropertyChanged();
+        }
+        else {
+            System.err.println("Error: ViewManagerModel is null.");
+        }
     }
 }

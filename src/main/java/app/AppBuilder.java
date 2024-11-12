@@ -35,9 +35,9 @@ import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
 import view.LoggedInView;
-import view.LoginView;
+import view.MindMapLoadingView;
 import view.MindMapView;
-import view.SignupView;
+import view.CreateNewMindMapView;
 import view.ViewManager;
 
 /**
@@ -52,12 +52,12 @@ public class AppBuilder {
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
 
-    private SignupView signupView;
+    private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
-    private LoginView loginView;
+    private MindMapLoadingView mindMapLoadingView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -69,8 +69,8 @@ public class AppBuilder {
      */
     public AppBuilder addSignupView() {
         mindMapViewModel = new MindMapViewModel();
-        signupView = new SignupView(mindMapViewModel);
-        cardPanel.add(signupView, signupView.getViewName());
+        createNewMindMapView = new CreateNewMindMapView(mindMapViewModel);
+        cardPanel.add(createNewMindMapView, createNewMindMapView.getViewName());
         return this;
     }
 
@@ -78,10 +78,11 @@ public class AppBuilder {
      * Adds the Login View to the application.
      * @return this builder
      */
-    public AppBuilder addLoginView() {
-        loginViewModel = new LoginViewModel();
-        loginView = new LoginView(loginViewModel);
-        cardPanel.add(loginView, loginView.getViewName());
+    public AppBuilder addMindMapLoadingView() {
+        loginViewModel = new LoginViewModel();  // Initialize loginViewModel here
+        final MindMapViewModel mindMapViewModel = new MindMapViewModel();
+        mindMapLoadingView = new MindMapLoadingView(mindMapViewModel);
+        cardPanel.add(mindMapLoadingView, mindMapLoadingView.getViewName());
         return this;
     }
 
@@ -107,7 +108,7 @@ public class AppBuilder {
                 new MindMapInteractor(userDataAccessObject, mindMapOutputBoundary, userFactory);
         final MindMapController controller =
                 new MindMapController(userSignupInteractor);
-        signupView.setSignupController(controller);
+        createNewMindMapView.setSignupController(controller);
         return this;
     }
 
@@ -116,11 +117,12 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
+        loginViewModel = new LoginViewModel();  // Ensure loginViewModel is initialized
         final LoginOutputBoundary loginOutputBoundary =
                 new LoginPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(userDataAccessObject, loginOutputBoundary);
         final LoginController loginController = new LoginController(loginInteractor);
-        loginView.setLoginController(loginController);
+        mindMapLoadingView.setLoginController(loginController);
         return this;
     }
 
@@ -179,7 +181,7 @@ public class AppBuilder {
         final JFrame application = new JFrame("Login Window");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.add(cardPanel);
-        viewManagerModel.setState(signupView.getViewName());
+        viewManagerModel.setState(createNewMindMapView.getViewName());
         viewManagerModel.firePropertyChanged();
         return application;
     }
