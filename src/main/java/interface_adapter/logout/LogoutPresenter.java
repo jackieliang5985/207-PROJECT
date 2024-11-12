@@ -3,8 +3,8 @@ package interface_adapter.logout;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.change_password.LoggedInState;
 import interface_adapter.change_password.LoggedInViewModel;
-import interface_adapter.login.LoginState;
-import interface_adapter.login.LoginViewModel;
+import interface_adapter.loading.LoadingState;
+import interface_adapter.loading.LoadingViewModel;
 import use_case.logout.LogoutOutputBoundary;
 import use_case.logout.LogoutOutputData;
 
@@ -15,14 +15,14 @@ public class LogoutPresenter implements LogoutOutputBoundary {
 
     private LoggedInViewModel loggedInViewModel;
     private ViewManagerModel viewManagerModel;
-    private LoginViewModel loginViewModel;
+    private LoadingViewModel loadingViewModel;
 
     public LogoutPresenter(ViewManagerModel viewManagerModel,
                           LoggedInViewModel loggedInViewModel,
-                           LoginViewModel loginViewModel) {
+                           LoadingViewModel loadingViewModel) {
         this.loggedInViewModel = loggedInViewModel;
         this.viewManagerModel = viewManagerModel;
-        this.loginViewModel = loginViewModel;
+        this.loadingViewModel = loadingViewModel;
     }
 
     @Override
@@ -40,21 +40,21 @@ public class LogoutPresenter implements LogoutOutputBoundary {
         // 3. set the state in the LoggedInViewModel to the updated state
         this.loggedInViewModel.setState(loggedOutState);
         // 4. firePropertyChanged so that the View that is listening is updated.
-        this.viewManagerModel.setState(loginViewModel.getViewName());
+        this.viewManagerModel.setState(loadingViewModel.getViewName());
         // dont know if this line above is useful
         viewManagerModel.firePropertyChanged();
 
         // 5. get the LoginState out of the appropriate View Model,
-        final LoginState loginState = loginViewModel.getState();
+        final LoadingState loadingState = loadingViewModel.getState();
         // 6. set the username and password in the state to the empty string
-        loginState.setName("");
-        loginState.setDescription("");
+        loadingState.setName("");
+        loadingState.setDescription("");
         // 7. set the state in the LoginViewModel to the updated state
-        this.loginViewModel.setState(loginState);
+        this.loadingViewModel.setState(loadingState);
         // 8. firePropertyChanged so that the View that is listening is updated.
         viewManagerModel.firePropertyChanged();
         // This code tells the View Manager to switch to the LoginView.
-        this.viewManagerModel.setState(loginViewModel.getViewName());
+        this.viewManagerModel.setState(loadingViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
     }
 

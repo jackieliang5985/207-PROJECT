@@ -5,8 +5,7 @@ import entity.CommonUserFactory;
 import entity.User;
 import entity.UserFactory;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
+import use_case.loading.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,8 +13,8 @@ class LoginInteractorTest {
 
     @Test
     void successTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "password");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        LoadingInputData inputData = new LoadingInputData("Paul", "password");
+        LoadingUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // For the success test, we need to add Paul to the data access repository before we log in.
         UserFactory factory = new CommonUserFactory();
@@ -23,9 +22,9 @@ class LoginInteractorTest {
         userRepository.save(user);
 
         // This creates a successPresenter that tests whether the test case is as we expect.
-        LoginOutputBoundary successPresenter = new LoginOutputBoundary() {
+        LoadingOutputBoundary successPresenter = new LoadingOutputBoundary() {
             @Override
-            public void prepareSuccessView(LoginOutputData user) {
+            public void prepareSuccessView(LoadingOutputData user) {
                 assertEquals("Paul", user.getUsername());
             }
 
@@ -35,14 +34,14 @@ class LoginInteractorTest {
             }
         };
 
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, successPresenter);
+        LoadingInputBoundary interactor = new LoadingInteractor(userRepository, successPresenter);
         interactor.execute(inputData);
     }
 
     @Test
     void successUserLoggedInTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "password");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        LoadingInputData inputData = new LoadingInputData("Paul", "password");
+        LoadingUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // For the success test, we need to add Paul to the data access repository before we log in.
         UserFactory factory = new CommonUserFactory();
@@ -50,9 +49,9 @@ class LoginInteractorTest {
         userRepository.save(user);
 
         // This creates a successPresenter that tests whether the test case is as we expect.
-        LoginOutputBoundary successPresenter = new LoginOutputBoundary() {
+        LoadingOutputBoundary successPresenter = new LoadingOutputBoundary() {
             @Override
-            public void prepareSuccessView(LoginOutputData user) {
+            public void prepareSuccessView(LoadingOutputData user) {
                 assertEquals("Paul", userRepository.getCurrentUsername());
             }
 
@@ -62,7 +61,7 @@ class LoginInteractorTest {
             }
         };
 
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, successPresenter);
+        LoadingInputBoundary interactor = new LoadingInteractor(userRepository, successPresenter);
         assertEquals(null, userRepository.getCurrentUsername());
 
         interactor.execute(inputData);
@@ -70,8 +69,8 @@ class LoginInteractorTest {
 
     @Test
     void failurePasswordMismatchTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "wrong");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        LoadingInputData inputData = new LoadingInputData("Paul", "wrong");
+        LoadingUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // For this failure test, we need to add Paul to the data access repository before we log in, and
         // the passwords should not match.
@@ -80,9 +79,9 @@ class LoginInteractorTest {
         userRepository.save(user);
 
         // This creates a presenter that tests whether the test case is as we expect.
-        LoginOutputBoundary failurePresenter = new LoginOutputBoundary() {
+        LoadingOutputBoundary failurePresenter = new LoadingOutputBoundary() {
             @Override
-            public void prepareSuccessView(LoginOutputData user) {
+            public void prepareSuccessView(LoadingOutputData user) {
                 // this should never be reached since the test case should fail
                 fail("Use case success is unexpected.");
             }
@@ -93,21 +92,21 @@ class LoginInteractorTest {
             }
         };
 
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, failurePresenter);
+        LoadingInputBoundary interactor = new LoadingInteractor(userRepository, failurePresenter);
         interactor.execute(inputData);
     }
 
     @Test
     void failureUserDoesNotExistTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "password");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        LoadingInputData inputData = new LoadingInputData("Paul", "password");
+        LoadingUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
 
         // Add Paul to the repo so that when we check later they already exist
 
         // This creates a presenter that tests whether the test case is as we expect.
-        LoginOutputBoundary failurePresenter = new LoginOutputBoundary() {
+        LoadingOutputBoundary failurePresenter = new LoadingOutputBoundary() {
             @Override
-            public void prepareSuccessView(LoginOutputData user) {
+            public void prepareSuccessView(LoadingOutputData user) {
                 // this should never be reached since the test case should fail
                 fail("Use case success is unexpected.");
             }
@@ -118,7 +117,7 @@ class LoginInteractorTest {
             }
         };
 
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, failurePresenter);
+        LoadingInputBoundary interactor = new LoadingInteractor(userRepository, failurePresenter);
         interactor.execute(inputData);
     }
 }

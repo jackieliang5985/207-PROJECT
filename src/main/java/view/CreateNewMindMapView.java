@@ -23,19 +23,19 @@ import interface_adapter.create_MindMap.MindMapViewModel;
 /**
  * The View for the Signup Use Case.
  */
-public class SignupView extends JPanel implements ActionListener, PropertyChangeListener {
-    private final String viewName = "sign up";
+public class CreateNewMindMapView extends JPanel implements ActionListener, PropertyChangeListener {
+    private final String viewName = "create new mindmap";
 
     private final MindMapViewModel mindMapViewModel;
-    private final JTextField NameInputField = new JTextField(15);
-    private final JPasswordField DescriptionInputField = new JPasswordField(15);
+    private final JTextField nameInputField = new JTextField(15);
+    private final JPasswordField descriptionInputField = new JPasswordField(15);
     private MindMapController mindMapController;
 
     private final JButton toCreate;
     private final JButton cancel;
     private final JButton toLoad;
 
-    public SignupView(MindMapViewModel mindMapViewModel) {
+    public CreateNewMindMapView(MindMapViewModel mindMapViewModel) {
         this.mindMapViewModel = mindMapViewModel;
         mindMapViewModel.addPropertyChangeListener(this);
 
@@ -43,9 +43,9 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel usernameInfo = new LabelTextPanel(
-                new JLabel(MindMapViewModel.NAME_LABEL), NameInputField);
+                new JLabel(MindMapViewModel.NAME_LABEL), nameInputField);
         final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel(MindMapViewModel.DESCRIPTION_LABEL), DescriptionInputField);
+                new JLabel(MindMapViewModel.DESCRIPTION_LABEL), descriptionInputField);
 
         final JPanel buttons = new JPanel();
         toLoad = new JButton(MindMapViewModel.TO_LOAD_BUTTON_LABEL);
@@ -79,7 +79,15 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                 }
         );
 
-        cancel.addActionListener(this);
+        cancel.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        JOptionPane.showMessageDialog(CreateNewMindMapView.this,
+                                "Creation canceled. Closing program...");
+                        System.exit(0);
+                    }
+                }
+        );
 
         addNameListener();
         addDescriptionListener();
@@ -89,16 +97,16 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.add(title);
         this.add(usernameInfo);
         this.add(passwordInfo);
-//        this.add(repeatPasswordInfo);
+        // this.add(repeatPasswordInfo);
         this.add(buttons);
     }
 
     private void addNameListener() {
-        NameInputField.getDocument().addDocumentListener(new DocumentListener() {
+        nameInputField.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
                 final MindMapState currentState = mindMapViewModel.getState();
-                currentState.setName(NameInputField.getText());
+                currentState.setName(nameInputField.getText());
                 mindMapViewModel.setState(currentState);
             }
 
@@ -120,11 +128,11 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     }
 
     private void addDescriptionListener() {
-        DescriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
+        descriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
                 final MindMapState currentState = mindMapViewModel.getState();
-                currentState.setDescription(new String(DescriptionInputField.getPassword()));
+                currentState.setDescription(new String(descriptionInputField.getPassword()));
                 mindMapViewModel.setState(currentState);
             }
 

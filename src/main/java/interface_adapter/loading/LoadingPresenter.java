@@ -1,30 +1,30 @@
-package interface_adapter.login;
+package interface_adapter.loading;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.change_password.LoggedInState;
 import interface_adapter.change_password.LoggedInViewModel;
-import use_case.login.LoginOutputBoundary;
-import use_case.login.LoginOutputData;
+import use_case.loading.LoadingOutputBoundary;
+import use_case.loading.LoadingOutputData;
 
 /**
  * The Presenter for the Login Use Case.
  */
-public class LoginPresenter implements LoginOutputBoundary {
+public class LoadingPresenter implements LoadingOutputBoundary {
 
-    private final LoginViewModel loginViewModel;
+    private final LoadingViewModel loadingViewModel;
     private final LoggedInViewModel loggedInViewModel;
     private final ViewManagerModel viewManagerModel;
 
-    public LoginPresenter(ViewManagerModel viewManagerModel,
-                          LoggedInViewModel loggedInViewModel,
-                          LoginViewModel loginViewModel) {
+    public LoadingPresenter(ViewManagerModel viewManagerModel,
+                            LoggedInViewModel loggedInViewModel,
+                            LoadingViewModel loadingViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel = loggedInViewModel;
-        this.loginViewModel = loginViewModel;
+        this.loadingViewModel = loadingViewModel;
     }
 
     @Override
-    public void prepareSuccessView(LoginOutputData response) {
+    public void prepareSuccessView(LoadingOutputData response) {
         // On success, switch to the logged in view.
 
         final LoggedInState loggedInState = loggedInViewModel.getState();
@@ -38,8 +38,8 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        final LoginState loginState = loginViewModel.getState();
-        loginState.setLoginError(error);
-        loginViewModel.firePropertyChanged();
+        final LoadingState loadingState = loadingViewModel.getState();
+        loadingState.setLoginError(error);
+        loadingViewModel.firePropertyChanged();
     }
 }
