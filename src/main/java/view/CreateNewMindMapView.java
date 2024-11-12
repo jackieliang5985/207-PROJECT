@@ -79,7 +79,15 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
                 }
         );
 
-        cancel.addActionListener(this);
+        cancel.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        JOptionPane.showMessageDialog(CreateNewMindMapView.this,
+                                "Creation canceled. Closing program...");
+                        System.exit(0);
+                    }
+                }
+        );
 
         addNameListener();
         addDescriptionListener();
@@ -89,7 +97,7 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         this.add(title);
         this.add(usernameInfo);
         this.add(passwordInfo);
-//        this.add(repeatPasswordInfo);
+        // this.add(repeatPasswordInfo);
         this.add(buttons);
     }
 
