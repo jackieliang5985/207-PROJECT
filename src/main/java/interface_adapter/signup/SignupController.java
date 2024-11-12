@@ -15,14 +15,13 @@ public class SignupController {
     }
 
     /**
-     * Executes the Signup Use Case.
-     * @param username the username to sign up
-     * @param password1 the password
-     * @param password2 the password repeated
+     * Executes the Mindmap Creation/loading Use Case.
+     * @param name the MindMap
+     * @param description the description
      */
-    public void execute(String username, String password1, String password2) {
+    public void execute(String name, String description) {
         final SignupInputData signupInputData = new SignupInputData(
-                username, password1, password2);
+                name, description);
 
         userSignupUseCaseInteractor.execute(signupInputData);
     }

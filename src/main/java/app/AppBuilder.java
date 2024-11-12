@@ -102,7 +102,7 @@ public class AppBuilder {
      */
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary =
-                new SignupPresenter(viewManagerModel, signupViewModel, loginViewModel);
+                new SignupPresenter(viewManagerModel, signupViewModel, loginViewModel, loggedInViewModel);
         final SignupInputBoundary userSignupInteractor =
                 new SignupInteractor(userDataAccessObject, signupOutputBoundary, userFactory);
         final SignupController controller =
@@ -159,7 +159,7 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        final MindMapView mindMap = new MindMapView();
+        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel);
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
