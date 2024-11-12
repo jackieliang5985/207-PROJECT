@@ -43,7 +43,7 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
         this.mindMapViewModel = mindMapViewModel;
         this.mindMapViewModel.addPropertyChangeListener(this);
         this.viewManagerModel = viewManagerModel;
-        final MindMapView createNewMindMapView = new MindMapView();
+        final MindMapView createNewMindMapView = new MindMapView(cardLayout, cardPanel);
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
 

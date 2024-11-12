@@ -161,7 +161,7 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        final MindMapView mindMap = new MindMapView();
+        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel);
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
