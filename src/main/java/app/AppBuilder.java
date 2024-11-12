@@ -79,9 +79,9 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapLoadingView() {
-        loadingViewModel = new LoadingViewModel()
+        loadingViewModel = new LoadingViewModel();
         final MindMapViewModel mindMapViewModel = new MindMapViewModel();
-        mindMapLoadingView = new MindMapLoadingView(mindMapViewModel);
+        mindMapLoadingView = new MindMapLoadingView(mindMapViewModel, viewManagerModel, cardPanel, cardLayout);
         cardPanel.add(mindMapLoadingView, mindMapLoadingView.getViewName());
         return this;
     }

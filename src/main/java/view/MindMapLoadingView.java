@@ -1,6 +1,6 @@
 package view;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import interface_adapter.ViewManagerModel;
+import interface_adapter.ViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapState;
 import interface_adapter.create_MindMap.MindMapViewModel;
@@ -28,12 +30,22 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
 
     private final JButton loadMindMapButton;
     private final JButton cancelButton;
+    private final ViewModel viewManagerModel;
+    private final CardLayout cardLayout;
+    private final Container cardPanel;
     private MindMapController mindMapController;
     private LoadingController loadingController;
 
-    public MindMapLoadingView(MindMapViewModel mindMapViewModel) {
+    public MindMapLoadingView(MindMapViewModel mindMapViewModel,
+                              ViewManagerModel viewManagerModel,
+                              JPanel cardPanel,
+                              CardLayout cardLayout) {
         this.mindMapViewModel = mindMapViewModel;
         this.mindMapViewModel.addPropertyChangeListener(this);
+        this.viewManagerModel = viewManagerModel;
+        final MindMapView createNewMindMapView = new MindMapView();
+        this.cardLayout = cardLayout;
+        this.cardPanel = cardPanel;
 
         final JLabel title = new JLabel("Loading Screen");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -64,9 +76,13 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
         cancelButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
+                        JOptionPane.showMessageDialog(MindMapLoadingView.this, "Loading canceled.");
+                        final String createNewMindMapViewName = "create new mindmap";
                         JOptionPane.showMessageDialog(
-                                MindMapLoadingView.this, "Loading canceled."
+                                MindMapLoadingView.this, "Loading canceled,"
+                                        + " returning to Mindmap Creation page"
                         );
+                        cardLayout.show(cardPanel, createNewMindMapViewName);
                     }
                 }
         );

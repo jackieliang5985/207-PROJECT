@@ -24,7 +24,7 @@ import interface_adapter.create_MindMap.MindMapViewModel;
  * The View for the Signup Use Case.
  */
 public class CreateNewMindMapView extends JPanel implements ActionListener, PropertyChangeListener {
-    private final String viewName = "sign up";
+    private final String viewName = "create new mindmap";
 
     private final MindMapViewModel mindMapViewModel;
     private final JTextField NameInputField = new JTextField(15);
