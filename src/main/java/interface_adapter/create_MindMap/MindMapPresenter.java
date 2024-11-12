@@ -1,36 +1,34 @@
-package interface_adapter.signup;
+package interface_adapter.create_MindMap;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.ViewModel;
 import interface_adapter.change_password.LoggedInState;
-import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
-import use_case.login.LoginOutputData;
-import use_case.signup.SignupOutputBoundary;
-import use_case.signup.SignupOutputData;
+import use_case.create_MindMap.MindMapOutputBoundary;
+import use_case.create_MindMap.MindMapOutputData;
 
 /**
  * The Presenter for the Signup Use Case.
  */
-public class SignupPresenter implements SignupOutputBoundary {
+public class MindMapPresenter implements MindMapOutputBoundary {
 
-    private final SignupViewModel signupViewModel;
+    private final MindMapViewModel mindMapViewModel;
     private final LoginViewModel loginViewModel;
     private final ViewManagerModel viewManagerModel;
     private ViewModel<LoggedInState> loggedInViewModel;
 
-    public SignupPresenter(ViewManagerModel viewManagerModel,
-                           SignupViewModel signupViewModel,
-                           LoginViewModel loginViewModel,
-                           ViewModel<LoggedInState> loggedInViewModel) {
+    public MindMapPresenter(ViewManagerModel viewManagerModel,
+                            MindMapViewModel mindMapViewModel,
+                            LoginViewModel loginViewModel,
+                            ViewModel<LoggedInState> loggedInViewModel) {
         this.viewManagerModel = viewManagerModel;
-        this.signupViewModel = signupViewModel;
+        this.mindMapViewModel = mindMapViewModel;
         this.loginViewModel = loginViewModel;
         this.loggedInViewModel = loggedInViewModel; // Pass it in the constructor
     }
 
     @Override
-    public void prepareSuccessView(SignupOutputData response) {
+    public void prepareSuccessView(MindMapOutputData response) {
         // Debugging: print out response to ensure it's correct
         final LoggedInState loggedInState = loggedInViewModel.getState();
         loggedInState.setName(response.getName());
@@ -43,9 +41,9 @@ public class SignupPresenter implements SignupOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        final SignupState signupState = signupViewModel.getState();
-        signupState.setNameError(error);
-        signupViewModel.firePropertyChanged();
+        final MindMapState mindMapState = mindMapViewModel.getState();
+        mindMapState.setNameError(error);
+        mindMapViewModel.firePropertyChanged();
     }
 
     @Override

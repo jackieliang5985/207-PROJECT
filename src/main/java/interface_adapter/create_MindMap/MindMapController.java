@@ -1,16 +1,16 @@
-package interface_adapter.signup;
+package interface_adapter.create_MindMap;
 
-import use_case.signup.SignupInputBoundary;
-import use_case.signup.SignupInputData;
+import use_case.create_MindMap.MindMapInputBoundary;
+import use_case.create_MindMap.MindMapInputData;
 
 /**
  * Controller for the Signup Use Case.
  */
-public class SignupController {
+public class MindMapController {
 
-    private final SignupInputBoundary userSignupUseCaseInteractor;
+    private final MindMapInputBoundary userSignupUseCaseInteractor;
 
-    public SignupController(SignupInputBoundary userSignupUseCaseInteractor) {
+    public MindMapController(MindMapInputBoundary userSignupUseCaseInteractor) {
         this.userSignupUseCaseInteractor = userSignupUseCaseInteractor;
     }
 
@@ -20,10 +20,10 @@ public class SignupController {
      * @param description the description
      */
     public void execute(String name, String description) {
-        final SignupInputData signupInputData = new SignupInputData(
+        final MindMapInputData mindMapInputData = new MindMapInputData(
                 name, description);
 
-        userSignupUseCaseInteractor.execute(signupInputData);
+        userSignupUseCaseInteractor.execute(mindMapInputData);
     }
 
     /**

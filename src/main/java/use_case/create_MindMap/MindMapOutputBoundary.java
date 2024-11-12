@@ -1,15 +1,15 @@
-package use_case.signup;
+package use_case.create_MindMap;
 
 /**
  * The output boundary for the Signup Use Case.
  */
-public interface SignupOutputBoundary {
+public interface MindMapOutputBoundary {
 
     /**
      * Prepares the success view for the Signup Use Case.
      * @param outputData the output data
      */
-    void prepareSuccessView(SignupOutputData outputData);
+    void prepareSuccessView(MindMapOutputData outputData);
 
     /**
      * Prepares the failure view for the Signup Use Case.

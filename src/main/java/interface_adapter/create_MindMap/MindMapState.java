@@ -1,14 +1,14 @@
-package interface_adapter.signup;
+package interface_adapter.create_MindMap;
 
 /**
  * The state for the Signup View Model.
  */
-public class SignupState {
+public class MindMapState {
     private String name = "";
     private String nameError;
     private String description = "";
 
-    public SignupState(String nameError) {
+    public MindMapState(String nameError) {
         this.nameError = nameError;
     }
 
