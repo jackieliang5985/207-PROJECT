@@ -2,6 +2,8 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * A view class for the Detective Board screen.
@@ -9,7 +11,13 @@ import java.awt.*;
 public class MindMapView extends JPanel {
     public static final String VIEW_NAME = "MINDMAP";
 
-    public MindMapView() {
+    private final CardLayout cardLayout;
+    private final Container cardPanel;
+
+    public MindMapView(CardLayout cardLayout, Container cardPanel) {
+        this.cardLayout = cardLayout;
+        this.cardPanel = cardPanel;
+
         setLayout(new BorderLayout());
 
         // Header label
@@ -39,6 +47,29 @@ public class MindMapView extends JPanel {
         final JButton saveButton = createStyledButton("SAVE");
         final JButton logoutButton = createStyledButton("LOGOUT");
 
+        // Adding action listener to the logout button
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // Show a message indicating the logout action
+                JOptionPane.showMessageDialog(
+                        MindMapView.this,
+                        "You have been logged out."
+                );
+
+                // Define the target view name for redirection
+                final String loginViewName = "CreateNewMindMapView";
+
+                // Show another message indicating navigation to the login screen
+                JOptionPane.showMessageDialog(
+                        MindMapView.this,
+                        "Returning to the Login page"
+                );
+
+                // Navigate to the "login" view
+                cardLayout.show(cardPanel, loginViewName);
+            }
+        });
+
         // Adding buttons
         bottomPanel.add(addTextPostButton);
         bottomPanel.add(addImageButton);
@@ -64,6 +95,6 @@ public class MindMapView extends JPanel {
     }
 
     public String getViewName() {
-        return "MindMapView";
+        return "CreateNewMindMapView";
     }
 }
