@@ -76,7 +76,7 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
         cancelButton.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        JOptionPane.showMessageDialog(MindMapLoadingView.this, "Loading canceled.");
+                        // JOptionPane.showMessageDialog(MindMapLoadingView.this, "Loading canceled.");
                         final String createNewMindMapViewName = "CreateNewMindMapView";
                         JOptionPane.showMessageDialog(
                                 MindMapLoadingView.this, "Loading canceled,"

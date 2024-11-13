@@ -51,10 +51,10 @@ public class MindMapView extends JPanel {
         logoutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 // Show a message indicating the logout action
-                JOptionPane.showMessageDialog(
-                        MindMapView.this,
-                        "You have been logged out."
-                );
+                //                JOptionPane.showMessageDialog(
+                //                        MindMapView.this,
+                //                        "You have been logged out."
+                //                );
 
                 // Define the target view name for redirection
                 final String loginViewName = "CreateNewMindMapView";
@@ -62,7 +62,7 @@ public class MindMapView extends JPanel {
                 // Show another message indicating navigation to the login screen
                 JOptionPane.showMessageDialog(
                         MindMapView.this,
-                        "Returning to the Login page"
+                        "You have been logged out. Returning to the Login page"
                 );
 
                 // Navigate to the "login" view
