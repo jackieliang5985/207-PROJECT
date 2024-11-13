@@ -1,28 +1,21 @@
 package view;
 
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import app.AppBuilder;
 import interface_adapter.change_password.ChangePasswordController;
 import interface_adapter.change_password.LoggedInState;
 import interface_adapter.change_password.LoggedInViewModel;
-import interface_adapter.create_MindMap.MindMapState;
 import interface_adapter.logout.LogoutController;
 
-public class LoggedInView extends JPanel implements PropertyChangeListener {
+public class LoadedInView extends JPanel implements PropertyChangeListener {
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
     private final JLabel passwordErrorField = new JLabel();
@@ -34,44 +27,85 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
     private final JButton changeMindMap;
     private final JButton continueToMindMap;
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel, AppBuilder appBuilder, CardLayout cardLayout, Container cardPanel) {
+    public LoadedInView(LoggedInViewModel loggedInViewModel, AppBuilder appBuilder, CardLayout cardLayout, Container cardPanel) {
         this.loggedInViewModel = loggedInViewModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Logged In Screen");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        final LabelTextPanel passwordInfo = new LabelTextPanel(new JLabel("ID"), passwordInputField);
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        final JLabel usernameInfo = new JLabel("Currently logged in: ");
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new GridBagLayout());
+        centerPanel.setBackground(Color.LIGHT_GRAY);
+        centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel title = new JLabel("Loading In Screen");
+        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setHorizontalAlignment(JLabel.CENTER);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        centerPanel.add(title, gbc);
+
+        JLabel usernameInfo = new JLabel("Currently Loaded MindMap Name:");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        centerPanel.add(usernameInfo, gbc);
+
         username = new JLabel();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        centerPanel.add(username, gbc);
 
-        final JPanel buttons = new JPanel();
+        JLabel passwordLabel = new JLabel("ID:");
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        centerPanel.add(passwordLabel, gbc);
+
+        passwordInputField.setPreferredSize(new Dimension(100, 25));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        centerPanel.add(passwordInputField, gbc);
+
         returnToCreateMindmap = new JButton("Go back to home page");
-        buttons.add(returnToCreateMindmap);
+        returnToCreateMindmap.setPreferredSize(new Dimension(250, 30));
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        centerPanel.add(returnToCreateMindmap, gbc);
 
         changeMindMap = new JButton("Change ID to load existing MindMap");
-        buttons.add(changeMindMap);
+        changeMindMap.setPreferredSize(new Dimension(250, 30));
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        centerPanel.add(changeMindMap, gbc);
 
         continueToMindMap = new JButton("Continue to Mind Map");
-        buttons.add(continueToMindMap);
+        continueToMindMap.setPreferredSize(new Dimension(250, 30));
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        centerPanel.add(continueToMindMap, gbc);
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(username);
-        this.add(passwordInfo);
-        this.add(passwordErrorField);
-        this.add(buttons);
+        add(centerPanel, BorderLayout.CENTER);
 
+        // Action listener for the continueToMindMap button
         continueToMindMap.addActionListener(evt -> appBuilder.showMindMapView());
+
+        // Action listener for the changeMindMap button
 
         // Action listener for the returnToCreateMindmap button
         returnToCreateMindmap.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                JOptionPane.showMessageDialog(LoggedInView.this, "Loading canceled.");
+                JOptionPane.showMessageDialog(LoadedInView.this, "Loading canceled.");
                 final String createNewMindMapViewName = "CreateNewMindMapView";
                 JOptionPane.showMessageDialog(
-                        LoggedInView.this, "Loading canceled,"
+                        LoadedInView.this, "Loading canceled,"
                                 + " returning to Mindmap Creation page"
                 );
                 cardLayout.show(cardPanel, createNewMindMapViewName);

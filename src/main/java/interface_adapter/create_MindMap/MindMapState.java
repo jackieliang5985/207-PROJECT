@@ -37,12 +37,12 @@ public class MindMapState {
     }
 
     public boolean isValidName() {
-        System.out.println("Validating name: '" + name + "'");
+        // System.out.println("Validating name: '" + name + "'");
         if (name == null || name.trim().isEmpty()) {
             nameError = "Title cannot be empty.";
             return false;
         }
-        // Add other validations here
+        // Other vaildations
         return true;
     }
 

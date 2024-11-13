@@ -35,7 +35,7 @@ import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
 import view.CreateNewMindMapView;
-import view.LoggedInView;
+import view.LoadedInView;
 import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
@@ -56,7 +56,7 @@ public class AppBuilder {
     private MindMapViewModel mindMapViewModel;
     private LoadingViewModel loadingViewModel;
     private LoggedInViewModel loggedInViewModel;
-    private LoggedInView loggedInView;
+    private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
 
     public AppBuilder() {
@@ -92,8 +92,8 @@ public class AppBuilder {
      */
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel, this, cardLayout, cardPanel);
-        cardPanel.add(loggedInView, loggedInView.getViewName());
+        loadedInView = new LoadedInView(loggedInViewModel, this, cardLayout, cardPanel);
+        cardPanel.add(loadedInView, loadedInView.getViewName());
         return this;
     }
 
@@ -137,7 +137,7 @@ public class AppBuilder {
                 new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
         final ChangePasswordController changePasswordController =
                 new ChangePasswordController(changePasswordInteractor);
-        loggedInView.setChangePasswordController(changePasswordController);
+        loadedInView.setChangePasswordController(changePasswordController);
         return this;
     }
 
@@ -152,7 +152,7 @@ public class AppBuilder {
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         final LogoutController logoutController =
                 new LogoutController(logoutInteractor);
-        loggedInView.setLogoutController(logoutController);
+        loadedInView.setLogoutController(logoutController);
         return this;
     }
 
