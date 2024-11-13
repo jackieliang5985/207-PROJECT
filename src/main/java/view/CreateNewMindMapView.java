@@ -1,17 +1,23 @@
 package view;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -21,14 +27,14 @@ import interface_adapter.create_MindMap.MindMapState;
 import interface_adapter.create_MindMap.MindMapViewModel;
 
 /**
- * The View for the Signup Use Case.
+ * The View for the Create New Mindmap Use Case.
  */
 public class CreateNewMindMapView extends JPanel implements ActionListener, PropertyChangeListener {
     private final String viewName = "create new mindmap";
 
     private final MindMapViewModel mindMapViewModel;
-    private final JTextField nameInputField = new JTextField(15);
-    private final JPasswordField descriptionInputField = new JPasswordField(15);
+    private final JTextField titleInputField = new JTextField(15);
+    private final JTextField descriptionInputField = new JTextField(15);
     private MindMapController mindMapController;
 
     private final JButton toCreate;
@@ -39,145 +45,138 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         this.mindMapViewModel = mindMapViewModel;
         mindMapViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel(MindMapViewModel.TITLE_LABEL);
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Main panel setup
+        this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        final LabelTextPanel usernameInfo = new LabelTextPanel(
-                new JLabel(MindMapViewModel.NAME_LABEL), nameInputField);
-        final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel(MindMapViewModel.DESCRIPTION_LABEL), descriptionInputField);
+        // Center panel to mimic a box
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new GridBagLayout());
+        centerPanel.setBackground(Color.LIGHT_GRAY);
+        centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
 
-        final JPanel buttons = new JPanel();
-        toLoad = new JButton(MindMapViewModel.TO_LOAD_BUTTON_LABEL);
-        buttons.add(toLoad);
-        toCreate = new JButton(MindMapViewModel.CREATE_BUTTON_LABEL);
-        buttons.add(toCreate);
-        cancel = new JButton(MindMapViewModel.CANCEL_BUTTON_LABEL);
-        buttons.add(cancel);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        toCreate.addActionListener(
-                // This creates an anonymous subclass of ActionListener and instantiates it.
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(toCreate)) {
-                            final MindMapState currentState = mindMapViewModel.getState();
+        // Title Label
+        final JLabel titleLabel = new JLabel("DETECTIVE CLUE BOARD SIMULATOR");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
 
-                            mindMapController.execute(
-                                    currentState.getName(),
-                                    currentState.getDescription()
-                            );
-                        }
-                    }
-                }
-        );
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        centerPanel.add(titleLabel, gbc);
 
-        toLoad.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        mindMapController.switchToLoginView();
-                    }
-                }
-        );
+        // Label and input for title
+        final JLabel titleInputLabel = new JLabel("Title");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        centerPanel.add(titleInputLabel, gbc);
 
-        cancel.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        JOptionPane.showMessageDialog(CreateNewMindMapView.this,
-                                "Creation canceled. Closing program...");
-                        System.exit(0);
-                    }
-                }
-        );
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        centerPanel.add(titleInputField, gbc);
 
-        addNameListener();
+        // Label and input for description
+        final JLabel descriptionInputLabel = new JLabel("Description");
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        centerPanel.add(descriptionInputLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        centerPanel.add(descriptionInputField, gbc);
+
+        // Button for creating a new mindmap
+        toCreate = new JButton("Create New Mindmap");
+        toCreate.setPreferredSize(new Dimension(200, 30));
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        centerPanel.add(toCreate, gbc);
+
+        // Button for loading an existing mindmap
+        toLoad = new JButton("Load Existing Mindmap");
+        toLoad.setPreferredSize(new Dimension(200, 30));
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        centerPanel.add(toLoad, gbc);
+
+        // Cancel button
+        cancel = new JButton("Cancel");
+        cancel.setPreferredSize(new Dimension(200, 30));
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        centerPanel.add(cancel, gbc);
+
+        // Add action listeners
+        toCreate.addActionListener(evt -> {
+            if (evt.getSource().equals(toCreate)) {
+                final MindMapState currentState = mindMapViewModel.getState();
+                mindMapController.execute(currentState.getName(), currentState.getDescription());
+            }
+        });
+
+        toLoad.addActionListener(evt -> mindMapController.switchToLoginView());
+
+        cancel.addActionListener(evt -> {
+            JOptionPane.showMessageDialog(CreateNewMindMapView.this, "Creation canceled. Closing program...");
+            System.exit(0);
+        });
+
+        // Add listeners for input fields
+        addTitleListener();
         addDescriptionListener();
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(passwordInfo);
-        // this.add(repeatPasswordInfo);
-        this.add(buttons);
+        // Add the center panel to the main panel
+        this.add(centerPanel, BorderLayout.CENTER);
     }
 
-    private void addNameListener() {
-        nameInputField.getDocument().addDocumentListener(new DocumentListener() {
-
+    private void addTitleListener() {
+        titleInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
                 final MindMapState currentState = mindMapViewModel.getState();
-                currentState.setName(nameInputField.getText());
+                currentState.setName(titleInputField.getText());
                 mindMapViewModel.setState(currentState);
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
     }
 
     private void addDescriptionListener() {
         descriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
-
             private void documentListenerHelper() {
                 final MindMapState currentState = mindMapViewModel.getState();
-                currentState.setDescription(new String(descriptionInputField.getPassword()));
+                currentState.setDescription(descriptionInputField.getText());
                 mindMapViewModel.setState(currentState);
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
     }
-//
-//    private void addRepeatPasswordListener() {
-//        repeatPasswordInputField.getDocument().addDocumentListener(new DocumentListener() {
-//
-//            private void documentListenerHelper() {
-//                final SignupState currentState = signupViewModel.getState();
-//                currentState.setRepeatPassword(new String(repeatPasswordInputField.getPassword()));
-//                signupViewModel.setState(currentState);
-//            }
-//
-//            @Override
-//            public void insertUpdate(DocumentEvent e) {
-//                documentListenerHelper();
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent e) {
-//                documentListenerHelper();
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent e) {
-//                documentListenerHelper();
-//            }
-//        });
-//    }
 
     @Override
     public void actionPerformed(ActionEvent evt) {

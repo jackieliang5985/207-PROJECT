@@ -92,7 +92,7 @@ public class AppBuilder {
      */
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel, this);
+        loggedInView = new LoggedInView(loggedInViewModel, this, cardLayout, cardPanel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
     }
