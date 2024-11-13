@@ -77,11 +77,12 @@ public class MindMapLoadingView extends JPanel implements ActionListener, Proper
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         JOptionPane.showMessageDialog(MindMapLoadingView.this, "Loading canceled.");
-                        final String createNewMindMapViewName = "create new mindmap";
+                        final String createNewMindMapViewName = "CreateNewMindMapView";
                         JOptionPane.showMessageDialog(
                                 MindMapLoadingView.this, "Loading canceled,"
                                         + " returning to Mindmap Creation page"
                         );
+                        mindMapViewModel.setState(new MindMapState(""));
                         cardLayout.show(cardPanel, createNewMindMapViewName);
                     }
                 }

@@ -57,7 +57,7 @@ public class MindMapView extends JPanel {
                 );
 
                 // Define the target view name for redirection
-                final String loginViewName = "create new mindmap";
+                final String loginViewName = "CreateNewMindMapView";
 
                 // Show another message indicating navigation to the login screen
                 JOptionPane.showMessageDialog(
@@ -95,6 +95,6 @@ public class MindMapView extends JPanel {
     }
 
     public String getViewName() {
-        return "MindMapView";
+        return "CreateNewMindMapView";
     }
 }

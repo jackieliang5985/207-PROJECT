@@ -69,7 +69,7 @@ public class LoggedInView extends JPanel implements PropertyChangeListener {
         returnToCreateMindmap.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 JOptionPane.showMessageDialog(LoggedInView.this, "Loading canceled.");
-                final String createNewMindMapViewName = "create new mindmap";
+                final String createNewMindMapViewName = "CreateNewMindMapView";
                 JOptionPane.showMessageDialog(
                         LoggedInView.this, "Loading canceled,"
                                 + " returning to Mindmap Creation page"

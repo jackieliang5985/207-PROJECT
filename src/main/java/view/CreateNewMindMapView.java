@@ -117,14 +117,31 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         gbc.gridwidth = 2;
         centerPanel.add(cancel, gbc);
 
-        // Add action listeners
         toCreate.addActionListener(evt -> {
-            if (evt.getSource().equals(toCreate)) {
-                final MindMapState currentState = mindMapViewModel.getState();
-                mindMapController.execute(currentState.getName(), currentState.getDescription());
+            // Ensure the current state is updated before proceeding
+            final MindMapState currentState = mindMapViewModel.getState();
+
+            // Get the values directly from the text fields
+            String name = titleInputField.getText().trim();
+            String description = descriptionInputField.getText().trim();
+
+            // Update the state with the current name and description
+            currentState.setName(name);
+            currentState.setDescription(description);
+            mindMapViewModel.setState(currentState);
+
+            if (name.isEmpty() || description.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Title and description cannot be empty.");
+            }
+            else {
+                if (currentState.isValidName()) {
+                    mindMapController.execute(name, description);
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, currentState.getNameError());
+                }
             }
         });
-
         toLoad.addActionListener(evt -> mindMapController.switchToLoginView());
 
         cancel.addActionListener(evt -> {
@@ -192,7 +209,7 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
     }
 
     public String getViewName() {
-        return viewName;
+        return "CreateNewMindMapView";
     }
 
     public void setSignupController(MindMapController controller) {

@@ -24,23 +24,33 @@ public class MindMapState {
         return description;
     }
 
-    public void setName(String username) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setNameError(String usernameError) {
+    public void setNameError(String nameError) {
         this.nameError = nameError;
     }
 
-    public void setDescription(String password) {
+    public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isValidName() {
+        System.out.println("Validating name: '" + name + "'");
+        if (name == null || name.trim().isEmpty()) {
+            nameError = "Title cannot be empty.";
+            return false;
+        }
+        // Add other validations here
+        return true;
     }
 
     @Override
     public String toString() {
-        return "SignupState{"
-                + "username='" + name + '\''
-                + ", password='" + description + '\''
+        return "MindMapState{"
+                + "name='" + name + '\''
+                + ", description='" + description + '\''
                 + '}';
     }
 }
