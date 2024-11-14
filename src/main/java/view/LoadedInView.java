@@ -102,7 +102,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         // Action listener for the returnToCreateMindmap button
         returnToCreateMindmap.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                JOptionPane.showMessageDialog(LoadedInView.this, "Loading canceled.");
+                // JOptionPane.showMessageDialog(LoadedInView.this, "Loading canceled.");
                 final String createNewMindMapViewName = "CreateNewMindMapView";
                 JOptionPane.showMessageDialog(
                         LoadedInView.this, "Loading canceled,"
