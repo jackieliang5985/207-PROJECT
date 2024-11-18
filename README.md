@@ -24,15 +24,15 @@
 * Presenter: Loads and displays the saved mind map data on request.
 
 **Adding Text-Based Nodes:**
-* User Story: John creates a text node, types in an idea, and positions it on the mind map board.
+* User Story: John wants to make draggable text nodes and position it on the mind map board.
 * Assigned to: Eric
-* Use Case: The user can create and position text nodes by typing in content and dragging nodes around the board to organize their mind map visually.
+* Use Case: The user makes a draghable text node and position text nodes by holding left click button on the node to move around the board to organize their mind map visually.
 
 * Interactor: Listens for user input to create text nodes.
 * Controller: Manages node creation and positioning.
 * Presenter: Displays text nodes at specified positions on the board.
 
-**Adding Image-Based Nodes:**
+**Adding Elements Within Mind Map:**
 * User Story: John uploads an image as a draggable node on the board.
 * Assigned to: Sudharshan
 * Use Case: The user selects an image from their device, which appears as a draggable node on the board, allowing the inclusion of visual references in the mind map.
@@ -42,18 +42,18 @@
 * Presenter: Displays the image at a chosen location.
 
 **Connecting Nodes with Lines:**
-* User Story: John draws a colored line between two nodes to represent relationships.
+* User Story: John wants to have a connected text node that connects to node that already exists in the mind map
 * Assigned to: Ujivel
-* Use Case: The user can connect nodes using colored lines, visually representing relationships between ideas or topics.
+* Use Case: The user can choose to create a new text node that is connected to a parent node by right clicking on the parent node and create a new connected node
 
 * Interactor: Detects starting and ending points for line creation.
 * Controller: Establishes the line connection between nodes.
 * Presenter: Renders lines with specified colors between nodes.
 
 **Deleting Nodes:**
-* User Story: John removes irrelevant nodes by dragging them to a trash icon.
+* User Story: John removes irrelevant nodes which automatically disconnects all the lines that connect the node to others.
 * Assigned to: Jackie
-* Use Case: The user drags nodes to a trash icon to delete them, enabling easy organization and removal of irrelevant information.
+* Use Case: The user right click nodes to delete it, enabling easy organization and removal of irrelevant information.
 
 * Interactor: Detects dragging motions to the trash icon.
 * Controller: Deletes the node from the board.
