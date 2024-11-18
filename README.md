@@ -43,7 +43,7 @@
 
 **Connecting Nodes with Lines:**
 * User Story: John wants to have a connected text node that connects to node that already exists in the mind map
-* Assigned to: Ujivel
+* Assigned to: Eric
 * Use Case: The user can choose to create a new text node that is connected to a parent node by right clicking on the parent node and create a new connected node
 
 * Interactor: Detects starting and ending points for line creation.
@@ -52,7 +52,7 @@
 
 **Deleting Nodes:**
 * User Story: John removes irrelevant nodes which automatically disconnects all the lines that connect the node to others.
-* Assigned to: Jackie
+* Assigned to: Sudharsian
 * Use Case: The user right click nodes to delete it, enabling easy organization and removal of irrelevant information.
 
 * Interactor: Detects dragging motions to the trash icon.
@@ -67,5 +67,7 @@
 * Interactor: Receives user-selected colors for nodes or lines.
 * Controller: Applies color changes to selected nodes or lines.
 * Presenter: Updates the display with the chosen colors.
+
+**Resizing Nodes: Optional**
 
 
