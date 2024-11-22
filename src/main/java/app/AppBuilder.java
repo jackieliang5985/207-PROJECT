@@ -10,6 +10,7 @@ import javax.swing.WindowConstants;
 import data_access.InMemoryUserDataAccessObject;
 import entity.CommonUserFactory;
 import entity.UserFactory;
+import interface_adapter.UnsplashImageInputBoundary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.change_password.ChangePasswordController;
 import interface_adapter.change_password.ChangePasswordPresenter;
@@ -17,17 +18,22 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
+import interface_adapter.image.ImageController;
+import interface_adapter.image.ImagePresenter;
+import interface_adapter.image.ImageViewModel;
 import interface_adapter.loading.LoadingController;
 import interface_adapter.loading.LoadingPresenter;
 import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import io.github.cdimascio.dotenv.Dotenv;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
+import use_case.image.ImageInteractor;
 import use_case.loading.LoadingInputBoundary;
 import use_case.loading.LoadingInteractor;
 import use_case.loading.LoadingOutputBoundary;
@@ -58,6 +64,11 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
+    Dotenv dotenv = Dotenv.configure()
+            .directory(".") // Directory of the .env file (default is root)
+            .load();
+
+    private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -65,6 +76,7 @@ public class AppBuilder {
 
     /**
      * Adds the Signup View to the application.
+     *
      * @return this builder
      */
     public AppBuilder addSignupView() {
@@ -76,6 +88,7 @@ public class AppBuilder {
 
     /**
      * Adds the Login View to the application.
+     *
      * @return this builder
      */
     public AppBuilder addMindMapLoadingView() {
@@ -88,6 +101,7 @@ public class AppBuilder {
 
     /**
      * Adds the LoggedIn View to the application.
+     *
      * @return this builder
      */
     public AppBuilder addLoggedInView() {
@@ -99,6 +113,7 @@ public class AppBuilder {
 
     /**
      * Adds the Signup Use Case to the application.
+     *
      * @return this builder
      */
     public AppBuilder addSignupUseCase() {
@@ -114,6 +129,7 @@ public class AppBuilder {
 
     /**
      * Adds the Login Use Case to the application.
+     *
      * @return this builder
      */
     public AppBuilder addLoginUseCase() {
@@ -128,6 +144,7 @@ public class AppBuilder {
 
     /**
      * Adds the Change Password Use Case to the application.
+     *
      * @return this builder
      */
     public AppBuilder addChangePasswordUseCase() {
@@ -143,6 +160,7 @@ public class AppBuilder {
 
     /**
      * Adds the Logout Use Case to the application.
+     *
      * @return this builder
      */
     public AppBuilder addLogoutUseCase() {
@@ -158,10 +176,16 @@ public class AppBuilder {
 
     /**
      * Adds the MindMap View to the application.
+     *
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel);
+        ImageViewModel imageViewModel = new ImageViewModel();
+        ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+        ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
+        ImageController imageController = new ImageController(imageInteractor);
+        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel);
+
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
@@ -175,8 +199,10 @@ public class AppBuilder {
 
     /**
      * Creates the JFrame for the application and initially sets the SignupView to be displayed.
+     *
      * @return the application
      */
+
     public JFrame build() {
         final JFrame application = new JFrame("Login Window");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

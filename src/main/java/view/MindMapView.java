@@ -1,19 +1,20 @@
 package view;
 
-import entity.Image;
-import interface_adapter.UnsplashImageRepository;
-import use_case.image.FetchImagesUseCase;
+import entity.CommonImage;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import io.github.cdimascio.dotenv.Dotenv;
 
+import interface_adapter.image.ImageController;
+import interface_adapter.image.ImagePresenter;
+import interface_adapter.image.ImageViewModel;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class MindMapView extends JPanel {
     public static final String VIEW_NAME = "MINDMAP";
@@ -21,21 +22,42 @@ public class MindMapView extends JPanel {
     private final CardLayout cardLayout;
     private final Container cardPanel;
     private final JPanel boardPanel;
-    Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the .env file (default is root)
+
+    // Load the API key from .env file
+    private Dotenv dotenv = Dotenv.configure()
+            .directory(".")
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
 
-    public MindMapView(CardLayout cardLayout, Container cardPanel) {
+    private final ImageController imageController;
+    private final ImageViewModel imageViewModel;
+    private final int zero = 0;
+    private final int one = 1;
+    private final int three = 3;
+    private final int five = 5;
+    private final int ten = 10;
+    private final int tweleve = 12;
+    private final int twentyFour = 24;
+    private final int fifty = 50;
+    private final int hundredFifty = 150;
+    private final int twoHundredThirty = 230;
+    private final int twoHundredFifty = 250;
+    private final int fourHundred = 400;
+    private final int sixHundred = 600;
+
+    public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
+                       ImageViewModel imageViewModel) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
+        this.imageController = imageController;
+        this.imageViewModel = imageViewModel;
 
         setLayout(new BorderLayout());
 
         // Header label
         final JLabel titleLabel = new JLabel("Mind Map", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, twentyFour));
         titleLabel.setOpaque(true);
         titleLabel.setBackground(Color.LIGHT_GRAY);
         titleLabel.setForeground(Color.BLACK);
@@ -44,15 +66,14 @@ public class MindMapView extends JPanel {
         // Main center panel for the board area
         boardPanel = new JPanel();
         boardPanel.setBackground(Color.LIGHT_GRAY);
-        boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3));
+        boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, three));
         boardPanel.setLayout(null);
-        // Allow absolute positioning for draggable components
         add(boardPanel, BorderLayout.CENTER);
 
         // Bottom panel for buttons
         final JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayout(1, 5, 10, 0));
-        bottomPanel.setBackground(new Color(230, 230, 250));
+        bottomPanel.setLayout(new GridLayout(one, five, ten, zero));
+        bottomPanel.setBackground(new Color(twoHundredThirty, twoHundredThirty, twoHundredFifty));
 
         final JButton addTextPostButton = createStyledButton("Add Text Post It");
         final JButton addImageButton = createStyledButton("Add Image Post It");
@@ -79,6 +100,17 @@ public class MindMapView extends JPanel {
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
+
+        // Add property change listener to update the view with the fetched images
+        imageViewModel.addPropertyChangeListener(evt -> {
+            if ("images".equals(evt.getPropertyName())) {
+                final List<CommonImage> images = (List<CommonImage>) evt.getNewValue();
+                showImageSelectionDialog(images);
+            }
+            else if ("errorMessage".equals(evt.getPropertyName())) {
+                JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
+            }
+        });
     }
 
     /**
@@ -86,11 +118,11 @@ public class MindMapView extends JPanel {
      */
     private JButton createStyledButton(String text) {
         final JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(new Color(230, 230, 250));
+        button.setFont(new Font("Arial", Font.BOLD, tweleve));
+        button.setBackground(new Color(twoHundredThirty, twoHundredThirty, twoHundredFifty));
         button.setForeground(Color.BLACK);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, one));
         return button;
     }
 
@@ -98,66 +130,49 @@ public class MindMapView extends JPanel {
      * Fetch images from Unsplash and add one to the board.
      */
     private void fetchAndAddImage() {
-        System.out.println("Unsplash API Key: " + unsplashApiKey);
-        String query = JOptionPane.showInputDialog(this, "Enter a search term for images:");
+        final String query = JOptionPane.showInputDialog(this, "Enter a search term for images:");
         if (query == null || query.isEmpty()) {
-            // User canceled or provided empty input
+            // User cancelled or something
             return;
         }
 
-        try {
-            // Use UnsplashImageRepository to fetch images
-            UnsplashImageRepository repository = new UnsplashImageRepository(unsplashApiKey);
-            FetchImagesUseCase fetchImagesUseCase = new FetchImagesUseCase(repository);
+        // Create an instance of ImagePresenter (which implements ImageOutputBoundary)
+        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
-            List<Image> images = fetchImagesUseCase.fetchImages(query);
-            if (images.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No images found for the query: " + query);
-                return;
-            }
-
-            // Show images in a dialog for selection
-            Image selectedImage = showImageSelectionDialog(images);
-            if (selectedImage != null) {
-                addImageToBoard(selectedImage);
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error fetching images: " + e.getMessage());
-        }
+        // Call the ImageController with the query and the ImagePresenter as the output boundary
+        imageController.fetchImages(query, imagePresenter);
     }
 
     /**
      * Display images in a dialog for selection.
      */
-    private Image showImageSelectionDialog(List<Image> images) {
+    private void showImageSelectionDialog(List<CommonImage> commonImages) {
         final JDialog dialog = new JDialog((Frame) null, "Select an Image", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setLayout(new BorderLayout());
 
-        // Create a panel to hold the image buttons
         final JPanel imagePanel = new JPanel();
-        imagePanel.setLayout(new GridLayout(0, 3, 10, 10)); // 3 images per row with spacing
+        imagePanel.setLayout(new GridLayout(zero, three, ten, ten));
 
-        final Image[] selectedImage = {null};
+        final CommonImage[] selectedCommonImage = {null};
         // Icons for buttons
-        for (Image image : images) {
+        for (CommonImage commonImage : commonImages) {
             try {
-                System.out.println("Fetching image: " + image.getUrl());
-                BufferedImage bufferedImage = ImageIO.read(new URL(image.getUrl()));
+                final BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
                 if (bufferedImage == null) {
-                    System.err.println("Failed to fetch image: " + image.getUrl());
+                    System.err.println("Failed to fetch image: " + commonImage.getUrl());
                     continue;
                 }
-                final ImageIcon icon = new ImageIcon(bufferedImage.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH));
+                final ImageIcon icon = new ImageIcon(bufferedImage.getScaledInstance(100, 100,
+                        java.awt.Image.SCALE_SMOOTH));
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
-                    selectedImage[0] = image;
+                    selectedCommonImage[zero] = commonImage;
                     dialog.dispose();
                 });
                 imagePanel.add(imageButton);
             }
             catch (IOException e) {
-                System.err.println("Error loading image: " + image.getUrl());
+                System.err.println("Error loading image: " + commonImage.getUrl());
                 e.printStackTrace();
             }
         }
@@ -168,22 +183,20 @@ public class MindMapView extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         dialog.add(scrollPane, BorderLayout.CENTER);
-        // Set an appropriate size for the dialog
-        dialog.setSize(600, 400);
+        dialog.setSize(sixHundred, fourHundred);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-
-        return selectedImage[0];
     }
 
     /**
      * Add the selected image to the board as a draggable component.
      */
-    private void addImageToBoard(Image image) {
-        System.out.println("Adding image: " + image.getUrl());  // Debug the image URL
-        final ImageIcon icon = new ImageIcon(new ImageIcon(image.getUrl()).getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
+    private void addImageToBoard(CommonImage commonImage) {
+        final ImageIcon icon = new ImageIcon(new ImageIcon(commonImage.getUrl()).getImage()
+                .getScaledInstance(hundredFifty, hundredFifty, java.awt.Image.SCALE_SMOOTH));
         final JLabel imageLabel = new JLabel(icon);
-        imageLabel.setBounds(50, 50, 150, 150); // Example positioning
+        // Example positioning
+        imageLabel.setBounds(fifty, fifty, hundredFifty, hundredFifty);
         boardPanel.add(imageLabel);
         boardPanel.revalidate();
         boardPanel.repaint();

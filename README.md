@@ -10,7 +10,7 @@
 **Mind Map Board Generator**
 
 **Project Overview**
-* The Mind Map Board Generator is a virtual mind-mapping application designed to help users create, connect, and organize ideas through a graphical interface. The simulator allows users to add draggable text and image nodes, connect them with lines, categorize them by color, and save and load mind maps for later use. This project aims to provide a seamless and intuitive experience for brainstorming, planning, and organizing information visually.
+* The Mind Map Board Generator is a virtual mind-mapping application designed to help users create, connect, and organize ideas through a graphical interface. The simulator allows users to add draggable text and commonImage nodes, connect them with lines, categorize them by color, and save and load mind maps for later use. This project aims to provide a seamless and intuitive experience for brainstorming, planning, and organizing information visually.
 
 **User Stories**
 
@@ -33,13 +33,13 @@
 * Presenter: Displays text nodes at specified positions on the board.
 
 **Adding Elements Within Mind Map:**
-* User Story: John uploads an image as a draggable node on the board.
+* User Story: John uploads an commonImage as a draggable node on the board.
 * Assigned to: Sudharshan
-* Use Case: The user selects an image from their device, which appears as a draggable node on the board, allowing the inclusion of visual references in the mind map.
+* Use Case: The user selects an commonImage from their device, which appears as a draggable node on the board, allowing the inclusion of visual references in the mind map.
 
-* Interactor: Manages file selection and image upload.
-* Controller: Adds the image node to the board.
-* Presenter: Displays the image at a chosen location.
+* Interactor: Manages file selection and commonImage upload.
+* Controller: Adds the commonImage node to the board.
+* Presenter: Displays the commonImage at a chosen location.
 
 **Connecting Nodes with Lines:**
 * User Story: John wants to have a connected text node that connects to node that already exists in the mind map
