@@ -1,17 +1,17 @@
 package use_case.image;
-import entity.Image;
+import entity.CommonImage;
 
 import java.util.List;
 
 
 public class FetchImagesUseCase {
-    private final ImageRepository imageRepository;
+    private final ImageInputBoundary imageInputBoundary;
 
-    public FetchImagesUseCase(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
+    public FetchImagesUseCase(ImageInputBoundary imageInputBoundary) {
+        this.imageInputBoundary = imageInputBoundary;
     }
 
-    public List<Image> fetchImages(String query) throws Exception {
-        return imageRepository.searchImages(query);
+    public List<CommonImage> fetchImages(String query) throws Exception {
+        return imageInputBoundary.searchImages(query);
     }
 }
