@@ -12,7 +12,6 @@ class PostNote {
     Color color; // Color of the post-it note
     JLabel label; // Display label for the post-it note
     JTextField textField; // Text field for editing the post-it label
-    PostNote parentPostNote; // Reference to the parent post-it, if there is one
     SquarePanel panel; // Reference to the panel so we can repaint
     private boolean dragging = false; // boolean that checks if post-it note is being moved around
     private Point relativePos; // variable to store position of the mouse cursor relative to the postitnote
@@ -108,39 +107,6 @@ class PostNote {
     }
 
     /**
-     * Calculates the X-coordinate of the postit's center.
-     * @return Center X-coordinate
-     */
-    public int getCenterX() {
-        return x + width / 2;
-    }
-
-    /**
-     * Calculates the Y-coordinate of the postit's center.
-     * @return Center Y-coordinate
-     */
-    public int getCenterY() {
-        return y + height / 2;
-    }
-
-    /**
-     * Returns the parent postit.
-     * @return The postit parent
-     */
-    public PostNote getParentPostIt() {
-        // only gets called if there is a parent postit
-        return parentPostNote;
-    }
-
-    /**
-     * Sets the parent postit for this postit.
-     * @param parentPostNote The parent postit to set
-     */
-    public void setParentPostIt(PostNote parentPostNote) {
-        this.parentPostNote = parentPostNote;
-    }
-
-    /**
      * Returns the label for this postit.
      * @return JLabel for the postit
      */
@@ -168,15 +134,6 @@ class PostNote {
         JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
         editPostItItem.addActionListener(event -> startEditing());
 
-        // creates a new panel, and uses it to call createConnectedPostNote, with the current postitnote as the parent parameter
-        JMenuItem createPostItItem = new JMenuItem("Create Connected Post-it note");
-        createPostItItem.addActionListener(event -> {
-            SquarePanel newPanel = (SquarePanel) label.getParent();
-            newPanel.createConnectedPostNote(this);
-        });
-
-        menu.add(editPostItItem);
-        menu.add(createPostItItem);
         menu.show(label, e.getX(), e.getY());
     }
 
