@@ -1,20 +1,18 @@
 package view;
 
 import entity.CommonImage;
-
-import javax.swing.*;
-import java.awt.*;
-
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 public class MindMapView extends JPanel {
     public static final String VIEW_NAME = "MINDMAP";
@@ -23,15 +21,16 @@ public class MindMapView extends JPanel {
     private final Container cardPanel;
     private final JPanel boardPanel;
 
-    // Load the API key from .env file
-    private Dotenv dotenv = Dotenv.configure()
+    // Load the API key from the .env file
+    private final Dotenv dotenv = Dotenv.configure()
             .directory(".")
             .load();
-
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
 
     private final ImageController imageController;
     private final ImageViewModel imageViewModel;
+
+    // Constants for dimensions and spacing
     private final int zero = 0;
     private final int one = 1;
     private final int three = 3;
@@ -46,6 +45,10 @@ public class MindMapView extends JPanel {
     private final int fourHundred = 400;
     private final int sixHundred = 600;
 
+    // Uncomment and use these when implementing the notepad features
+    // private final List<PostNote> postNotes = new ArrayList<>();
+    // private PostNote initialPostNote;
+
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
                        ImageViewModel imageViewModel) {
         this.cardLayout = cardLayout;
@@ -55,7 +58,13 @@ public class MindMapView extends JPanel {
 
         setLayout(new BorderLayout());
 
-        // Header label
+        setPreferredSize(new Dimension(1920, 1080));
+        JPanel mainPanel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(1920, 1080);
+            }
+        };
         final JLabel titleLabel = new JLabel("Mind Map", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, twentyFour));
         titleLabel.setOpaque(true);
@@ -93,6 +102,7 @@ public class MindMapView extends JPanel {
             cardLayout.show(cardPanel, "CreateNewMindMapView");
         });
 
+        // Add buttons to the bottom panel
         bottomPanel.add(addTextPostButton);
         bottomPanel.add(addImageButton);
         bottomPanel.add(attachStringButton);
@@ -100,6 +110,12 @@ public class MindMapView extends JPanel {
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
+
+        // Uncomment and use these when implementing the notepad features
+        // SquarePanel panel = new SquarePanel(postNotes);
+        // initialPostNote = new PostNote(100, 100, 100, 100, Color.ORANGE, panel);
+        // postNotes.add(initialPostNote);
+        // panel.addPostNote(initialPostNote);
 
         saveButton.addActionListener(evt -> {
             try {
@@ -165,8 +181,7 @@ public class MindMapView extends JPanel {
             if ("images".equals(evt.getPropertyName())) {
                 final List<CommonImage> images = (List<CommonImage>) evt.getNewValue();
                 showImageSelectionDialog(images);
-            }
-            else if ("errorMessage".equals(evt.getPropertyName())) {
+            } else if ("errorMessage".equals(evt.getPropertyName())) {
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
@@ -195,10 +210,7 @@ public class MindMapView extends JPanel {
             return;
         }
 
-        // Create an instance of ImagePresenter (which implements ImageOutputBoundary)
         final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-
-        // Call the ImageController with the query and the ImagePresenter as the output boundary
         imageController.fetchImages(query, imagePresenter);
     }
 
@@ -234,7 +246,6 @@ public class MindMapView extends JPanel {
         imagePanel.setLayout(new GridLayout(zero, three, ten, ten));
 
         final CommonImage[] selectedCommonImage = {null};
-        // Icons for buttons
         for (CommonImage commonImage : commonImages) {
             try {
                 final BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
@@ -250,14 +261,12 @@ public class MindMapView extends JPanel {
                     dialog.dispose();
                 });
                 imagePanel.add(imageButton);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("Error loading image: " + commonImage.getUrl());
                 e.printStackTrace();
             }
         }
 
-        // Scrolling
         final JScrollPane scrollPane = new JScrollPane(imagePanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -275,7 +284,6 @@ public class MindMapView extends JPanel {
         final ImageIcon icon = new ImageIcon(new ImageIcon(commonImage.getUrl()).getImage()
                 .getScaledInstance(hundredFifty, hundredFifty, java.awt.Image.SCALE_SMOOTH));
         final JLabel imageLabel = new JLabel(icon);
-        // Example positioning
         imageLabel.setBounds(fifty, fifty, hundredFifty, hundredFifty);
         boardPanel.add(imageLabel);
         boardPanel.revalidate();
