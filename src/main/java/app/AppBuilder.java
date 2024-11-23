@@ -204,7 +204,7 @@ public class AppBuilder {
      */
 
     public JFrame build() {
-        final JFrame application = new JFrame("Login Window");
+        final JFrame application = new JFrame("MindMap");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.add(cardPanel);
         viewManagerModel.setState(createNewMindMapView.getViewName());

@@ -13,17 +13,20 @@ public class Main {
     public static void main(String[] args) {
         final AppBuilder appBuilder = new AppBuilder();
         final JFrame application = appBuilder
-                                            .addMindMapLoadingView()
-                                            .addSignupView()
-                                            .addLoggedInView()
+                .addMindMapLoadingView()
+                .addSignupView()
+                .addLoggedInView()
                 .addMindMapView()
-                                            .addSignupUseCase()
-                                            .addLoginUseCase()
-                                            .addChangePasswordUseCase()
-                                            .addLogoutUseCase()
-                                            .build();
+                .addSignupUseCase()
+                .addLoginUseCase()
+                .addChangePasswordUseCase()
+                .addLogoutUseCase()
+                .build();
 
-        application.pack();
+        // Set the application to maximized state
+        application.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        // Make the application visible
         application.setVisible(true);
     }
 }
