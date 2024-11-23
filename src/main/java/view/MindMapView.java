@@ -1,10 +1,12 @@
 package view;
 
+import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -120,17 +122,17 @@ public class MindMapView extends JPanel {
         saveButton.addActionListener(evt -> {
             try {
                 // Capture the JPanel as a BufferedImage
-                BufferedImage screenshot = new BufferedImage(
+                final BufferedImage screenshot = new BufferedImage(
                         boardPanel.getWidth(),
                         boardPanel.getHeight(),
                         BufferedImage.TYPE_INT_RGB
                 );
-                Graphics2D g2d = screenshot.createGraphics();
+                final Graphics2D g2d = screenshot.createGraphics();
                 boardPanel.paint(g2d);
                 g2d.dispose();
 
                 // Open a file chooser to save the screenshot
-                JFileChooser fileChooser = new JFileChooser();
+                final JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Save Mind Map");
 
                 // Add a file filter for PNG, JPEG, and PDF
@@ -139,40 +141,14 @@ public class MindMapView extends JPanel {
                 fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
                 fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
 
-                int userSelection = fileChooser.showSaveDialog(MindMapView.this);
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    java.io.File fileToSave = fileChooser.getSelectedFile();
-                    String selectedExtension = "";
-
-                    // Determine the selected file format
-                    String description = fileChooser.getFileFilter().getDescription();
-                    if (description.contains("PNG")) {
-                        selectedExtension = "png";
-                    } else if (description.contains("JPEG")) {
-                        selectedExtension = "jpg";
-                    } else if (description.contains("PDF")) {
-                        selectedExtension = "pdf";
-                    }
-
-                    // Ensure the file has the correct extension
-                    if (!fileToSave.getName().toLowerCase().endsWith("." + selectedExtension)) {
-                        fileToSave = new java.io.File(fileToSave.getAbsolutePath() + "." + selectedExtension);
-                    }
-
-                    // Save the file in the selected format
-                    if (selectedExtension.equals("png") || selectedExtension.equals("jpg")) {
-                        // Write image as PNG or JPEG
-                        ImageIO.write(screenshot, selectedExtension, fileToSave);
-                    } else if (selectedExtension.equals("pdf")) {
-                        // Save as PDF
-                        saveAsPdf(screenshot, fileToSave);
-                    }
-
-                    JOptionPane.showMessageDialog(MindMapView.this, "Mind Map saved successfully as " + selectedExtension.toUpperCase() + "!");
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + e.getMessage());
-                e.printStackTrace();
+                final int userSelection = fileChooser.showSaveDialog(MindMapView.this);
+                fileType(userSelection, fileChooser, screenshot);
+            }
+            catch (IOException exception) {
+                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
+                exception.printStackTrace();
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -181,10 +157,53 @@ public class MindMapView extends JPanel {
             if ("images".equals(evt.getPropertyName())) {
                 final List<CommonImage> images = (List<CommonImage>) evt.getNewValue();
                 showImageSelectionDialog(images);
-            } else if ("errorMessage".equals(evt.getPropertyName())) {
+            }
+            else if ("errorMessage".equals(evt.getPropertyName())) {
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
+    }
+
+    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException, DocumentException {
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            java.io.File fileToSave = fileChooser.getSelectedFile();
+            final String selectedExtension = getFile(fileChooser);
+
+            // Ensure the file has the correct extension
+            if (!fileToSave.getName().toLowerCase().endsWith("." + selectedExtension)) {
+                fileToSave = new java.io.File(fileToSave.getAbsolutePath() + "." + selectedExtension);
+            }
+
+            // Save the file in the selected format
+            if (selectedExtension.equals("png") || selectedExtension.equals("jpg")) {
+                // Write image as PNG or JPEG
+                ImageIO.write(screenshot, selectedExtension, fileToSave);
+            }
+            else if (selectedExtension.equals("pdf")) {
+                // Save as PDF
+                saveAsPdf(screenshot, fileToSave);
+            }
+
+            JOptionPane.showMessageDialog(MindMapView.this, "Mind Map saved successfully as " + selectedExtension.toUpperCase() + "!");
+        }
+    }
+
+    @NotNull
+    private static String getFile(JFileChooser fileChooser) {
+        String selectedExtension = "";
+
+        // Determine the selected file format
+        final String description = fileChooser.getFileFilter().getDescription();
+        if (description.contains("PNG")) {
+            selectedExtension = "png";
+        }
+        else if (description.contains("JPEG")) {
+            selectedExtension = "jpg";
+        }
+        else if (description.contains("PDF")) {
+            selectedExtension = "pdf";
+        }
+        return selectedExtension;
     }
 
     /**
@@ -215,24 +234,28 @@ public class MindMapView extends JPanel {
     }
 
     /**
-     * Helper method to download the JFrame mindMap as a PDF
+     * Saves a BufferedImage as a PDF file.
+     * This method converts the given BufferedImage into a PDF format and saves it
+     * to the specified file location. The generated PDF will contain a single page
+     * with the image scaled to fit.
+     *
+     * @param image the BufferedImage to be saved as a PDF
+     * @param file  the file where the PDF will be saved
+     * @throws IOException              if an error occurs while writing to the file
+     * @throws com.itextpdf.text.DocumentException if an error occurs with the PDF generation
      */
-    private void saveAsPdf(BufferedImage image, java.io.File file) {
-        try {
-            com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-            com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(file));
-            document.open();
+    private void saveAsPdf(BufferedImage image, java.io.File file)
+            throws IOException, com.itextpdf.text.DocumentException {
+        final com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(file));
+        document.open();
 
-            com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-            pdfImage.scaleToFit(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 50);
-            pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+        final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
+        pdfImage.scaleToFit(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 50);
+        pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
 
-            document.add(pdfImage);
-            document.close();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving PDF: " + e.getMessage());
-            e.printStackTrace();
-        }
+        document.add(pdfImage);
+        document.close();
     }
 
     /**
@@ -261,9 +284,10 @@ public class MindMapView extends JPanel {
                     dialog.dispose();
                 });
                 imagePanel.add(imageButton);
-            } catch (IOException e) {
+            }
+            catch (IOException exception) {
                 System.err.println("Error loading image: " + commonImage.getUrl());
-                e.printStackTrace();
+                exception.printStackTrace();
             }
         }
 
