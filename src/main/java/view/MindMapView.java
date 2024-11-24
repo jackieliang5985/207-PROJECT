@@ -1,13 +1,16 @@
 package view;
 
 import entity.ImagePostNote;
+import entity.TextPostNote;
 import entity.PostNote;
+import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.jetbrains.annotations.NotNull;
 import use_case.export_mind_map.ExportInputData;
 
 import javax.imageio.ImageIO;
