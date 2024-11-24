@@ -63,7 +63,7 @@ public class MindMapView extends JPanel {
         setLayout(new BorderLayout());
 
         setPreferredSize(new Dimension(1920, 1080));
-        JPanel mainPanel = new JPanel() {
+        final JPanel mainPanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(1920, 1080);
@@ -145,7 +145,8 @@ public class MindMapView extends JPanel {
             catch (IOException exception) {
                 JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
                 exception.printStackTrace();
-            } catch (DocumentException e) {
+            }
+            catch (DocumentException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -162,7 +163,8 @@ public class MindMapView extends JPanel {
         });
     }
 
-    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException, DocumentException {
+    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException,
+            DocumentException {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             java.io.File fileToSave = fileChooser.getSelectedFile();
             final String selectedExtension = getFile(fileChooser);
@@ -249,7 +251,8 @@ public class MindMapView extends JPanel {
         document.open();
 
         final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-        pdfImage.scaleToFit(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 50);
+        pdfImage.scaleToFit(document.getPageSize().getWidth() - fifty, document.getPageSize()
+                .getHeight() - fifty);
         pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
 
         document.add(pdfImage);
@@ -311,24 +314,20 @@ public class MindMapView extends JPanel {
     private void addImageToBoard(CommonImage commonImage) {
         try {
             // Fetch the image from the URL
-            BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
+            final BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
             if (bufferedImage == null) {
                 JOptionPane.showMessageDialog(this, "Failed to load the selected image.");
                 return;
             }
 
-            // Create an ImageIcon for the ImagePostNote
-            ImageIcon imageIcon = new ImageIcon(bufferedImage);
+            final ImageIcon imageIcon = new ImageIcon(bufferedImage);
 
-            // Create an ImagePostNote with correct parameters based on the image size
-            // Set the width and height of the note to match the image size
-            ImagePostNote imagePostNote = new ImagePostNote(50, 50, Color.ORANGE, boardPanel);
+            final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, Color.ORANGE, boardPanel);
             imagePostNote.setImage(imageIcon);
 
             // Add the ImagePostNote to the board (SquarePanel)
             boardPanel.createPostNote(imagePostNote);
 
-            // Repaint the board to reflect changes
             boardPanel.revalidate();
             boardPanel.repaint();
 
@@ -337,6 +336,5 @@ public class MindMapView extends JPanel {
             exception.printStackTrace();
         }
     }
-
 
 }
