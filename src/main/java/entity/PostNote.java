@@ -1,4 +1,6 @@
-package backEndMindMapImplementation;
+package entity;
+
+import interface_adapter.create_MindMap.SquarePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,12 +9,11 @@ import java.awt.event.*;
 /**
  * Represents an individual post-it note on the panel, with text, connections, and drag functionality.
  */
-class PostNote {
+public class PostNote {
     int x, y, width, height; // initiazlies the position and size of the postit note
     Color color; // Color of the post-it note
     JLabel label; // Display label for the post-it note
     JTextField textField; // Text field for editing the post-it label
-    PostNote parentPostNote; // Reference to the parent post-it, if there is one
     SquarePanel panel; // Reference to the panel so we can repaint
     private boolean dragging = false; // boolean that checks if post-it note is being moved around
     private Point relativePos; // variable to store position of the mouse cursor relative to the postitnote
@@ -59,6 +60,7 @@ class PostNote {
                     showContextMenu(e);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     dragging = true;
+                    movingResize();
                     relativePos = new Point(e.getX(), e.getY());
                 }
             }
@@ -66,8 +68,12 @@ class PostNote {
             // When left button is let go, dragging is set to false.
             @Override
             public void mouseReleased(MouseEvent e) {
-                dragging = false;
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    dragging = false;
+                    movingResize();
+                }
             }
+
         });
 
         // This mouse motion listener takes in the mouse motion and sees if component is being dragged, if so:
@@ -101,43 +107,10 @@ class PostNote {
         // point.x/y is set as the new position of the post it note
         // relativePos.x/y makes sure that the post-it note does not teleport the post it to the cursor
         x = point.x - relativePos.x;
-        y = point.y - relativePos.y;
+        y = point.y - relativePos.y - 50;
         label.setLocation(x, y);
         textField.setLocation(x, y);
         panel.repaint();
-    }
-
-    /**
-     * Calculates the X-coordinate of the postit's center.
-     * @return Center X-coordinate
-     */
-    public int getCenterX() {
-        return x + width / 2;
-    }
-
-    /**
-     * Calculates the Y-coordinate of the postit's center.
-     * @return Center Y-coordinate
-     */
-    public int getCenterY() {
-        return y + height / 2;
-    }
-
-    /**
-     * Returns the parent postit.
-     * @return The postit parent
-     */
-    public PostNote getParentPostIt() {
-        // only gets called if there is a parent postit
-        return parentPostNote;
-    }
-
-    /**
-     * Sets the parent postit for this postit.
-     * @param parentPostNote The parent postit to set
-     */
-    public void setParentPostIt(PostNote parentPostNote) {
-        this.parentPostNote = parentPostNote;
     }
 
     /**
@@ -163,20 +136,12 @@ class PostNote {
      */
     private void showContextMenu(MouseEvent e) {
         JPopupMenu menu = new JPopupMenu();
-
+        System.out.println("pop up menu");
         // calls startEditing when that option is pressed.
         JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
         editPostItItem.addActionListener(event -> startEditing());
 
-        // creates a new panel, and uses it to call createConnectedPostNote, with the current postitnote as the parent parameter
-        JMenuItem createPostItItem = new JMenuItem("Create Connected Post-it note");
-        createPostItItem.addActionListener(event -> {
-            SquarePanel newPanel = (SquarePanel) label.getParent();
-            newPanel.createConnectedPostNote(this);
-        });
-
         menu.add(editPostItItem);
-        menu.add(createPostItItem);
         menu.show(label, e.getX(), e.getY());
     }
 
@@ -198,5 +163,18 @@ class PostNote {
         label.setText(textField.getText());
         textField.setVisible(false);
         label.setVisible(true);
+    }
+
+    private void movingResize() {
+        int sizeOffset = 10;
+        if (dragging) {
+            this.width += sizeOffset;
+            this.height += sizeOffset;
+        }
+        else {
+            this.width -= sizeOffset;
+            this.height -= sizeOffset;
+        }
+        label.setSize(width, height);
     }
 }

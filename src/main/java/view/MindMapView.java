@@ -1,8 +1,10 @@
 package view;
 
+import entity.ImagePostNote;
+import entity.PostNote;
+import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
-import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
@@ -11,11 +13,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MindMapView extends JPanel {
@@ -23,7 +25,7 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final JPanel boardPanel;
+    private final SquarePanel boardPanel;
 
     // Load the API key from the .env file
     private final Dotenv dotenv = Dotenv.configure()
@@ -48,23 +50,20 @@ public class MindMapView extends JPanel {
     private final int twoHundredFifty = 250;
     private final int fourHundred = 400;
     private final int sixHundred = 600;
-    private final ExportController exportController;
 
-    // Uncomment and use these when implementing the notepad features
-    // private final List<PostNote> postNotes = new ArrayList<>();
-    // private PostNote initialPostNote;
+    private final ArrayList<PostNote> postNotes = new ArrayList<>();
 
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
-                       ImageViewModel imageViewModel, ExportController exportController) {
+                       ImageViewModel imageViewModel) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.imageController = imageController;
         this.imageViewModel = imageViewModel;
-        this.exportController = exportController;
+
         setLayout(new BorderLayout());
 
         setPreferredSize(new Dimension(1920, 1080));
-        JPanel mainPanel = new JPanel() {
+        final JPanel mainPanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(1920, 1080);
@@ -78,7 +77,7 @@ public class MindMapView extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Main center panel for the board area
-        boardPanel = new JPanel();
+        boardPanel = new SquarePanel(postNotes);
         boardPanel.setBackground(Color.LIGHT_GRAY);
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, three));
         boardPanel.setLayout(null);
@@ -92,11 +91,13 @@ public class MindMapView extends JPanel {
         final JButton addTextPostButton = createStyledButton("Add Text Post It");
         final JButton addImageButton = createStyledButton("Add Image Post It");
         final JButton attachStringButton = createStyledButton("Attach String");
-        final JButton exportButton = createStyledButton("EXPORT");
+        final JButton saveButton = createStyledButton("SAVE");
         final JButton logoutButton = createStyledButton("LOGOUT");
 
         // Add action listener for "Add Image Post It"
         addImageButton.addActionListener(evt -> fetchAndAddImage());
+
+        addTextPostButton.addActionListener(evt -> boardPanel.createPostNote());
 
         // Adding action listener to the logout button
         logoutButton.addActionListener(evt -> {
@@ -111,18 +112,12 @@ public class MindMapView extends JPanel {
         bottomPanel.add(addTextPostButton);
         bottomPanel.add(addImageButton);
         bottomPanel.add(attachStringButton);
-        bottomPanel.add(exportButton);
+        bottomPanel.add(saveButton);
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Uncomment and use these when implementing the notepad features
-        // SquarePanel panel = new SquarePanel(postNotes);
-        // initialPostNote = new PostNote(100, 100, 100, 100, Color.ORANGE, panel);
-        // postNotes.add(initialPostNote);
-        // panel.addPostNote(initialPostNote);
-
-        exportButton.addActionListener(evt -> {
+        saveButton.addActionListener(evt -> {
             try {
                 // Capture the JPanel as a BufferedImage
                 final BufferedImage screenshot = new BufferedImage(
@@ -140,9 +135,9 @@ public class MindMapView extends JPanel {
 
                 // Add a file filter for PNG, JPEG, and PDF
                 fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Image (*.png)", "png"));
+                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
 
                 final int userSelection = fileChooser.showSaveDialog(MindMapView.this);
                 fileType(userSelection, fileChooser, screenshot);
@@ -150,7 +145,8 @@ public class MindMapView extends JPanel {
             catch (IOException exception) {
                 JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
                 exception.printStackTrace();
-            } catch (DocumentException e) {
+            }
+            catch (DocumentException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -167,7 +163,8 @@ public class MindMapView extends JPanel {
         });
     }
 
-    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException, DocumentException {
+    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException,
+            DocumentException {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             java.io.File fileToSave = fileChooser.getSelectedFile();
             final String selectedExtension = getFile(fileChooser);
@@ -254,7 +251,8 @@ public class MindMapView extends JPanel {
         document.open();
 
         final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-        pdfImage.scaleToFit(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 50);
+        pdfImage.scaleToFit(document.getPageSize().getWidth() - fifty, document.getPageSize()
+                .getHeight() - fifty);
         pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
 
         document.add(pdfImage);
@@ -285,6 +283,9 @@ public class MindMapView extends JPanel {
                 imageButton.addActionListener(evt -> {
                     selectedCommonImage[zero] = commonImage;
                     dialog.dispose();
+
+                    // Call the method to add the image to the board after selection
+                    addImageToBoard(selectedCommonImage[zero]);
                 });
                 imagePanel.add(imageButton);
             }
@@ -307,13 +308,33 @@ public class MindMapView extends JPanel {
     /**
      * Add the selected image to the board as a draggable component.
      */
+    /**
+     * Add the selected image to the board as a PostNote.
+     */
     private void addImageToBoard(CommonImage commonImage) {
-        final ImageIcon icon = new ImageIcon(new ImageIcon(commonImage.getUrl()).getImage()
-                .getScaledInstance(hundredFifty, hundredFifty, java.awt.Image.SCALE_SMOOTH));
-        final JLabel imageLabel = new JLabel(icon);
-        imageLabel.setBounds(fifty, fifty, hundredFifty, hundredFifty);
-        boardPanel.add(imageLabel);
-        boardPanel.revalidate();
-        boardPanel.repaint();
+        try {
+            // Fetch the image from the URL
+            final BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
+            if (bufferedImage == null) {
+                JOptionPane.showMessageDialog(this, "Failed to load the selected image.");
+                return;
+            }
+
+            final ImageIcon imageIcon = new ImageIcon(bufferedImage);
+
+            final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, Color.ORANGE, boardPanel);
+            imagePostNote.setImage(imageIcon);
+
+            // Add the ImagePostNote to the board (SquarePanel)
+            boardPanel.createPostNote(imagePostNote);
+
+            boardPanel.revalidate();
+            boardPanel.repaint();
+
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(this, "Error loading the image: " + exception.getMessage());
+            exception.printStackTrace();
+        }
     }
+
 }
