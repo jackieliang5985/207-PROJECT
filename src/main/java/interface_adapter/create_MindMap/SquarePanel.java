@@ -1,4 +1,6 @@
-package backEndMindMapImplementation;
+package interface_adapter.create_MindMap;
+
+import entity.PostNote;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,13 +10,15 @@ import java.util.ArrayList;
 /**
  * A child class that inherits JPanel, it will hold all the post-it notes and take care adding/removing/editing
  */
-class SquarePanel extends JPanel {
+public class SquarePanel extends JPanel {
     private ArrayList<PostNote> postNotes; // List to hold all post-it notes on the panel
 
     public SquarePanel(ArrayList<PostNote> postNotes) {
         this.postNotes = postNotes;
         setLayout(null); // Disable layout manager for manual positioning
         setBackground(Color.WHITE); // Set background color of the panel
+
+        setFocusable(true);
 
         // Add a mouse listener to detect right-clicks on the panel
         addMouseListener(new MouseAdapter() {
@@ -35,7 +39,7 @@ class SquarePanel extends JPanel {
         JPopupMenu menu = new JPopupMenu();
 
         JMenuItem createNoteItem = new JMenuItem("Create New Post-it Note");
-        createNoteItem.addActionListener(event -> createPostNoteAt(point));
+        createNoteItem.addActionListener(event -> createPostNote());
 
         menu.add(createNoteItem);
         menu.show(this, point.x, point.y);
@@ -43,30 +47,13 @@ class SquarePanel extends JPanel {
 
     /**
      * Creates a new post-it note at the specified position.
-     * @param point The position for the new post-it note
      */
-    private void createPostNoteAt(Point point) {
-        PostNote newPostNote = new PostNote(point.x, point.y, 100, 100, Color.YELLOW, this);
+    public void createPostNote() {
+        PostNote newPostNote = new PostNote(100, 100, 100, 100, Color.ORANGE, this);
+        add(newPostNote.getLabel());
+        add(newPostNote.getTextField());
+        repaint();
         postNotes.add(newPostNote);
-        addPostNote(newPostNote);
-        repaint();
-    }
-
-    public void addPostNote(PostNote postNote) {
-        add(postNote.getLabel());
-        add(postNote.getTextField());
-        repaint();
-    }
-
-    /**
-     * Paints all post-it notes on the panel.
-     * @param g Graphics object for drawing
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g); // Calls JPanel's paintComponent
-        for (PostNote postNote : postNotes) {
-            postNote.draw(g);
-        }
+        System.out.println(postNotes);
     }
 }

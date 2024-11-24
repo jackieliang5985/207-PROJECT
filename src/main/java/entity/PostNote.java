@@ -1,4 +1,6 @@
-package backEndMindMapImplementation;
+package entity;
+
+import interface_adapter.create_MindMap.SquarePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +9,7 @@ import java.awt.event.*;
 /**
  * Represents an individual post-it note on the panel, with text, connections, and drag functionality.
  */
-class PostNote {
+public class PostNote {
     int x, y, width, height; // initiazlies the position and size of the postit note
     Color color; // Color of the post-it note
     JLabel label; // Display label for the post-it note
@@ -58,6 +60,7 @@ class PostNote {
                     showContextMenu(e);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     dragging = true;
+                    movingResize();
                     relativePos = new Point(e.getX(), e.getY());
                 }
             }
@@ -65,8 +68,12 @@ class PostNote {
             // When left button is let go, dragging is set to false.
             @Override
             public void mouseReleased(MouseEvent e) {
-                dragging = false;
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    dragging = false;
+                    movingResize();
+                }
             }
+
         });
 
         // This mouse motion listener takes in the mouse motion and sees if component is being dragged, if so:
@@ -100,7 +107,7 @@ class PostNote {
         // point.x/y is set as the new position of the post it note
         // relativePos.x/y makes sure that the post-it note does not teleport the post it to the cursor
         x = point.x - relativePos.x;
-        y = point.y - relativePos.y;
+        y = point.y - relativePos.y - 50;
         label.setLocation(x, y);
         textField.setLocation(x, y);
         panel.repaint();
@@ -129,11 +136,12 @@ class PostNote {
      */
     private void showContextMenu(MouseEvent e) {
         JPopupMenu menu = new JPopupMenu();
-
+        System.out.println("pop up menu");
         // calls startEditing when that option is pressed.
         JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
         editPostItItem.addActionListener(event -> startEditing());
 
+        menu.add(editPostItItem);
         menu.show(label, e.getX(), e.getY());
     }
 
@@ -155,5 +163,18 @@ class PostNote {
         label.setText(textField.getText());
         textField.setVisible(false);
         label.setVisible(true);
+    }
+
+    private void movingResize() {
+        int sizeOffset = 10;
+        if (dragging) {
+            this.width += sizeOffset;
+            this.height += sizeOffset;
+        }
+        else {
+            this.width -= sizeOffset;
+            this.height -= sizeOffset;
+        }
+        label.setSize(width, height);
     }
 }

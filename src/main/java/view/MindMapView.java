@@ -1,5 +1,7 @@
 package view;
 
+import entity.PostNote;
+import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
 import interface_adapter.image.ImageController;
@@ -14,6 +16,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MindMapView extends JPanel {
@@ -21,7 +24,7 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final JPanel boardPanel;
+    private final SquarePanel boardPanel;
 
     // Load the API key from the .env file
     private final Dotenv dotenv = Dotenv.configure()
@@ -47,9 +50,7 @@ public class MindMapView extends JPanel {
     private final int fourHundred = 400;
     private final int sixHundred = 600;
 
-    // Uncomment and use these when implementing the notepad features
-    // private final List<PostNote> postNotes = new ArrayList<>();
-    // private PostNote initialPostNote;
+    private final ArrayList<PostNote> postNotes = new ArrayList<>();
 
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
                        ImageViewModel imageViewModel) {
@@ -75,7 +76,7 @@ public class MindMapView extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Main center panel for the board area
-        boardPanel = new JPanel();
+        boardPanel = new SquarePanel(postNotes);
         boardPanel.setBackground(Color.LIGHT_GRAY);
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, three));
         boardPanel.setLayout(null);
@@ -95,6 +96,8 @@ public class MindMapView extends JPanel {
         // Add action listener for "Add Image Post It"
         addImageButton.addActionListener(evt -> fetchAndAddImage());
 
+        addTextPostButton.addActionListener(evt -> boardPanel.createPostNote());
+
         // Adding action listener to the logout button
         logoutButton.addActionListener(evt -> {
             JOptionPane.showMessageDialog(
@@ -112,12 +115,6 @@ public class MindMapView extends JPanel {
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
-
-        // Uncomment and use these when implementing the notepad features
-        // SquarePanel panel = new SquarePanel(postNotes);
-        // initialPostNote = new PostNote(100, 100, 100, 100, Color.ORANGE, panel);
-        // postNotes.add(initialPostNote);
-        // panel.addPostNote(initialPostNote);
 
         saveButton.addActionListener(evt -> {
             try {
