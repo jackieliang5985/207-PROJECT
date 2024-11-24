@@ -1,7 +1,6 @@
 package use_case.export_mind_map;
 
 import javax.swing.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class ExportInputData {
@@ -29,4 +28,3 @@ public class ExportInputData {
         return supportedFormats;
     }
 }
-

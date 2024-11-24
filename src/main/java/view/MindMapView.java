@@ -5,11 +5,13 @@ import entity.PostNote;
 import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
+import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jetbrains.annotations.NotNull;
+import use_case.export_mind_map.ExportInputData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MindMapView extends JPanel {
@@ -35,6 +38,8 @@ public class MindMapView extends JPanel {
 
     private final ImageController imageController;
     private final ImageViewModel imageViewModel;
+
+    private ExportController exportController;
 
     // Constants for dimensions and spacing
     private final int zero = 0;
@@ -54,11 +59,12 @@ public class MindMapView extends JPanel {
     private final ArrayList<PostNote> postNotes = new ArrayList<>();
 
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
-                       ImageViewModel imageViewModel) {
+                       ImageViewModel imageViewModel, ExportController exportController) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.imageController = imageController;
         this.imageViewModel = imageViewModel;
+        this.exportController = exportController;
 
         setLayout(new BorderLayout());
 
@@ -119,35 +125,21 @@ public class MindMapView extends JPanel {
 
         saveButton.addActionListener(evt -> {
             try {
-                // Capture the JPanel as a BufferedImage
-                final BufferedImage screenshot = new BufferedImage(
-                        boardPanel.getWidth(),
-                        boardPanel.getHeight(),
-                        BufferedImage.TYPE_INT_RGB
-                );
-                final Graphics2D g2d = screenshot.createGraphics();
-                boardPanel.paint(g2d);
-                g2d.dispose();
+                // Get the file formats you want to support
+                List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
 
-                // Open a file chooser to save the screenshot
-                final JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save Mind Map");
+                // Get the dialog title for the file chooser
+                String dialogTitle = "Save Mind Map";
 
-                // Add a file filter for PNG, JPEG, and PDF
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Image (*.png)", "png"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+                // Pass all three arguments to the ExportInputData constructor
+                ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
 
-                final int userSelection = fileChooser.showSaveDialog(MindMapView.this);
-                fileType(userSelection, fileChooser, screenshot);
-            }
-            catch (IOException exception) {
-                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
-                exception.printStackTrace();
-            }
-            catch (DocumentException e) {
-                throw new RuntimeException(e);
+                // Use ExportController to handle saving the mind map
+                exportController.handleExportCommand(boardPanel, dialogTitle);  // This line can remain the same now
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + e.getMessage());
+                e.printStackTrace();
             }
         });
 
