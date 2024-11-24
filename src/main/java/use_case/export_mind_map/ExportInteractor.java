@@ -3,11 +3,6 @@ package use_case.export_mind_map;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
-import use_case.export_mind_map.ExportInputBoundary;
-import use_case.export_mind_map.ExportInputData;
-import use_case.export_mind_map.ExportOutputBoundary;
-import use_case.export_mind_map.ExportOutputData;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

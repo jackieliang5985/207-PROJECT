@@ -130,9 +130,8 @@ public class MindMapView extends JPanel {
 
                 // Get the dialog title for the file chooser
                 String dialogTitle = "Save Mind Map";
-
                 // Pass all three arguments to the ExportInputData constructor
-                ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
+                ExportInputData inputData = new ExportInputData(boardPanel);
 
                 // Use ExportController to handle saving the mind map
                 exportController.handleExportCommand(boardPanel, dialogTitle);  // This line can remain the same now

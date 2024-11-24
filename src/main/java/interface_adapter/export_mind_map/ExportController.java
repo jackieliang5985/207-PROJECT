@@ -21,10 +21,7 @@ public class ExportController {
      */
     public void handleExportCommand(JPanel panel, String dialogTitle) {
         // Supported formats
-        java.util.List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
-
-        // Create input data for the interactor
-        ExportInputData inputData = new ExportInputData(panel, dialogTitle, supportedFormats);
+        final ExportInputData inputData = new ExportInputData(panel);
 
         // Call the interactor's execute method
         exportInteractor.execute(inputData); // Use exportInteractor directly
