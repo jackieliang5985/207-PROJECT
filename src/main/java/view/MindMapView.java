@@ -1,5 +1,6 @@
 package view;
 
+import entity.ImagePostNote;
 import entity.PostNote;
 import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
@@ -62,7 +63,7 @@ public class MindMapView extends JPanel {
         setLayout(new BorderLayout());
 
         setPreferredSize(new Dimension(1920, 1080));
-        JPanel mainPanel = new JPanel() {
+        final JPanel mainPanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(1920, 1080);
@@ -144,7 +145,8 @@ public class MindMapView extends JPanel {
             catch (IOException exception) {
                 JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
                 exception.printStackTrace();
-            } catch (DocumentException e) {
+            }
+            catch (DocumentException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -161,7 +163,8 @@ public class MindMapView extends JPanel {
         });
     }
 
-    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException, DocumentException {
+    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException,
+            DocumentException {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             java.io.File fileToSave = fileChooser.getSelectedFile();
             final String selectedExtension = getFile(fileChooser);
@@ -248,7 +251,8 @@ public class MindMapView extends JPanel {
         document.open();
 
         final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-        pdfImage.scaleToFit(document.getPageSize().getWidth() - 50, document.getPageSize().getHeight() - 50);
+        pdfImage.scaleToFit(document.getPageSize().getWidth() - fifty, document.getPageSize()
+                .getHeight() - fifty);
         pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
 
         document.add(pdfImage);
@@ -279,6 +283,9 @@ public class MindMapView extends JPanel {
                 imageButton.addActionListener(evt -> {
                     selectedCommonImage[zero] = commonImage;
                     dialog.dispose();
+
+                    // Call the method to add the image to the board after selection
+                    addImageToBoard(selectedCommonImage[zero]);
                 });
                 imagePanel.add(imageButton);
             }
@@ -301,13 +308,33 @@ public class MindMapView extends JPanel {
     /**
      * Add the selected image to the board as a draggable component.
      */
+    /**
+     * Add the selected image to the board as a PostNote.
+     */
     private void addImageToBoard(CommonImage commonImage) {
-        final ImageIcon icon = new ImageIcon(new ImageIcon(commonImage.getUrl()).getImage()
-                .getScaledInstance(hundredFifty, hundredFifty, java.awt.Image.SCALE_SMOOTH));
-        final JLabel imageLabel = new JLabel(icon);
-        imageLabel.setBounds(fifty, fifty, hundredFifty, hundredFifty);
-        boardPanel.add(imageLabel);
-        boardPanel.revalidate();
-        boardPanel.repaint();
+        try {
+            // Fetch the image from the URL
+            final BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
+            if (bufferedImage == null) {
+                JOptionPane.showMessageDialog(this, "Failed to load the selected image.");
+                return;
+            }
+
+            final ImageIcon imageIcon = new ImageIcon(bufferedImage);
+
+            final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, Color.ORANGE, boardPanel);
+            imagePostNote.setImage(imageIcon);
+
+            // Add the ImagePostNote to the board (SquarePanel)
+            boardPanel.createPostNote(imagePostNote);
+
+            boardPanel.revalidate();
+            boardPanel.repaint();
+
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(this, "Error loading the image: " + exception.getMessage());
+            exception.printStackTrace();
+        }
     }
+
 }
