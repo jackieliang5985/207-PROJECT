@@ -2,6 +2,7 @@ package view;
 
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
+import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -52,12 +54,12 @@ public class MindMapView extends JPanel {
     // private PostNote initialPostNote;
 
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
-                       ImageViewModel imageViewModel) {
+                       ImageViewModel imageViewModel, ExportController exportController) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.imageController = imageController;
         this.imageViewModel = imageViewModel;
-
+        this.exportController = exportController;
         setLayout(new BorderLayout());
 
         setPreferredSize(new Dimension(1920, 1080));
@@ -89,7 +91,7 @@ public class MindMapView extends JPanel {
         final JButton addTextPostButton = createStyledButton("Add Text Post It");
         final JButton addImageButton = createStyledButton("Add Image Post It");
         final JButton attachStringButton = createStyledButton("Attach String");
-        final JButton saveButton = createStyledButton("SAVE");
+        final JButton exportButton = createStyledButton("EXPORT");
         final JButton logoutButton = createStyledButton("LOGOUT");
 
         // Add action listener for "Add Image Post It"
@@ -108,7 +110,7 @@ public class MindMapView extends JPanel {
         bottomPanel.add(addTextPostButton);
         bottomPanel.add(addImageButton);
         bottomPanel.add(attachStringButton);
-        bottomPanel.add(saveButton);
+        bottomPanel.add(exportButton);
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
@@ -119,7 +121,7 @@ public class MindMapView extends JPanel {
         // postNotes.add(initialPostNote);
         // panel.addPostNote(initialPostNote);
 
-        saveButton.addActionListener(evt -> {
+        exportButton.addActionListener(evt -> {
             try {
                 // Capture the JPanel as a BufferedImage
                 final BufferedImage screenshot = new BufferedImage(
@@ -137,9 +139,9 @@ public class MindMapView extends JPanel {
 
                 // Add a file filter for PNG, JPEG, and PDF
                 fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Image (*.png)", "png"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
 
                 final int userSelection = fileChooser.showSaveDialog(MindMapView.this);
                 fileType(userSelection, fileChooser, screenshot);
