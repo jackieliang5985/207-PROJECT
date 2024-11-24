@@ -48,6 +48,7 @@ public class MindMapView extends JPanel {
     private final int twoHundredFifty = 250;
     private final int fourHundred = 400;
     private final int sixHundred = 600;
+    private final ExportController exportController;
 
     // Uncomment and use these when implementing the notepad features
     // private final List<PostNote> postNotes = new ArrayList<>();

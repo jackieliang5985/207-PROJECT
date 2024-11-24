@@ -1,9 +1,12 @@
 package interface_adapter.export_mind_map;
 
+import use_case.export_mind_map.ExportOutputBoundary;
+import use_case.export_mind_map.ExportOutputData;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class ExportViewModel {
+public class ExportViewModel implements ExportOutputBoundary {
     private final ExportState exportState;
     private final PropertyChangeSupport support; // For notifying observers
 
@@ -12,72 +15,56 @@ public class ExportViewModel {
         this.support = new PropertyChangeSupport(this); // Initialize the support object
     }
 
-    /**
-     * Get the current file path from the state.
-     * @return the file path where the image was saved.
-     */
+    @Override
+    public void prepareSuccessView(ExportOutputData outputData) {
+        // Update the export status and file path
+        setExportStatus("Success");
+        setFilePath(outputData.getFilePath());
+    }
+
+    @Override
+    public void prepareFailView(String errorMessage) {
+        // Update the export status and error message
+        setExportStatus("Failure");
+        setErrorMessage(errorMessage);
+    }
+
+    // Getter and Setter Methods for ExportState
     public String getFilePath() {
         return exportState.getFilePath();
     }
 
-    /**
-     * Update the file path in the state and notify listeners of the change.
-     * @param filePath the new file path where the image was saved.
-     */
     public void setFilePath(String filePath) {
         String oldPath = exportState.getFilePath();
         exportState.setFilePath(filePath);
-        support.firePropertyChange("filePath", oldPath, filePath); // Notify observers of the change
+        support.firePropertyChange("filePath", oldPath, filePath);
     }
 
-    /**
-     * Get the current export status from the state.
-     * @return the export status ("Success", "Failure", etc.).
-     */
     public String getExportStatus() {
         return exportState.getExportStatus();
     }
 
-    /**
-     * Update the export status in the state and notify listeners of the change.
-     * @param exportStatus the new status of the export process.
-     */
     public void setExportStatus(String exportStatus) {
         String oldStatus = exportState.getExportStatus();
         exportState.setExportStatus(exportStatus);
-        support.firePropertyChange("exportStatus", oldStatus, exportStatus); // Notify observers of the change
+        support.firePropertyChange("exportStatus", oldStatus, exportStatus);
     }
 
-    /**
-     * Get the current error message from the state.
-     * @return the error message if the export failed.
-     */
     public String getErrorMessage() {
         return exportState.getErrorMessage();
     }
 
-    /**
-     * Update the error message in the state and notify listeners of the change.
-     * @param errorMessage the new error message for the export process.
-     */
     public void setErrorMessage(String errorMessage) {
         String oldMessage = exportState.getErrorMessage();
         exportState.setErrorMessage(errorMessage);
-        support.firePropertyChange("errorMessage", oldMessage, errorMessage); // Notify observers of the change
+        support.firePropertyChange("errorMessage", oldMessage, errorMessage);
     }
 
-    /**
-     * Add a listener to be notified of property changes.
-     * @param listener the PropertyChangeListener to be added.
-     */
+    // Property Change Listener Methods
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    /**
-     * Remove a listener from being notified of property changes.
-     * @param listener the PropertyChangeListener to be removed.
-     */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
