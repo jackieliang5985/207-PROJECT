@@ -320,8 +320,9 @@ public class MindMapView extends JPanel {
             // Create an ImageIcon for the ImagePostNote
             ImageIcon imageIcon = new ImageIcon(bufferedImage);
 
-            // Create an ImagePostNote with correct parameters
-            ImagePostNote imagePostNote = new ImagePostNote(50, 50, 150, 150, Color.ORANGE, boardPanel);
+            // Create an ImagePostNote with correct parameters based on the image size
+            // Set the width and height of the note to match the image size
+            ImagePostNote imagePostNote = new ImagePostNote(50, 50, Color.ORANGE, boardPanel);
             imagePostNote.setImage(imageIcon);
 
             // Add the ImagePostNote to the board (SquarePanel)
@@ -336,5 +337,6 @@ public class MindMapView extends JPanel {
             exception.printStackTrace();
         }
     }
+
 
 }
