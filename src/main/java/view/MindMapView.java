@@ -59,7 +59,7 @@ public class MindMapView extends JPanel {
     private final ArrayList<PostNote> postNotes = new ArrayList<>();
 
     public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
-                       ImageViewModel imageViewModel) {
+                       ImageViewModel imageViewModel, ExportController exportController) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.imageController = imageController;
@@ -122,6 +122,26 @@ public class MindMapView extends JPanel {
         bottomPanel.add(logoutButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
+
+        saveButton.addActionListener(evt -> {
+            try {
+                // Get the file formats you want to support
+                List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
+
+                // Get the dialog title for the file chooser
+                String dialogTitle = "Save Mind Map";
+
+                // Pass all three arguments to the ExportInputData constructor
+                ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
+
+                // Use ExportController to handle saving the mind map
+                exportController.handleExportCommand(boardPanel, dialogTitle);  // This line can remain the same now
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
 
         // Add property change listener to update the view with the fetched images
         imageViewModel.addPropertyChangeListener(evt -> {
