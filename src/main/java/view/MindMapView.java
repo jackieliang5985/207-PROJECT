@@ -1,5 +1,6 @@
 package view;
 
+import entity.ImagePostNote;
 import entity.PostNote;
 import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
@@ -279,6 +280,9 @@ public class MindMapView extends JPanel {
                 imageButton.addActionListener(evt -> {
                     selectedCommonImage[zero] = commonImage;
                     dialog.dispose();
+
+                    // Call the method to add the image to the board after selection
+                    addImageToBoard(selectedCommonImage[zero]);
                 });
                 imagePanel.add(imageButton);
             }
@@ -301,13 +305,36 @@ public class MindMapView extends JPanel {
     /**
      * Add the selected image to the board as a draggable component.
      */
+    /**
+     * Add the selected image to the board as a PostNote.
+     */
     private void addImageToBoard(CommonImage commonImage) {
-        final ImageIcon icon = new ImageIcon(new ImageIcon(commonImage.getUrl()).getImage()
-                .getScaledInstance(hundredFifty, hundredFifty, java.awt.Image.SCALE_SMOOTH));
-        final JLabel imageLabel = new JLabel(icon);
-        imageLabel.setBounds(fifty, fifty, hundredFifty, hundredFifty);
-        boardPanel.add(imageLabel);
-        boardPanel.revalidate();
-        boardPanel.repaint();
+        try {
+            // Fetch the image from the URL
+            BufferedImage bufferedImage = ImageIO.read(new URL(commonImage.getUrl()));
+            if (bufferedImage == null) {
+                JOptionPane.showMessageDialog(this, "Failed to load the selected image.");
+                return;
+            }
+
+            // Create an ImageIcon for the ImagePostNote
+            ImageIcon imageIcon = new ImageIcon(bufferedImage);
+
+            // Create an ImagePostNote with correct parameters
+            ImagePostNote imagePostNote = new ImagePostNote(50, 50, 150, 150, Color.ORANGE, boardPanel);
+            imagePostNote.setImage(imageIcon);
+
+            // Add the ImagePostNote to the board (SquarePanel)
+            boardPanel.createPostNote(imagePostNote);
+
+            // Repaint the board to reflect changes
+            boardPanel.revalidate();
+            boardPanel.repaint();
+
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(this, "Error loading the image: " + exception.getMessage());
+            exception.printStackTrace();
+        }
     }
+
 }

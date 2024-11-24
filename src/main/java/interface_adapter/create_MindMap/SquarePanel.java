@@ -1,5 +1,6 @@
 package interface_adapter.create_MindMap;
 
+import entity.ImagePostNote;
 import entity.PostNote;
 
 import javax.swing.*;
@@ -8,7 +9,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
- * A child class that inherits JPanel, it will hold all the post-it notes and take care adding/removing/editing
+ * A child class that inherits JPanel, it will hold all the post-it notes and take care of adding/removing/editing
  */
 public class SquarePanel extends JPanel {
     private ArrayList<PostNote> postNotes; // List to hold all post-it notes on the panel
@@ -17,7 +18,6 @@ public class SquarePanel extends JPanel {
         this.postNotes = postNotes;
         setLayout(null); // Disable layout manager for manual positioning
         setBackground(Color.WHITE); // Set background color of the panel
-
         setFocusable(true);
 
         // Add a mouse listener to detect right-clicks on the panel
@@ -54,6 +54,14 @@ public class SquarePanel extends JPanel {
         add(newPostNote.getTextField());
         repaint();
         postNotes.add(newPostNote);
-        System.out.println(postNotes);
+    }
+
+    /**
+     * Creates a new ImagePostNote at the specified position.
+     */
+    public void createPostNote(ImagePostNote imagePostNote) {
+        add(imagePostNote.getLabel());
+        repaint();
+        postNotes.add(imagePostNote);
     }
 }
