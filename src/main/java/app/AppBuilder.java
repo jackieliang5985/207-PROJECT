@@ -18,9 +18,6 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
-import interface_adapter.export_mind_map.ExportController;
-import interface_adapter.export_mind_map.ExportState;
-import interface_adapter.export_mind_map.ExportViewModel;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
@@ -36,8 +33,6 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
-import use_case.export_mind_map.ExportInteractor;
-import use_case.export_mind_map.ExportOutputBoundary;
 import use_case.image.ImageInteractor;
 import use_case.loading.LoadingInputBoundary;
 import use_case.loading.LoadingInteractor;
@@ -189,7 +184,6 @@ public class AppBuilder {
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
         ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
         ImageController imageController = new ImageController(imageInteractor);
-
         final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel);
 
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
