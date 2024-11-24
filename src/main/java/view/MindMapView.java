@@ -5,11 +5,13 @@ import entity.PostNote;
 import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
+import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jetbrains.annotations.NotNull;
+import use_case.export_mind_map.ExportInputData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MindMapView extends JPanel {
@@ -35,6 +38,8 @@ public class MindMapView extends JPanel {
 
     private final ImageController imageController;
     private final ImageViewModel imageViewModel;
+
+    private ExportController exportController;
 
     // Constants for dimensions and spacing
     private final int zero = 0;
@@ -59,6 +64,7 @@ public class MindMapView extends JPanel {
         this.cardPanel = cardPanel;
         this.imageController = imageController;
         this.imageViewModel = imageViewModel;
+        this.exportController = exportController;
 
         setLayout(new BorderLayout());
 
@@ -117,40 +123,6 @@ public class MindMapView extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        saveButton.addActionListener(evt -> {
-            try {
-                // Capture the JPanel as a BufferedImage
-                final BufferedImage screenshot = new BufferedImage(
-                        boardPanel.getWidth(),
-                        boardPanel.getHeight(),
-                        BufferedImage.TYPE_INT_RGB
-                );
-                final Graphics2D g2d = screenshot.createGraphics();
-                boardPanel.paint(g2d);
-                g2d.dispose();
-
-                // Open a file chooser to save the screenshot
-                final JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save Mind Map");
-
-                // Add a file filter for PNG, JPEG, and PDF
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Image (*.png)", "png"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-                fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
-
-                final int userSelection = fileChooser.showSaveDialog(MindMapView.this);
-                fileType(userSelection, fileChooser, screenshot);
-            }
-            catch (IOException exception) {
-                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + exception.getMessage());
-                exception.printStackTrace();
-            }
-            catch (DocumentException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
         // Add property change listener to update the view with the fetched images
         imageViewModel.addPropertyChangeListener(evt -> {
             if ("images".equals(evt.getPropertyName())) {
@@ -161,49 +133,6 @@ public class MindMapView extends JPanel {
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
-    }
-
-    private void fileType(int userSelection, JFileChooser fileChooser, BufferedImage screenshot) throws IOException,
-            DocumentException {
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            java.io.File fileToSave = fileChooser.getSelectedFile();
-            final String selectedExtension = getFile(fileChooser);
-
-            // Ensure the file has the correct extension
-            if (!fileToSave.getName().toLowerCase().endsWith("." + selectedExtension)) {
-                fileToSave = new java.io.File(fileToSave.getAbsolutePath() + "." + selectedExtension);
-            }
-
-            // Save the file in the selected format
-            if (selectedExtension.equals("png") || selectedExtension.equals("jpg")) {
-                // Write image as PNG or JPEG
-                ImageIO.write(screenshot, selectedExtension, fileToSave);
-            }
-            else if (selectedExtension.equals("pdf")) {
-                // Save as PDF
-                saveAsPdf(screenshot, fileToSave);
-            }
-
-            JOptionPane.showMessageDialog(MindMapView.this, "Mind Map saved successfully as " + selectedExtension.toUpperCase() + "!");
-        }
-    }
-
-    @NotNull
-    private static String getFile(JFileChooser fileChooser) {
-        String selectedExtension = "";
-
-        // Determine the selected file format
-        final String description = fileChooser.getFileFilter().getDescription();
-        if (description.contains("PNG")) {
-            selectedExtension = "png";
-        }
-        else if (description.contains("JPEG")) {
-            selectedExtension = "jpg";
-        }
-        else if (description.contains("PDF")) {
-            selectedExtension = "pdf";
-        }
-        return selectedExtension;
     }
 
     /**
