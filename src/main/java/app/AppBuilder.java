@@ -37,7 +37,6 @@ import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.export_mind_map.ExportInteractor;
-import use_case.export_mind_map.ExportOutputBoundary;
 import use_case.image.ImageInteractor;
 import use_case.loading.LoadingInputBoundary;
 import use_case.loading.LoadingInteractor;
@@ -190,7 +189,11 @@ public class AppBuilder {
         ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
         ImageController imageController = new ImageController(imageInteractor);
 
-        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel);
+        ExportState exportState = new ExportState(); // Create ExportState
+        ExportViewModel exportViewModel = new ExportViewModel(exportState);
+        ExportInteractor exportInteractor = new ExportInteractor(exportViewModel); // Initialize with ExportViewModel
+        ExportController exportController = new ExportController(exportInteractor); // Pass ExportInteractor to ExportController
+        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel, exportController);
 
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
