@@ -75,8 +75,8 @@ public class ExportInteractor implements ExportInputBoundary {
 
     private void saveAsPdf(BufferedImage image, java.io.File file) throws DocumentException, IOException {
         // Convert dimensions to float
-        float width = (float) image.getWidth();
-        float height = (float) image.getHeight();
+        int width = image.getWidth();
+        int height = image.getHeight();
 
         // Create a rectangle with the dimensions of the image
         Document document = new Document(new com.itextpdf.text.Rectangle(width, height));
