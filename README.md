@@ -14,7 +14,7 @@
 
 **User Stories**
 
-**Creating, Saving, Loading Mind Maps:**
+**Creating Exporting Loading Mind Maps:**
 * User Story: John opens new mind map, saves the current mind map and later loads it to continue brainstorming.
 * Assigned to: Team
 * Use Case: The user can open a new mind map and then save the current state of the mind map, including nodes and connections, and reload it to continue working in the future.
@@ -52,7 +52,7 @@
 
 **Deleting Nodes:**
 * User Story: John removes irrelevant nodes which automatically disconnects all the lines that connect the node to others.
-* Assigned to: Sudharsian
+* Assigned to: Sudharshan
 * Use Case: The user right click nodes to delete it, enabling easy organization and removal of irrelevant information.
 
 * Interactor: Detects dragging motions to the trash icon.
