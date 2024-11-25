@@ -3,6 +3,11 @@ package use_case.export_mind_map;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
+import use_case.export_mind_map.ExportInputBoundary;
+import use_case.export_mind_map.ExportInputData;
+import use_case.export_mind_map.ExportOutputBoundary;
+import use_case.export_mind_map.ExportOutputData;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -75,8 +80,8 @@ public class ExportInteractor implements ExportInputBoundary {
 
     private void saveAsPdf(BufferedImage image, java.io.File file) throws DocumentException, IOException {
         // Convert dimensions to float
-        int width = image.getWidth();
-        int height = image.getHeight();
+        float width = (float) image.getWidth();
+        float height = (float) image.getHeight();
 
         // Create a rectangle with the dimensions of the image
         Document document = new Document(new com.itextpdf.text.Rectangle(width, height));
