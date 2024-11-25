@@ -1,8 +1,8 @@
 package view;
 
 import entity.ImagePostNote;
-import entity.TextPostNote;
 import entity.PostNote;
+import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
 import interface_adapter.export_mind_map.ExportController;
@@ -28,7 +28,7 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final NotePanel boardPanel;
+    private final SquarePanel boardPanel;
 
     // Load the API key from the .env file
     private final Dotenv dotenv = Dotenv.configure()
@@ -38,8 +38,6 @@ public class MindMapView extends JPanel {
 
     private final ImageController imageController;
     private final ImageViewModel imageViewModel;
-
-//    private final ChangeColorController changeColorController;
 
     private ExportController exportController;
 
@@ -85,7 +83,7 @@ public class MindMapView extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Main center panel for the board area
-        boardPanel = new NotePanel(postNotes);
+        boardPanel = new SquarePanel(postNotes);
         boardPanel.setBackground(Color.LIGHT_GRAY);
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, three));
         boardPanel.setLayout(null);
@@ -105,7 +103,7 @@ public class MindMapView extends JPanel {
         // Add action listener for "Add Image Post It"
         addImageButton.addActionListener(evt -> fetchAndAddImage());
 
-        addTextPostButton.addActionListener(evt -> boardPanel.addTextPostNote());
+        addTextPostButton.addActionListener(evt -> boardPanel.createPostNote());
 
         // Adding action listener to the logout button
         logoutButton.addActionListener(evt -> {
@@ -273,11 +271,11 @@ public class MindMapView extends JPanel {
 
             final ImageIcon imageIcon = new ImageIcon(bufferedImage);
 
-            final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, boardPanel);
+            final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, Color.ORANGE, boardPanel);
             imagePostNote.setImage(imageIcon);
 
-            // Add the ImagePostNote to the board (NotePanel)
-            boardPanel.addImagePostNote(imagePostNote);
+            // Add the ImagePostNote to the board (SquarePanel)
+            boardPanel.createPostNote(imagePostNote);
 
             boardPanel.revalidate();
             boardPanel.repaint();
