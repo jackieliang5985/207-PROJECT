@@ -1,7 +1,8 @@
-package interface_adapter.create_MindMap;
+package view;
 
 import entity.ImagePostNote;
 import entity.PostNote;
+import entity.TextPostNote;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 /**
  * A child class that inherits JPanel, it will hold all the post-it notes and take care of adding/removing/editing
  */
-public class SquarePanel extends JPanel {
+public class NotePanel extends JPanel {
     private ArrayList<PostNote> postNotes; // List to hold all post-it notes on the panel
 
-    public SquarePanel(ArrayList<PostNote> postNotes) {
+    public NotePanel(ArrayList<PostNote> postNotes) {
         this.postNotes = postNotes;
         setLayout(null); // Disable layout manager for manual positioning
         setBackground(Color.WHITE); // Set background color of the panel
@@ -36,10 +37,10 @@ public class SquarePanel extends JPanel {
      * @param point The position where the context menu should be displayed
      */
     private void showContextMenu(Point point) {
-        JPopupMenu menu = new JPopupMenu();
+        final JPopupMenu menu = new JPopupMenu();
 
-        JMenuItem createNoteItem = new JMenuItem("Create New Post-it Note");
-        createNoteItem.addActionListener(event -> createPostNote());
+        final JMenuItem createNoteItem = new JMenuItem("Create New Post-it Note");
+        createNoteItem.addActionListener(event -> addTextPostNote());
 
         menu.add(createNoteItem);
         menu.show(this, point.x, point.y);
@@ -48,18 +49,19 @@ public class SquarePanel extends JPanel {
     /**
      * Creates a new post-it note at the specified position.
      */
-    public void createPostNote() {
-        PostNote newPostNote = new PostNote(100, 100, 100, 100, Color.ORANGE, this);
-        add(newPostNote.getLabel());
-        add(newPostNote.getTextField());
+    public void addTextPostNote() {
+        final TextPostNote textPostNote = new TextPostNote(100, 100, 100, 100, Color.ORANGE, this);
+        add(textPostNote.getLabel());
+        add(textPostNote.getTextField());
         repaint();
-        postNotes.add(newPostNote);
+        postNotes.add(textPostNote);
     }
 
     /**
      * Creates a new ImagePostNote at the specified position.
+     * @param imagePostNote the image post-it note to add to the board
      */
-    public void createPostNote(ImagePostNote imagePostNote) {
+    public void addImagePostNote(ImagePostNote imagePostNote) {
         add(imagePostNote.getLabel());
         repaint();
         postNotes.add(imagePostNote);
