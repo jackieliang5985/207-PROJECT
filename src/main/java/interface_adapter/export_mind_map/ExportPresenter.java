@@ -12,14 +12,14 @@ public class ExportPresenter implements ExportOutputBoundary {
 
     @Override
     public void prepareSuccessView(ExportOutputData outputData) {
-        exportViewModel.setFilePath(outputData.getFilePath()); // Triggers notification
+        exportViewModel.setFilePath(outputData.getFilePath());
         exportViewModel.setExportStatus("Success");
         exportViewModel.setErrorMessage(null);
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-        exportViewModel.setErrorMessage(errorMessage); // Triggers notification
+        exportViewModel.setErrorMessage(errorMessage);
         exportViewModel.setExportStatus("Failure");
     }
 }

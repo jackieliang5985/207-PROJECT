@@ -1,32 +1,39 @@
 package interface_adapter.export_mind_map;
 
-import use_case.export_mind_map.ExportInputBoundary;
+import javax.swing.JPanel;
+
 import use_case.export_mind_map.ExportInputData;
 import use_case.export_mind_map.ExportInteractor;
 
-import javax.swing.*;
-import java.util.Arrays;
-
+/**
+ * Controller class for handling the export functionality of the mind map.
+ * This class acts as the intermediary between the UI (JPanel) and the export interactor.
+ */
 public class ExportController {
     private final ExportInteractor exportInteractor;
 
+    /**
+     * Constructs an ExportController with the specified export interactor.
+     *
+     * @param exportInteractor the interactor that handles the export logic
+     */
     public ExportController(ExportInteractor exportInteractor) {
-        this.exportInteractor = exportInteractor; // Initialize with ExportInteractor
+        // Initialize with ExportInteractor
+        this.exportInteractor = exportInteractor;
     }
 
     /**
-     * Handles the user's export command and invokes the interactor.
-     * @param panel the JPanel to export
-     * @param dialogTitle the title for the save dialog
+     * Handles the user's export command and triggers the export process.
+     * Prepares the required input data from the provided panel and delegates
+     * the export logic to the interactor.
+     *
+     * @param panel the JPanel representing the mind map to be exported
      */
-    public void handleExportCommand(JPanel panel, String dialogTitle) {
-        // Supported formats
-        java.util.List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
+    public void handleExportCommand(JPanel panel) {
+        // Prepare input data for export
+        final ExportInputData inputData = new ExportInputData(panel);
 
-        // Create input data for the interactor
-        ExportInputData inputData = new ExportInputData(panel, dialogTitle, supportedFormats);
-
-        // Call the interactor's execute method
-        exportInteractor.execute(inputData); // Use exportInteractor directly
+        // Delegate the export process to the interactor
+        exportInteractor.execute(inputData);
     }
 }

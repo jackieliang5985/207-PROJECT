@@ -1,4 +1,4 @@
-package use_case.get_images;
+package use_case.image;
 
 import entity.CommonImage;
 import java.util.List;
@@ -14,10 +14,12 @@ public class ImageInteractor {
 
     public void fetchImages(ImageInputData inputData) {
         try {
-            List<CommonImage> images = imageInputBoundary.searchImages(inputData.getQuery());
+            final List<CommonImage> images = imageInputBoundary.searchImages(inputData.getQuery());
             // Send images to presenter
             outputBoundary.presentImages(images);
         } catch (Exception e) {
+
+            // Send error to presenter
             outputBoundary.presentError(e.getMessage());
         }
     }

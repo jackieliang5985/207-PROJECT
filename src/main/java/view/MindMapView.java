@@ -123,23 +123,8 @@ public class MindMapView extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(evt -> {
-            try {
-                // Get the file formats you want to support
-                List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
-
-                // Get the dialog title for the file chooser
-                String dialogTitle = "Save Mind Map";
-
-                // Pass all three arguments to the ExportInputData constructor
-                ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
-
-                // Use ExportController to handle saving the mind map
-                exportController.handleExportCommand(boardPanel, dialogTitle);  // This line can remain the same now
-
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + e.getMessage());
-                e.printStackTrace();
-            }
+            // Use ExportController to handle saving the mind map
+            exportController.handleExportCommand(boardPanel);
         });
 
         // Add property change listener to update the view with the fetched images
@@ -153,7 +138,6 @@ public class MindMapView extends JPanel {
             }
         });
     }
-
     /**
      * Helper method to create styled buttons.
      */
@@ -179,32 +163,6 @@ public class MindMapView extends JPanel {
 
         final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
         imageController.fetchImages(query, imagePresenter);
-    }
-
-    /**
-     * Saves a BufferedImage as a PDF file.
-     * This method converts the given BufferedImage into a PDF format and saves it
-     * to the specified file location. The generated PDF will contain a single page
-     * with the image scaled to fit.
-     *
-     * @param image the BufferedImage to be saved as a PDF
-     * @param file  the file where the PDF will be saved
-     * @throws IOException              if an error occurs while writing to the file
-     * @throws com.itextpdf.text.DocumentException if an error occurs with the PDF generation
-     */
-    private void saveAsPdf(BufferedImage image, java.io.File file)
-            throws IOException, com.itextpdf.text.DocumentException {
-        final com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-        com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(file));
-        document.open();
-
-        final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-        pdfImage.scaleToFit(document.getPageSize().getWidth() - fifty, document.getPageSize()
-                .getHeight() - fifty);
-        pdfImage.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
-
-        document.add(pdfImage);
-        document.close();
     }
 
     /**
