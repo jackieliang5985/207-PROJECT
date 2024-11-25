@@ -8,9 +8,9 @@ public class PostNoteEntity {
     private int y;
     private int width;
     private int height; // initializes the position and size of the postit note
-    private MindMap mindMap; // Reference to the mind map so we can repaint
+    private MindMapEntity mindMap; // Reference to the mind map so we can repaint
 
-    public PostNoteEntity(int x, int y, int width, int height, MindMap mindMap) {
+    public PostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -34,7 +34,7 @@ public class PostNoteEntity {
         return height;
     }
 
-    public MindMap getMindMap() {
+    public MindMapEntity getMindMap() {
         return mindMap;
     }
 }
