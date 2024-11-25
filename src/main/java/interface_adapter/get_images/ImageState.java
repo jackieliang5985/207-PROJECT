@@ -1,4 +1,4 @@
-package interface_adapter.image;
+package interface_adapter.get_images;
 
 import entity.Image;  // Interface representing an image entity
 import java.util.List;

@@ -1,6 +1,6 @@
 package interface_adapter;
 
-import use_case.image.ImageInputBoundary;  // Import the ImageRepository interface
+import use_case.get_images.ImageInputBoundary;  // Import the ImageRepository interface
 import entity.CommonImage;
 import org.json.JSONArray;
 import org.json.JSONObject;

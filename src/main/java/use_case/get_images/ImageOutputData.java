@@ -1,4 +1,4 @@
-package use_case.image;
+package use_case.get_images;
 
 import entity.CommonImage;
 import java.util.List;

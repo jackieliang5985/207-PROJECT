@@ -1,8 +1,8 @@
-package interface_adapter.image;
+package interface_adapter.get_images;
 
-import use_case.image.ImageInteractor;
-import use_case.image.ImageInputData;
-import use_case.image.ImageOutputBoundary;
+import use_case.get_images.ImageInteractor;
+import use_case.get_images.ImageInputData;
+import use_case.get_images.ImageOutputBoundary;
 
 /**
  * Controller for the Image Fetching Use Case.

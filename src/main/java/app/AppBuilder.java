@@ -21,9 +21,9 @@ import interface_adapter.create_MindMap.MindMapViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
-import interface_adapter.image.ImageController;
-import interface_adapter.image.ImagePresenter;
-import interface_adapter.image.ImageViewModel;
+import interface_adapter.get_images.ImageController;
+import interface_adapter.get_images.ImagePresenter;
+import interface_adapter.get_images.ImageViewModel;
 import interface_adapter.loading.LoadingController;
 import interface_adapter.loading.LoadingPresenter;
 import interface_adapter.loading.LoadingViewModel;
@@ -37,7 +37,7 @@ import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.export_mind_map.ExportInteractor;
-import use_case.image.ImageInteractor;
+import use_case.get_images.ImageInteractor;
 import use_case.loading.LoadingInputBoundary;
 import use_case.loading.LoadingInteractor;
 import use_case.loading.LoadingOutputBoundary;
@@ -69,7 +69,7 @@ public class AppBuilder {
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
     Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the .env file (default is root)
+            .directory(".") // Directory of the ..env file (default is root)
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");

@@ -1,9 +1,9 @@
-package interface_adapter.image;
+package interface_adapter.get_images;
 
 import java.util.List;
 
 import entity.CommonImage;
-import use_case.image.ImageOutputBoundary;
+import use_case.get_images.ImageOutputBoundary;
 
 /**
  * Presenter for the Image Fetching Use Case.
