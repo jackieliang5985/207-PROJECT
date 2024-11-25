@@ -1,8 +1,8 @@
 package use_case.image;
-import entity.CommonImage;
 
 import java.util.List;
 
+import entity.CommonImage;
 
 public class FetchImagesUseCase {
     private final ImageInputBoundary imageInputBoundary;

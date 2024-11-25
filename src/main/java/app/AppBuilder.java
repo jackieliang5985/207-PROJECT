@@ -68,8 +68,9 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
-    Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the .env file (default is root)
+    // Directory of the .env file (default is root)
+    private final Dotenv dotenv = Dotenv.configure()
+            .directory(".")
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
@@ -184,15 +185,15 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        ImageViewModel imageViewModel = new ImageViewModel();
-        ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-        ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
-        ImageController imageController = new ImageController(imageInteractor);
+        final ImageViewModel imageViewModel = new ImageViewModel();
+        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+        final ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
+        final ImageController imageController = new ImageController(imageInteractor);
 
-        ExportState exportState = new ExportState(); // Create ExportState
-        ExportViewModel exportViewModel = new ExportViewModel(exportState);
-        ExportInteractor exportInteractor = new ExportInteractor(exportViewModel); // Initialize with ExportViewModel
-        ExportController exportController = new ExportController(exportInteractor); // Pass ExportInteractor to ExportController
+        final ExportState exportState = new ExportState();
+        final ExportViewModel exportViewModel = new ExportViewModel(exportState);
+        final ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
+        final ExportController exportController = new ExportController(exportInteractor);
         final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel, exportController);
 
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
