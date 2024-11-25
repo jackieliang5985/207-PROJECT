@@ -1,8 +1,4 @@
-package view;
-
-import entity.ImagePostNote;
-import entity.PostNote;
-import entity.TextPostNote;
+package entity;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,10 +8,10 @@ import java.util.ArrayList;
 /**
  * A child class that inherits JPanel, it will hold all the post-it notes and take care of adding/removing/editing
  */
-public class NotePanel extends JPanel {
+public class MindMap extends JPanel {
     private ArrayList<PostNote> postNotes; // List to hold all post-it notes on the panel
 
-    public NotePanel(ArrayList<PostNote> postNotes) {
+    public MindMap(ArrayList<PostNote> postNotes) {
         this.postNotes = postNotes;
         setLayout(null); // Disable layout manager for manual positioning
         setBackground(Color.WHITE); // Set background color of the panel

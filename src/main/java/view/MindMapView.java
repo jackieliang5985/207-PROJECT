@@ -1,17 +1,14 @@
 package view;
 
-import entity.ImagePostNote;
-import entity.TextPostNote;
-import entity.PostNote;
-import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
-import interface_adapter.change_color.ChangeColorController;
+import entity.ImagePostNote;
+import entity.MindMap;
+import entity.PostNote;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.jetbrains.annotations.NotNull;
 import use_case.export_mind_map.ExportInputData;
 
 import javax.imageio.ImageIO;
@@ -29,7 +26,7 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final NotePanel boardPanel;
+    private final MindMap boardPanel;
 
     // Load the API key from the .env file
     private final Dotenv dotenv = Dotenv.configure()
@@ -86,7 +83,7 @@ public class MindMapView extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Main center panel for the board area
-        boardPanel = new NotePanel(postNotes);
+        boardPanel = new MindMap(postNotes);
         boardPanel.setBackground(Color.LIGHT_GRAY);
         boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, three));
         boardPanel.setLayout(null);
@@ -277,7 +274,7 @@ public class MindMapView extends JPanel {
             final ImagePostNote imagePostNote = new ImagePostNote(fifty, fifty, boardPanel);
             imagePostNote.setImage(imageIcon);
 
-            // Add the ImagePostNote to the board (NotePanel)
+            // Add the ImagePostNote to the board (MindMap)
             boardPanel.addImagePostNote(imagePostNote);
 
             boardPanel.revalidate();
