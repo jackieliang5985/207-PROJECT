@@ -14,13 +14,10 @@ public class ImageInteractor {
 
     public void fetchImages(ImageInputData inputData) {
         try {
-            final List<CommonImage> images = imageInputBoundary.searchImages(inputData.getQuery());
-            // Send images to presenter
-            outputBoundary.presentImages(images);
+            List<CommonImage> images = imageInputBoundary.searchImages(inputData.getQuery());
+            outputBoundary.presentImages(images); // Send images to presenter
         } catch (Exception e) {
-
-            // Send error to presenter
-            outputBoundary.presentError(e.getMessage());
+            outputBoundary.presentError(e.getMessage()); // Send error to presenter
         }
     }
 }

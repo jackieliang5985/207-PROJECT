@@ -1,18 +1,18 @@
 package interface_adapter.export_mind_map;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import use_case.export_mind_map.ExportOutputBoundary;
 import use_case.export_mind_map.ExportOutputData;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 public class ExportViewModel implements ExportOutputBoundary {
     private final ExportState exportState;
-    private final PropertyChangeSupport support;
+    private final PropertyChangeSupport support; // For notifying observers
 
     public ExportViewModel(ExportState exportState) {
         this.exportState = exportState;
-        this.support = new PropertyChangeSupport(this);
+        this.support = new PropertyChangeSupport(this); // Initialize the support object
     }
 
     @Override

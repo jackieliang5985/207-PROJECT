@@ -13,8 +13,7 @@ public class ImagePostNote extends PostNote {
 
     // Constructor for ImagePostNote
     public ImagePostNote(int x, int y, NotePanel panel) {
-        // Start with 0 width and height, we'll set those later
-        super(x, y, 0, 0, Color.WHITE, panel);
+        super(x, y, 0, 0, Color.WHITE, panel);  // Start with 0 width and height, we'll set those later
     }
 
     // Image inside post it note
@@ -22,10 +21,8 @@ public class ImagePostNote extends PostNote {
         this.imageIcon = imageIcon;
 
         // Update the size of the PostNote based on the image size
-        // Set the width of the PostNote to the image width
-        // Set the height of the PostNote to the image height
-        this.width = imageIcon.getIconWidth();
-        this.height = imageIcon.getIconHeight();
+        this.width = imageIcon.getIconWidth();  // Set the width of the PostNote to the image width
+        this.height = imageIcon.getIconHeight();  // Set the height of the PostNote to the image height
 
         if (this.label != null) {
             this.label.setIcon(imageIcon);
@@ -66,10 +63,10 @@ public class ImagePostNote extends PostNote {
      */
     @Override
     protected void showContextMenu(MouseEvent e) {
-        final JPopupMenu menu = new JPopupMenu();
+        JPopupMenu menu = new JPopupMenu();
         System.out.println("pop up menu");
         // calls startEditing when that option is pressed.
-        final JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
+        JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
         // editPostItItem.addActionListener(event -> startEditing());
 
         menu.add(editPostItItem);

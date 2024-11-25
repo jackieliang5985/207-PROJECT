@@ -32,8 +32,7 @@ public abstract class PostNote {
         label.setBounds(x, y, width, height);
         label.setOpaque(true);
         label.setBackground(color);
-        // I thought this looked good but we can remove it
-        label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // I thought this looked good but we can remove it
 
         // A mouse listener to track if either buttons on the mouse is clicked.
         label.addMouseListener(new MouseAdapter() {

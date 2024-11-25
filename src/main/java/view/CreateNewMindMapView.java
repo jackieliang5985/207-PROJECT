@@ -30,6 +30,7 @@ import interface_adapter.create_MindMap.MindMapViewModel;
  * The View for the Create New Mindmap Use Case.
  */
 public class CreateNewMindMapView extends JPanel implements ActionListener, PropertyChangeListener {
+    private final String viewName = "create new mindmap";
 
     private final MindMapViewModel mindMapViewModel;
     private final JTextField titleInputField = new JTextField(15);
@@ -49,12 +50,12 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Center panel to mimic a box
-        final JPanel centerPanel = new JPanel();
+        JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
         centerPanel.setBackground(Color.LIGHT_GRAY);
         centerPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
 
-        final GridBagConstraints gbc = new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -165,21 +166,14 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        }
-        );
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+        });
     }
 
     private void addDescriptionListener() {
@@ -191,19 +185,13 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
     }
 
