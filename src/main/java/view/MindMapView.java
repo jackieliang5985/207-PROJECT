@@ -5,7 +5,6 @@ import entity.PostNote;
 import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
-import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
@@ -286,6 +285,5 @@ public class MindMapView extends JPanel {
             exception.printStackTrace();
         }
     }
-
 
 }
