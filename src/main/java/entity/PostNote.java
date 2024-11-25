@@ -90,6 +90,14 @@ public abstract class PostNote {
     public abstract void dragTo(Point point);
 
     /**
+     * Displays a context menu with options to edit, connect, or delete the postit.
+     * Prevents deletion of the initial postit.
+     *
+     * @param e MouseEvent that triggered the menu
+     */
+    protected abstract void showContextMenu(MouseEvent e);
+
+    /**
      * Returns the label for this postit.
      *
      * @return JLabel for the postit
@@ -97,14 +105,6 @@ public abstract class PostNote {
     public JLabel getLabel() {
         return label;
     }
-
-    /**
-     * Displays a context menu with options to edit, connect, or delete the postit.
-     * Prevents deletion of the initial postit.
-     *
-     * @param e MouseEvent that triggered the menu
-     */
-    protected abstract void showContextMenu(MouseEvent e);
 
     protected void movingResize() {
         int sizeOffset = 10;

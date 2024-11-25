@@ -37,9 +37,9 @@ public class NotePanel extends JPanel {
      * @param point The position where the context menu should be displayed
      */
     private void showContextMenu(Point point) {
-        JPopupMenu menu = new JPopupMenu();
+        final JPopupMenu menu = new JPopupMenu();
 
-        JMenuItem createNoteItem = new JMenuItem("Create New Post-it Note");
+        final JMenuItem createNoteItem = new JMenuItem("Create New Post-it Note");
         createNoteItem.addActionListener(event -> addTextPostNote());
 
         menu.add(createNoteItem);
@@ -59,6 +59,7 @@ public class NotePanel extends JPanel {
 
     /**
      * Creates a new ImagePostNote at the specified position.
+     * @param imagePostNote the image post-it note to add to the board
      */
     public void addImagePostNote(ImagePostNote imagePostNote) {
         add(imagePostNote.getLabel());

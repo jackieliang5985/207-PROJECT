@@ -93,6 +93,15 @@ public class TextPostNote extends PostNote {
         panel.repaint();
     }
 
+    public void changeColor() {
+//        final Color newColor = JColorChooser.showDialog(null, "Choose a color", this.color);
+//        if (newColor != null) {
+//
+//            selectedNode.setColor(newColor);
+//            repaint();
+//        }
+    }
+
     /**
      * Displays a context menu with options to edit, connect, or delete the postit.
      * Prevents deletion of the initial postit.
@@ -103,8 +112,10 @@ public class TextPostNote extends PostNote {
         JPopupMenu menu = new JPopupMenu();
         System.out.println("pop up menu");
         // calls startEditing when that option is pressed.
-        JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
+        final JMenuItem editPostItItem = new JMenuItem("Edit Post-it note");
+        final JMenuItem changeColorItem = new JMenuItem("Change color");
         editPostItItem.addActionListener(event -> startEditing());
+        changeColorItem.addActionListener(event -> changeColor());
 
         menu.add(editPostItItem);
         menu.show(label, e.getX(), e.getY());
