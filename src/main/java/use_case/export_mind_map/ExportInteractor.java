@@ -1,5 +1,8 @@
 package use_case.export_mind_map;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -7,10 +10,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
 
 public class ExportInteractor implements ExportInputBoundary {
     private final ExportOutputBoundary presenter;
@@ -23,27 +22,27 @@ public class ExportInteractor implements ExportInputBoundary {
     public void execute(ExportInputData inputData) {
         try {
             // Capture the JPanel as a BufferedImage
-            final BufferedImage screenshot = new BufferedImage(
+            BufferedImage screenshot = new BufferedImage(
                     inputData.getPanel().getWidth(),
                     inputData.getPanel().getHeight(),
                     BufferedImage.TYPE_INT_RGB
             );
-            final Graphics2D g2d = screenshot.createGraphics();
+            Graphics2D g2d = screenshot.createGraphics();
             inputData.getPanel().paint(g2d);
             g2d.dispose();
 
             // Handle file saving logic
-            final JFileChooser fileChooser = new JFileChooser();
+            JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Save Mind Map");
             fileChooser.setAcceptAllFileFilterUsed(false);
             fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
             fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
             fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
 
-            final int userSelection = fileChooser.showSaveDialog(null);
+            int userSelection = fileChooser.showSaveDialog(null);
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 java.io.File fileToSave = fileChooser.getSelectedFile();
-                final String selectedExtension = getFileExtension(fileChooser);
+                String selectedExtension = getFileExtension(fileChooser);
 
                 if (!fileToSave.getName().toLowerCase().endsWith("." + selectedExtension)) {
                     fileToSave = new java.io.File(fileToSave.getAbsolutePath() + "." + selectedExtension);
@@ -66,11 +65,9 @@ public class ExportInteractor implements ExportInputBoundary {
         String description = fileChooser.getFileFilter().getDescription();
         if (description.contains("PNG")) {
             return "png";
-        }
-        else if (description.contains("JPEG")) {
+        } else if (description.contains("JPEG")) {
             return "jpg";
-        }
-        else if (description.contains("PDF")) {
+        } else if (description.contains("PDF")) {
             return "pdf";
         }
         return "";
@@ -78,16 +75,16 @@ public class ExportInteractor implements ExportInputBoundary {
 
     private void saveAsPdf(BufferedImage image, java.io.File file) throws DocumentException, IOException {
         // Convert dimensions to float
-        final int width = image.getWidth();
-        final int height = image.getHeight();
+        int width = image.getWidth();
+        int height = image.getHeight();
 
         // Create a rectangle with the dimensions of the image
-        final Document document = new Document(new com.itextpdf.text.Rectangle(width, height));
-        final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
+        Document document = new Document(new com.itextpdf.text.Rectangle(width, height));
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
         document.open();
 
         // Convert the BufferedImage to an iText Image
-        final com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
+        com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
 
         // Add the image to the PDF
         document.add(pdfImage);
