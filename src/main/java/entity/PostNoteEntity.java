@@ -18,6 +18,14 @@ public class PostNoteEntity {
         this.mindMap = mindMap;
     }
 
+    protected void setWidth(int width) {
+        this.width = width;
+    }
+
+    protected void setHeight(int height) {
+        this.height = height;
+    }
+
     public int getX() {
         return x;
     }
