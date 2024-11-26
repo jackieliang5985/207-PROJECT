@@ -10,6 +10,7 @@ import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import use_case.export_mind_map.ExportInputData;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -128,68 +129,86 @@ public class MindMapView extends JPanel {
         dialog.setLayout(new BorderLayout());
 
         final JPanel imagePanel = new JPanel();
-        imagePanel.setLayout(new GridLayout(0, 3, 10, 10));
+        imagePanel.setLayout(new GridLayout(0, 3, 10, 10)); // Layout with 3 columns
 
         for (ImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
             try {
-                // Create ImagePostNoteViewModel from the image data
-                imagePostNoteViewModel.setImageUrl(imageData.getUrl());
-                imagePostNoteViewModel.setX(50); // Default X position
-                imagePostNoteViewModel.setY(50); // Default Y position
-                imagePostNoteViewModel.setColor(Color.ORANGE);
+                // Fetch the image
+                URL imageUrl = new URL(imageData.getUrl());
+                Image image = ImageIO.read(imageUrl);  // Read the image using ImageIO
 
-                // Add a button with the image
-                ImageIcon icon = new ImageIcon(new URL(imageData.getUrl()));
+                // Resize the image to a smaller size (e.g., 100x100)
+                Image resizedImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+                // Create an ImageIcon from the resized image
+                ImageIcon icon = new ImageIcon(resizedImage);
+
+                // Create a button with the resized image icon
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
-                    dialog.dispose();
-                    System.out.println("Passing image URL to controller: " + imagePostNoteViewModel.getImageUrl()); // Debugging URL
-                    imagePostNoteController.addImagePostNote(imagePostNoteViewModel);  // Controller should update MindMap
+                    dialog.dispose();  // Close the dialog
+                    // Create ImagePostNoteViewModel and pass it to the controller
+                    imagePostNoteViewModel.setImageUrl(imageData.getUrl());
+                    imagePostNoteViewModel.setX(50);  // Default X position
+                    imagePostNoteViewModel.setY(50);  // Default Y position
+                    imagePostNoteViewModel.setColor(Color.ORANGE);
+                    imagePostNoteController.addImagePostNote(imagePostNoteViewModel);
                 });
-
                 imagePanel.add(imageButton);
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Handle any exceptions
             }
         }
 
+        // Add the image panel to a scrollable pane
         final JScrollPane scrollPane = new JScrollPane(imagePanel);
         dialog.add(scrollPane, BorderLayout.CENTER);
-        dialog.setSize(600, 400);
-        dialog.setLocationRelativeTo(this);
+        dialog.setSize(600, 400);  // Set the dialog size
+        dialog.setLocationRelativeTo(this);  // Center the dialog
         dialog.setVisible(true);
     }
 
     public void updatePostNotes(ImagePostNoteViewModel viewModel) {
-        // Load the image from the URL
-        ImageIcon imageIcon = new ImageIcon(viewModel.getImageUrl());
+        try {
+            // Load the image from the URL using ImageIO
+            URL imageUrl = new URL(viewModel.getImageUrl());
+            Image image = ImageIO.read(imageUrl);  // Use ImageIO to read the image
 
-        // Create a panel to represent the post-it note
-        JPanel postItNotePanel = new JPanel();
-        postItNotePanel.setLayout(new BorderLayout());
+            // Check if image is loaded successfully
+            if (image != null) {
+                viewModel.setWidth(image.getWidth(null));  // Set width
+                viewModel.setHeight(image.getHeight(null));  // Set height
+                System.out.println("Image loaded successfully: " + viewModel.getImageUrl());
+            } else {
+                System.out.println("Error: Image failed to load.");
+                return;  // Exit if image loading fails
+            }
 
-        // Ensure the panel size matches the image size
-        postItNotePanel.setBounds(viewModel.getX(), viewModel.getY(), viewModel.getWidth(), viewModel.getHeight());
-        postItNotePanel.setBackground(viewModel.getColor());
+            // Create the post-it note panel (use the calculated width and height)
+            JPanel postItNotePanel = new JPanel();
+            postItNotePanel.setLayout(new BorderLayout());
+            postItNotePanel.setBounds(viewModel.getX(), viewModel.getY(), viewModel.getWidth()+10, viewModel.getHeight()+10);
+            postItNotePanel.setBackground(viewModel.getColor());
+            postItNotePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        // Create a label for the image and add it to the post-it note panel
-        JLabel imageLabel = new JLabel(imageIcon);
+            // Create an ImageIcon from the Image and add it to the post-it note panel
+            ImageIcon imageIcon = new ImageIcon(image);  // Use Image loaded by ImageIO
+            JLabel imageLabel = new JLabel(imageIcon);
+            postItNotePanel.add(imageLabel, BorderLayout.CENTER);
 
-        // Add the image to the post-it note panel
-        postItNotePanel.add(imageLabel, BorderLayout.CENTER);
+            // Add the post-it note panel to the board
+            boardPanel.add(postItNotePanel);
 
-        // Add the post-it note panel to the board
-        boardPanel.add(postItNotePanel);
+            // Revalidate and repaint to ensure the board updates
+            boardPanel.revalidate();
+            boardPanel.repaint();
 
-        // Revalidate and repaint to update the board
-        boardPanel.revalidate();
-        boardPanel.repaint();
-
-        System.out.println("Adding image with URL: " + viewModel.getImageUrl());
-        System.out.println("Image position: (" + viewModel.getX() + ", " + viewModel.getY() + ")");
-        System.out.println("Image size: " + viewModel.getWidth() + "x" + viewModel.getHeight());
+            System.out.println("Image added to post-it note at position: (" + viewModel.getX() + ", " + viewModel.getY() + ")");
+        } catch (Exception e) {
+            System.out.println("Error: Failed to load image from URL: " + viewModel.getImageUrl());
+            e.printStackTrace();
+        }
     }
-
 
     private void saveMindMap() {
         try {

@@ -1,7 +1,9 @@
 package interface_adapter.add_Image_PostNote;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import java.awt.Color;
+import java.awt.*;
+import java.io.InputStream;
 import java.net.URL;
 
 public class ImagePostNoteViewModel {
@@ -62,11 +64,19 @@ public class ImagePostNoteViewModel {
     // This method can be used to load the image and set width/height
     public void loadImage() {
         try {
-            ImageIcon icon = new ImageIcon(new URL(imageUrl));
-            setWidth(icon.getIconWidth());
-            setHeight(icon.getIconHeight());
+            URL url = new URL(imageUrl);
+            Image image = ImageIO.read(url);  // Load image using ImageIO
+            if (image != null) {
+                setWidth(image.getWidth(null));  // Set width
+                setHeight(image.getHeight(null));  // Set height
+                System.out.println("Image loaded successfully: " + imageUrl);
+            } else {
+                System.out.println("Error: Image not loaded from URL: " + imageUrl);
+            }
         } catch (Exception e) {
+            System.out.println("Error: Failed to load image from URL: " + imageUrl);
             e.printStackTrace();
         }
     }
+
 }
