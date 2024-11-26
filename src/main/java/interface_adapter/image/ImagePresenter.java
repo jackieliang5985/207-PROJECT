@@ -1,11 +1,9 @@
 package interface_adapter.image;
 
-import data_access.SimpleImage;
 import use_case.image.ImageOutputBoundary;
 import entity.CommonImage;
-
 import java.util.List;
-import java.util.ArrayList;
+
 
 public class ImagePresenter implements ImageOutputBoundary {
     private final ImageViewModel imageViewModel;

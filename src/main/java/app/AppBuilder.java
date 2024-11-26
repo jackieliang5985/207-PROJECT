@@ -7,7 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
+import data_access.InMemoryImageDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
+import data_access.UnsplashImageRepository;
 import entity.CommonUserFactory;
 import entity.UserFactory;
 import interface_adapter.UnsplashImageInputBoundary;
@@ -185,11 +187,13 @@ public class AppBuilder {
         ImageViewModel imageViewModel = new ImageViewModel();
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
-        // Now, use ImageRepository to implement ImageInputBoundary
-        ImageRepository imageRepository = new UnsplashImageRepository(unsplashApiKey);  // This is the repository that handles fetching images
-        ImageInteractor imageInteractor = new ImageInteractor(imageRepository, imagePresenter);  // Pass both repository and presenter to the interactor
+        // Initialize UnsplashImageRepository (passing the API key)
+        ImageRepository imageRepository = new UnsplashImageRepository(unsplashApiKey);
 
-        // Now, create the ImageController, which needs only the ImageInteractor
+        // Create ImageInteractor with the repository and presenter
+        ImageInteractor imageInteractor = new ImageInteractor(imageRepository, imagePresenter);
+
+        // Create ImageController with the ImageInteractor
         ImageController imageController = new ImageController(imageInteractor);
 
         // Export-related components (same as before)
