@@ -7,7 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
+import data_access.InMemoryImageDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
+import data_access.UnsplashImageRepository;
 import entity.CommonUserFactory;
 import entity.UserFactory;
 import interface_adapter.UnsplashImageInputBoundary;
@@ -21,9 +23,7 @@ import interface_adapter.create_MindMap.MindMapViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
-import interface_adapter.image.ImageController;
-import interface_adapter.image.ImagePresenter;
-import interface_adapter.image.ImageViewModel;
+import interface_adapter.image.*;
 import interface_adapter.loading.LoadingController;
 import interface_adapter.loading.LoadingPresenter;
 import interface_adapter.loading.LoadingViewModel;
@@ -69,7 +69,7 @@ public class AppBuilder {
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
     Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the .env file (default is root)
+            .directory(".") // Directory of the ..env file (default is root)
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
@@ -186,18 +186,30 @@ public class AppBuilder {
     public AppBuilder addMindMapView() {
         ImageViewModel imageViewModel = new ImageViewModel();
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-        ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
+
+        // Initialize UnsplashImageRepository (passing the API key)
+        ImageRepository imageRepository = new UnsplashImageRepository(unsplashApiKey);
+
+        // Create ImageInteractor with the repository and presenter
+        ImageInteractor imageInteractor = new ImageInteractor(imageRepository, imagePresenter);
+
+        // Create ImageController with the ImageInteractor
         ImageController imageController = new ImageController(imageInteractor);
 
-        ExportState exportState = new ExportState(); // Create ExportState
+        // Export-related components (same as before)
+        ExportState exportState = new ExportState();
         ExportViewModel exportViewModel = new ExportViewModel(exportState);
-        ExportInteractor exportInteractor = new ExportInteractor(exportViewModel); // Initialize with ExportViewModel
-        ExportController exportController = new ExportController(exportInteractor); // Pass ExportInteractor to ExportController
+        ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
+        ExportController exportController = new ExportController(exportInteractor);
+
+        // MindMapView setup
         final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel, exportController);
 
+        // Add the MindMapView to the card panel
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
+
 
     /**
      * Switches to display the MindMap view.

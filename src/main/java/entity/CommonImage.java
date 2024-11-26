@@ -1,18 +1,14 @@
 package entity;
 
 public class CommonImage {
-    private final String id;
     private final String url;
     private final String description;
+    private final String id;
 
-    public CommonImage(String id, String url, String description) {
-        this.id = id;
+    public CommonImage(String url, String description, String id) {
         this.url = url;
+        this.id = id;
         this.description = description;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getUrl() {

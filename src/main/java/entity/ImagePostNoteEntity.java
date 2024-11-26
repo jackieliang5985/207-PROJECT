@@ -1,17 +1,26 @@
 package entity;
 
-/**
- * Represents an individual image post-it note on the panel.
- */
+import java.awt.*;
+
+import javax.swing.ImageIcon;
+
 public class ImagePostNoteEntity extends PostNoteEntity {
-    final private Image image;
+    private ImageIcon imageIcon;
 
-    public ImagePostNoteEntity(int x, int y, MindMapEntity mindMap, Image image) {
-        super(x, y, 0, 0, mindMap);
-        this.image = image;
+    public ImagePostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap) {
+        super(x, y, width, height, mindMap);
     }
 
-    public String getImageUrl() {
-        return image.getUrl();
+    public void setImageIcon(ImageIcon imageIcon) {
+        this.imageIcon = imageIcon;
+        if (imageIcon != null) {
+            setWidth(imageIcon.getIconWidth());   // Use the protected setter
+            setHeight(imageIcon.getIconHeight()); // Use the protected setter
+        }
     }
+
+    public ImageIcon getImageIcon() {
+        return imageIcon;
+    }
+
 }
