@@ -20,6 +20,7 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
+import interface_adapter.create_MindMap.SquarePanel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
@@ -187,29 +188,22 @@ public class AppBuilder {
         ImageViewModel imageViewModel = new ImageViewModel();
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
-        // Initialize UnsplashImageRepository (passing the API key)
-        ImageRepository imageRepository = new UnsplashImageRepository(unsplashApiKey);
-
-        // Create ImageInteractor with the repository and presenter
-        ImageInteractor imageInteractor = new ImageInteractor(imageRepository, imagePresenter);
-
-        // Create ImageController with the ImageInteractor
+        // Use UnsplashImageInputBoundary as ImageRepository
+        ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
         ImageController imageController = new ImageController(imageInteractor);
 
-        // Export-related components (same as before)
+        // Initialize ExportController
         ExportState exportState = new ExportState();
         ExportViewModel exportViewModel = new ExportViewModel(exportState);
         ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
         ExportController exportController = new ExportController(exportInteractor);
 
-        // MindMapView setup
+        // Pass the imageController and exportController to MindMapView constructor
         final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel, exportController);
 
-        // Add the MindMapView to the card panel
         cardPanel.add(mindMap, MindMapView.VIEW_NAME);
         return this;
     }
-
 
     /**
      * Switches to display the MindMap view.

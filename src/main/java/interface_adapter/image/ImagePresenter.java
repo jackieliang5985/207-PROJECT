@@ -1,9 +1,10 @@
 package interface_adapter.image;
 
-import use_case.image.ImageOutputBoundary;
 import entity.CommonImage;
-import java.util.List;
+import use_case.image.ImageOutputBoundary;
 
+import java.util.List;
+import java.util.ArrayList;
 
 public class ImagePresenter implements ImageOutputBoundary {
     private final ImageViewModel imageViewModel;
@@ -13,9 +14,16 @@ public class ImagePresenter implements ImageOutputBoundary {
     }
 
     @Override
-    public void presentImages(List<CommonImage> commonImages) {
-        // Simply pass the images to the view model
-        imageViewModel.setImages(commonImages);
+    public void presentImages(List<CommonImage> images) {
+        // Map CommonImage to ImageDisplayData (view-friendly data)
+        List<ImageViewModel.ImageDisplayData> displayData = new ArrayList<>();
+        for (CommonImage commonImage : images) {
+            ImageViewModel.ImageDisplayData data = new ImageViewModel.ImageDisplayData(commonImage.getUrl(), commonImage.getDescription());
+            displayData.add(data);
+        }
+
+        // Pass the display data to the view model
+        imageViewModel.setImages(displayData);
     }
 
     @Override
