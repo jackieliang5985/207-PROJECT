@@ -1,25 +1,29 @@
 package interface_adapter.add_Image_PostNote;
 
-import entity.ImagePostNote;
 import use_case.add_Image_PostNote.ImagePostNoteInputBoundary;
-
-import javax.swing.ImageIcon;
-import java.awt.Color;
+import use_case.add_Image_PostNote.ImagePostNoteInputData;
+import view.MindMapView;
 
 public class ImagePostNoteController {
-
     private final ImagePostNoteInputBoundary inputBoundary;
+    private MindMapView mindMapView;  // Add reference for MindMapView
 
-    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary) {
+    // Constructor
+    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary, MindMapView mindMapView) {
         this.inputBoundary = inputBoundary;
+        this.mindMapView = mindMapView;  // Initialize the view
     }
 
-    public void addImagePostNote(ImageIcon imageIcon) {
-        // Create a new ImagePostNote
-        ImagePostNote postNote = new ImagePostNote(50, 50, Color.ORANGE, null);
-        postNote.setImage(imageIcon);
+    // Method to set MindMapView (after initialization)
+    public void setMindMapView(MindMapView mindMapView) {
+        this.mindMapView = mindMapView;
+    }
 
-        // Pass the post note to the interactor via the InputBoundary
-        inputBoundary.addImagePostNote(postNote);
+    public void addImagePostNote(ImagePostNoteViewModel viewModel) {
+        // Load the image to set width and height
+        viewModel.loadImage();
+
+        // Call updatePostNotes to add the image with its size
+        mindMapView.updatePostNotes(viewModel);
     }
 }

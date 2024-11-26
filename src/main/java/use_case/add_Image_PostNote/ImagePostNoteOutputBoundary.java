@@ -1,7 +1,7 @@
 package use_case.add_Image_PostNote;
 
-import entity.ImagePostNote;
+import interface_adapter.add_Image_PostNote.ImagePostNoteData;
 
 public interface ImagePostNoteOutputBoundary {
-    void presentImagePostNote(ImagePostNote postNote);
+    void presentImagePostNotes(ImagePostNoteData data);
 }

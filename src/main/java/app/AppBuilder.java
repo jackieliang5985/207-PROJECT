@@ -1,6 +1,9 @@
 package app;
 
 import java.awt.CardLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,9 +14,13 @@ import data_access.InMemoryImageDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import data_access.UnsplashImageRepository;
 import entity.CommonUserFactory;
+import entity.PostNote;
 import entity.UserFactory;
 import interface_adapter.UnsplashImageInputBoundary;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.add_Image_PostNote.ImagePostNoteController;
+import interface_adapter.add_Image_PostNote.ImagePostNotePresenter;
+import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.change_password.ChangePasswordController;
 import interface_adapter.change_password.ChangePasswordPresenter;
 import interface_adapter.change_password.LoggedInViewModel;
@@ -31,6 +38,7 @@ import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import io.github.cdimascio.dotenv.Dotenv;
+import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -185,25 +193,55 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
+        // Initialize the ImageViewModel and ImagePostNoteViewModel
         ImageViewModel imageViewModel = new ImageViewModel();
+        ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
+
+        // Initialize ImagePresenter (uses ImageViewModel)
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
-        // Use UnsplashImageInputBoundary as ImageRepository
+        // Use UnsplashImageInputBoundary as ImageRepository and create ImageInteractor
         ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
         ImageController imageController = new ImageController(imageInteractor);
 
-        // Initialize ExportController
+        // Initialize ExportController and related components
         ExportState exportState = new ExportState();
         ExportViewModel exportViewModel = new ExportViewModel(exportState);
         ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
         ExportController exportController = new ExportController(exportInteractor);
 
-        // Pass the imageController and exportController to MindMapView constructor
-        final MindMapView mindMap = new MindMapView(cardLayout, cardPanel, imageController, imageViewModel, exportController);
+        // Create an empty list of PostNotes
+        ArrayList<PostNote> postNotes = new ArrayList<>();
 
-        cardPanel.add(mindMap, MindMapView.VIEW_NAME);
+        // Initialize SquarePanel with postNotes
+        SquarePanel boardPanel = new SquarePanel(postNotes);
+
+        // Initialize the ImagePostNotePresenter and Controller
+        ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel); // Presenter uses ImagePostNoteViewModel
+        ImagePostNoteController imagePostNoteController = new ImagePostNoteController(new ImagePostNoteInteractor(imagePostNotePresenter), null);
+
+        // Initialize MindMapView (mindMapView) first
+        final MindMapView mindMapView = new MindMapView(cardLayout, cardPanel, imageController,
+                imageViewModel, imagePostNoteViewModel,
+                exportController, imagePostNoteController);
+
+        // Now pass the mindMapView to ImagePostNoteController
+        imagePostNoteController.setMindMapView(mindMapView);  // Set MindMapView in the controller
+
+        // Add the MindMapView to the cardPanel
+        cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
+
         return this;
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * Switches to display the MindMap view.
