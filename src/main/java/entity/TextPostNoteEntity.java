@@ -22,4 +22,8 @@ public class TextPostNoteEntity extends PostNoteEntity {
     public String getText() {
         return text;
     }
+
+    public void setText(String newText) {
+        this.text = newText;
+    }
 }
