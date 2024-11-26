@@ -2,28 +2,32 @@ package interface_adapter.add_Image_PostNote;
 
 import use_case.add_Image_PostNote.ImagePostNoteInputBoundary;
 import use_case.add_Image_PostNote.ImagePostNoteInputData;
-import view.MindMapView;
+
+import java.awt.*;
 
 public class ImagePostNoteController {
     private final ImagePostNoteInputBoundary inputBoundary;
-    private MindMapView mindMapView;  // Add reference for MindMapView
+    private final ImagePostNoteViewModel viewModel;
 
     // Constructor
-    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary, MindMapView mindMapView) {
+    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary, ImagePostNoteViewModel viewModel) {
         this.inputBoundary = inputBoundary;
-        this.mindMapView = mindMapView;  // Initialize the view
+        this.viewModel = viewModel;
     }
 
-    // Method to set MindMapView (after initialization)
-    public void setMindMapView(MindMapView mindMapView) {
-        this.mindMapView = mindMapView;
-    }
+    /**
+     * Handles adding a new image post-it note.
+     */
+    public void addImagePostNote(String imageUrl, int x, int y, int width, int height, Color color) {
+        // Update the view model with the image data
+        viewModel.setImageUrl(imageUrl);
+        viewModel.setX(x);
+        viewModel.setY(y);
+        viewModel.setWidth(width);
+        viewModel.setHeight(height);
+        viewModel.setColor(color);
 
-    public void addImagePostNote(ImagePostNoteViewModel viewModel) {
-        // Load the image to set width and height
-        viewModel.loadImage();
-
-        // Call updatePostNotes to add the image with its size
-        mindMapView.updatePostNotes(viewModel);
+        // Pass data to the interactor
+        inputBoundary.addImagePostNote(new ImagePostNoteInputData(imageUrl, x, y, width, height, color));
     }
 }

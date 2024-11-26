@@ -11,11 +11,10 @@ import javax.swing.WindowConstants;
 
 // Import all necessary components
 import data_access.InMemoryImageDataAccessObject;
+import data_access.InMemoryPostNoteDAO;
 import data_access.InMemoryUserDataAccessObject;
 import data_access.UnsplashImageRepository;
-import entity.CommonUserFactory;
-import entity.PostNote;
-import entity.UserFactory;
+import entity.*;
 import interface_adapter.UnsplashImageInputBoundary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
@@ -27,7 +26,6 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
-import interface_adapter.create_MindMap.SquarePanel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
@@ -211,35 +209,32 @@ public class AppBuilder {
         ExportController exportController = new ExportController(exportInteractor);
 
         // Create an empty list of PostNotes
-        ArrayList<PostNote> postNotes = new ArrayList<>();
+        ArrayList<PostNoteEntity> postNotes = new ArrayList<>();
 
-        // Initialize SquarePanel with postNotes
-        SquarePanel boardPanel = new SquarePanel(postNotes);
+        // Initialize ImagePostNotePresenter (this is the output boundary)
+        ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel);
 
-        // Initialize the ImagePostNotePresenter and Controller
-        ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel); // Presenter uses ImagePostNoteViewModel
-        ImagePostNoteController imagePostNoteController = new ImagePostNoteController(new ImagePostNoteInteractor(imagePostNotePresenter), null);
+        // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
+        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
 
-        // Initialize MindMapView (mindMapView) first
+        // Initialize MindMapEntity
+        MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);  // You can change the title as needed
+
+        // Initialize the ImagePostNoteInteractor with both the presenter, DAO, and MindMapEntity
+        ImagePostNoteInteractor imagePostNoteInteractor = new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
+
+        // Initialize the ImagePostNoteController, passing the interactor, the view model, and the MindMapView
+        ImagePostNoteController imagePostNoteController = new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
+
+        // Initialize MindMapView and pass the controller
         final MindMapView mindMapView = new MindMapView(cardLayout, cardPanel, imageController,
-                imageViewModel, imagePostNoteViewModel,
-                exportController, imagePostNoteController);
-
-        // Now pass the mindMapView to ImagePostNoteController
-        imagePostNoteController.setMindMapView(mindMapView);  // Set MindMapView in the controller
+                imageViewModel, imagePostNoteViewModel, exportController, imagePostNoteController);
 
         // Add the MindMapView to the cardPanel
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 
         return this;
     }
-
-
-
-
-
-
-
 
 
 
