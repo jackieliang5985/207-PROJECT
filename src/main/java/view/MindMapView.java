@@ -1,21 +1,16 @@
 package view;
 
-import entity.ImagePostNote;
-import entity.PostNote;
-import interface_adapter.create_MindMap.SquarePanel;
-import interface_adapter.export_mind_map.ExportController;
+import interface_adapter.add_Image_PostNote.ImagePostNoteController;
+import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
-import use_case.export_mind_map.ExportInputData;
-
+import interface_adapter.export_mind_map.ExportController;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MindMapView extends JPanel {
@@ -23,30 +18,36 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final SquarePanel boardPanel;
     private final ImageViewModel imageViewModel;
     private final ExportController exportController;
+    private final ImageController imageController;
+    private final ImagePostNoteController imagePostNoteController;
+    private final ImagePostNoteViewModel imagePostNoteViewModel;
+    private List<ImagePostNoteViewModel> postNotes;  // List of post-notes (image post notes)
 
-    private final ArrayList<PostNote> postNotes = new ArrayList<>();  // Declare postNotes
+    public MindMapView(CardLayout cardLayout, Container cardPanel,
+                       ImageController imageController,
+                       ImageViewModel imageViewModel,
+                       ImagePostNoteViewModel imagePostNoteViewModel,
+                       ExportController exportController,
+                       ImagePostNoteController imagePostNoteController) {
 
-    private final ImageController imageController;  // Declare ImageController
-
-    public MindMapView(CardLayout cardLayout, Container cardPanel, ImageController imageController,
-                       ImageViewModel imageViewModel, ExportController exportController) {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
+        this.imageController = imageController;
         this.imageViewModel = imageViewModel;
         this.exportController = exportController;
-        this.imageController = imageController;  // Initialize ImageController
+        this.imagePostNoteController = imagePostNoteController;
+        this.imagePostNoteViewModel = imagePostNoteViewModel;
 
-        // Initialize SquarePanel with postNotes
-        this.boardPanel = new SquarePanel(postNotes);
+        // Initialize postNotes as an empty list
+        this.postNotes = new ArrayList<>();
 
         setupUI();
     }
 
     private void setupUI() {
-        setLayout(new BorderLayout());
+        setLayout(null);  // Use absolute positioning for free placement
         setPreferredSize(new Dimension(1920, 1080));
 
         // Title Label for Mind Map
@@ -55,146 +56,205 @@ public class MindMapView extends JPanel {
         titleLabel.setOpaque(true);
         titleLabel.setBackground(Color.LIGHT_GRAY);
         titleLabel.setForeground(Color.BLACK);
-        add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setBounds(0, 0, getWidth(), 50);  // Ensure the title label is visible
+        add(titleLabel);
 
-        // Board Panel (Main area for the mind map)
-        boardPanel.setBackground(Color.LIGHT_GRAY);
-        boardPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3));
-        boardPanel.setLayout(null);  // Layout for free placement
-        add(boardPanel, BorderLayout.CENTER);
+        // Set up right-click context menu
+        JPopupMenu popupMenu = new JPopupMenu();
 
-        // Bottom Panel for buttons (Save, Logout, etc.)
-        final JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayout(1, 5, 10, 0));
-        bottomPanel.setBackground(new Color(230, 230, 250));
+        JMenuItem addImageMenuItem = new JMenuItem("Add Image Post It");
+        JMenuItem saveMenuItem = new JMenuItem("Save");
+        JMenuItem logoutMenuItem = new JMenuItem("Logout");
 
-        final JButton addTextPostButton = createStyledButton("Add Text Post It");
-        final JButton addImageButton = createStyledButton("Add Image Post It");
-        final JButton attachStringButton = createStyledButton("Attach String");
-        final JButton saveButton = createStyledButton("SAVE");
-        final JButton logoutButton = createStyledButton("LOGOUT");
+        // Add action listeners for each item
+        addImageMenuItem.addActionListener(e -> fetchAndAddImage());
+        saveMenuItem.addActionListener(e -> saveMindMap());
+        logoutMenuItem.addActionListener(e -> logout());
 
-        // Add action listener for buttons
-        addTextPostButton.addActionListener(evt -> boardPanel.createPostNote());
-        addImageButton.addActionListener(evt -> fetchAndAddImage());
-        saveButton.addActionListener(evt -> saveMindMap());
-        logoutButton.addActionListener(evt -> logout());
+        // Add the menu items to the popup menu
+        popupMenu.add(addImageMenuItem);
+        popupMenu.add(saveMenuItem);
+        popupMenu.add(logoutMenuItem);
 
-        // Add buttons to the bottom panel
-        bottomPanel.add(addTextPostButton);
-        bottomPanel.add(addImageButton);
-        bottomPanel.add(attachStringButton);
-        bottomPanel.add(saveButton);
-        bottomPanel.add(logoutButton);
+        // Add mouse listener to show the popup menu on right-click
+        this.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    System.out.println("Right-click detected, showing popup menu...");
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
 
-        add(bottomPanel, BorderLayout.SOUTH);
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    System.out.println("Right-click detected, showing popup menu...");
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+
+        // Revalidate and repaint the panel after adding components
+        revalidate();
+        repaint();
+
+        System.out.println("UI setup completed.");
 
         // Listen for property changes from the ImageViewModel
         imageViewModel.addPropertyChangeListener(evt -> {
             if ("images".equals(evt.getPropertyName())) {
-                final List<ImageViewModel.ImageDisplayData> images = (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
-                showImageSelectionDialog(images); // Display the images in the dialog
+                List<ImageViewModel.ImageDisplayData> images = (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
+                System.out.println("Images received: " + images.size());
+                showImageSelectionDialog(images);
             } else if ("errorMessage".equals(evt.getPropertyName())) {
+                System.out.println("Error message: " + imageViewModel.getErrorMessage());
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
     }
 
-    // Helper method to create styled buttons
-    private JButton createStyledButton(String text) {
-        final JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(new Color(230, 230, 250));
-        button.setForeground(Color.BLACK);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        return button;
-    }
-
-    // Method for fetching and adding an image
+    // Method to fetch images based on a query
     private void fetchAndAddImage() {
+        System.out.println("Fetching images based on query...");
         final String query = JOptionPane.showInputDialog(this, "Enter a search term for images:");
         if (query == null || query.isEmpty()) {
+            System.out.println("User canceled the query.");
             return; // User canceled
         }
-        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+
+        System.out.println("Searching for images with query: " + query);
+
+        // Create an instance of ImagePresenter
+        ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+
+        // Fetch images using the controller and pass both the query and the imagePresenter
         imageController.fetchImages(query, imagePresenter);
     }
 
-    // Method for showing the image selection dialog
+    // Method to show the image selection dialog with the fetched images
     private void showImageSelectionDialog(List<ImageViewModel.ImageDisplayData> imageDisplayDataList) {
         final JDialog dialog = new JDialog((Frame) null, "Select an Image", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setLayout(new BorderLayout());
 
         final JPanel imagePanel = new JPanel();
-        imagePanel.setLayout(new GridLayout(0, 3, 10, 10)); // GridLayout with 3 columns
+        imagePanel.setLayout(new GridLayout(0, 3, 10, 10)); // Layout with 3 columns
 
-        final ImageViewModel.ImageDisplayData[] selectedImage = {null};
         for (ImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
             try {
-                // Fetch the image
-                BufferedImage bufferedImage = ImageIO.read(new URL(imageData.getUrl()));
+                // Fetch the image from the URL
+                URL imageUrl = new URL(imageData.getUrl());
+                Image image = ImageIO.read(imageUrl);  // Read the image using ImageIO
 
                 // Resize the image to a smaller size (e.g., 100x100)
-                Image resizedImage = bufferedImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                Image resizedImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
 
-                // Create the ImageIcon from the resized image
+                // Create an ImageIcon from the resized image
                 ImageIcon icon = new ImageIcon(resizedImage);
 
-                // Add the image icon to a button
+                // Create a button with the resized image icon
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
-                    selectedImage[0] = imageData;
-                    dialog.dispose();
-                    addImageToBoard(selectedImage[0]); // Add the selected image to the board
+                    dialog.dispose();  // Close the dialog
+
+                    // Set the dimensions of the image post note view model
+                    imagePostNoteViewModel.setImageUrl(imageData.getUrl());
+                    imagePostNoteViewModel.setX(50);  // Default X position
+                    imagePostNoteViewModel.setY(50);  // Default Y position
+                    imagePostNoteViewModel.setColor(Color.ORANGE);
+                    imagePostNoteViewModel.setWidth(resizedImage.getWidth(null));  // Set width based on resized image
+                    imagePostNoteViewModel.setHeight(resizedImage.getHeight(null));  // Set height based on resized image
+
+                    // Add image post note via the controller
+                    imagePostNoteController.addImagePostNote(imagePostNoteViewModel.getImageUrl(), imagePostNoteViewModel.getX(),
+                            imagePostNoteViewModel.getY(), imagePostNoteViewModel.getWidth(), imagePostNoteViewModel.getHeight(),
+                            imagePostNoteViewModel.getColor());
+
+                    // Once the post note is added, update the MindMapView
+                    updatePostNotes(imagePostNoteViewModel);  // This will repaint the board with the new image
                 });
                 imagePanel.add(imageButton);
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Handle any exceptions
             }
         }
 
         final JScrollPane scrollPane = new JScrollPane(imagePanel);
         dialog.add(scrollPane, BorderLayout.CENTER);
-        dialog.setSize(600, 400);
-        dialog.setLocationRelativeTo(this);
+        dialog.setSize(600, 400);  // Set the dialog size
+        dialog.setLocationRelativeTo(this);  // Center the dialog
         dialog.setVisible(true);
     }
 
-    // Method for adding selected image to the board
-    private void addImageToBoard(ImageViewModel.ImageDisplayData imageData) {
-        try {
-            ImageIcon imageIcon = new ImageIcon(new URL(imageData.getUrl()));
-            ImagePostNote imagePostNote = new ImagePostNote(50, 50, Color.ORANGE, boardPanel);
-            imagePostNote.setImage(imageIcon);
 
-            // Add the ImagePostNote to the board (SquarePanel)
-            boardPanel.createPostNote(imagePostNote);
-
-            boardPanel.revalidate();
-            boardPanel.repaint();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading the image: " + e.getMessage());
-            e.printStackTrace();
-        }
+    // Method to update and display post notes on the board
+    public void updatePostNotes(ImagePostNoteViewModel postNoteViewModel) {
+        System.out.println("Updating post notes with new note: " + postNoteViewModel.getImageUrl());
+        this.postNotes.add(postNoteViewModel);  // Add the new post note to the list
+        System.out.println("Total post notes: " + postNotes.size());  // Debugging line to print number of post notes
+        revalidate();  // Revalidate the component to ensure the layout is updated
+        repaint();  // Repaint the panel to render the new post notes
     }
 
-    // Method for saving the MindMap
+    // Method to save the MindMap
     private void saveMindMap() {
         try {
-            List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
-            String dialogTitle = "Save Mind Map";
-            ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
-            exportController.handleExportCommand(boardPanel, dialogTitle);
+            // Export logic using exportController
+            exportController.handleExportCommand(this, "MindMap");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error saving Mind Map: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    // Method for handling the logout functionality
     private void logout() {
         JOptionPane.showMessageDialog(this, "You have been logged out. Returning to the Login page");
         cardLayout.show(cardPanel, "CreateNewMindMapView");
     }
+
+    // Overridden paintComponent to render the post-notes on the MindMap
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);  // Ensures the panel is cleared before painting
+
+        if (postNotes != null && !postNotes.isEmpty()) {
+            for (ImagePostNoteViewModel postNote : postNotes) {
+                // If postNote has an image, adjust the post-it note size to match the image's size + padding
+                if (postNote.getImageUrl() != null && !postNote.getImageUrl().isEmpty()) {
+                    try {
+                        // Load the image from the URL
+                        Image image = ImageIO.read(new URL(postNote.getImageUrl()));
+
+                        // Get the original image dimensions
+                        int imageWidth = image.getWidth(null);
+                        int imageHeight = image.getHeight(null);
+
+                        // Increase the post-it note size by 10 pixels on each side of the image
+                        int postNoteWidth = imageWidth + 20;  // +10 on each side
+                        int postNoteHeight = imageHeight + 20;  // +10 on each side
+
+                        // Calculate the x and y offsets to center the image within the post-it note
+                        int xOffset = (postNoteWidth - imageWidth) / 2;
+                        int yOffset = (postNoteHeight - imageHeight) / 2;
+
+                        // Resize the image
+                        Image resizedImage = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
+
+                        // Draw the post-it note (a rectangle with border)
+                        g.setColor(postNote.getColor());  // Set the post-it note color
+                        g.fillRect(postNote.getX(), postNote.getY(), postNoteWidth, postNoteHeight);  // Adjusted width and height
+
+                        // Draw the border around the post-it note
+                        g.setColor(Color.BLACK);  // Border color
+                        g.drawRect(postNote.getX(), postNote.getY(), postNoteWidth, postNoteHeight);  // Draw border
+
+                        // Draw the resized image in the center of the post-it note
+                        g.drawImage(resizedImage, postNote.getX() + xOffset, postNote.getY() + yOffset, this);
+                    } catch (Exception e) {
+                        e.printStackTrace();  // Handle image loading errors
+                    }
+                }
+            }
+        }
+    }
+
 }
+

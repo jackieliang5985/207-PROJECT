@@ -1,25 +1,33 @@
 package interface_adapter.add_Image_PostNote;
 
-import entity.ImagePostNote;
 import use_case.add_Image_PostNote.ImagePostNoteInputBoundary;
+import use_case.add_Image_PostNote.ImagePostNoteInputData;
 
-import javax.swing.ImageIcon;
-import java.awt.Color;
+import java.awt.*;
 
 public class ImagePostNoteController {
-
     private final ImagePostNoteInputBoundary inputBoundary;
+    private final ImagePostNoteViewModel viewModel;
 
-    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary) {
+    // Constructor
+    public ImagePostNoteController(ImagePostNoteInputBoundary inputBoundary, ImagePostNoteViewModel viewModel) {
         this.inputBoundary = inputBoundary;
+        this.viewModel = viewModel;
     }
 
-    public void addImagePostNote(ImageIcon imageIcon) {
-        // Create a new ImagePostNote
-        ImagePostNote postNote = new ImagePostNote(50, 50, Color.ORANGE, null);
-        postNote.setImage(imageIcon);
+    /**
+     * Handles adding a new image post-it note.
+     */
+    public void addImagePostNote(String imageUrl, int x, int y, int width, int height, Color color) {
+        // Update the view model with the image data
+        viewModel.setImageUrl(imageUrl);
+        viewModel.setX(x);
+        viewModel.setY(y);
+        viewModel.setWidth(width);
+        viewModel.setHeight(height);
+        viewModel.setColor(color);
 
-        // Pass the post note to the interactor via the InputBoundary
-        inputBoundary.addImagePostNote(postNote);
+        // Pass data to the interactor
+        inputBoundary.addImagePostNote(new ImagePostNoteInputData(imageUrl, x, y, width, height, color));
     }
 }
