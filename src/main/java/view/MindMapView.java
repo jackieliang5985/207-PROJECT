@@ -6,6 +6,7 @@ import interface_adapter.create_MindMap.SquarePanel;
 import com.itextpdf.text.DocumentException;
 import entity.CommonImage;
 import interface_adapter.export_mind_map.ExportController;
+import interface_adapter.export_mind_map.ExportViewModel;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
@@ -15,8 +16,10 @@ import use_case.export_mind_map.ExportInputData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -124,24 +127,40 @@ public class MindMapView extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
 
         saveButton.addActionListener(evt -> {
-            try {
-                // Get the file formats you want to support
-                List<String> supportedFormats = Arrays.asList("png", "jpg", "pdf");
+            // Create a file chooser to let the user pick where to save the file
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Mind Map");
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
 
-                // Get the dialog title for the file chooser
-                String dialogTitle = "Save Mind Map";
+            // Show the file chooser and wait for user selection
+            int userSelection = fileChooser.showSaveDialog(null);
 
-                // Pass all three arguments to the ExportInputData constructor
-                ExportInputData inputData = new ExportInputData(boardPanel, dialogTitle, supportedFormats);
+            // If the user selects a file to save
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                // Get the selected file
+                File fileToSave = fileChooser.getSelectedFile();
 
-                // Use ExportController to handle saving the mind map
-                exportController.handleExportCommand(boardPanel, dialogTitle);  // This line can remain the same now
+                // Get the selected file format (from the file filter)
+                String fileFormat = getFileFormat(fileChooser);
 
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(MindMapView.this, "Error saving Mind Map: " + e.getMessage());
-                e.printStackTrace();
+                // Make sure the selected file has the appropriate extension
+                if (!fileToSave.getName().toLowerCase().endsWith("." + fileFormat)) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + "." + fileFormat);
+                }
+
+                // Create a BufferedImage of the boardPanel (or any renderable content)
+                BufferedImage image = new BufferedImage(boardPanel.getWidth(), boardPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = image.createGraphics();
+                boardPanel.paint(g2d); // Render the boardPanel to the image
+                g2d.dispose(); // Dispose of the graphics context
+
+                // Pass the image, file, and format to the ExportController to handle the export
+                exportController.execute(image, fileToSave, fileFormat);
             }
         });
+
 
         // Add property change listener to update the view with the fetched images
         imageViewModel.addPropertyChangeListener(evt -> {
@@ -153,6 +172,7 @@ public class MindMapView extends JPanel {
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
+
     }
 
     /**
@@ -166,6 +186,14 @@ public class MindMapView extends JPanel {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(Color.GRAY, one));
         return button;
+    }
+
+    private String getFileFormat(JFileChooser fileChooser) {
+        String description = fileChooser.getFileFilter().getDescription();
+        if (description.contains("PNG")) return "png";
+        if (description.contains("JPEG")) return "jpg";
+        if (description.contains("PDF")) return "pdf";
+        return "";
     }
 
     /**

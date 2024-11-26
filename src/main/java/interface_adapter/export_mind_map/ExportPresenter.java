@@ -4,22 +4,21 @@ import use_case.export_mind_map.ExportOutputBoundary;
 import use_case.export_mind_map.ExportOutputData;
 
 public class ExportPresenter implements ExportOutputBoundary {
-    private final ExportViewModel exportViewModel;
+    private final ExportViewModel viewModel;
 
-    public ExportPresenter(ExportViewModel exportViewModel) {
-        this.exportViewModel = exportViewModel;
+    public ExportPresenter(ExportViewModel viewModel) {
+        this.viewModel = viewModel;
     }
 
     @Override
     public void prepareSuccessView(ExportOutputData outputData) {
-        exportViewModel.setFilePath(outputData.getFilePath()); // Triggers notification
-        exportViewModel.setExportStatus("Success");
-        exportViewModel.setErrorMessage(null);
+        viewModel.setExportStatus("Success");
+        viewModel.setFilePath(outputData.getFilePath());
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-        exportViewModel.setErrorMessage(errorMessage); // Triggers notification
-        exportViewModel.setExportStatus("Failure");
+        viewModel.setExportStatus("Failure");
+        viewModel.setErrorMessage(errorMessage);
     }
 }
