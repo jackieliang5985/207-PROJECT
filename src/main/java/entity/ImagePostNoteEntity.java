@@ -9,8 +9,18 @@ public class ImagePostNoteEntity extends PostNoteEntity {
     private String imageUrl;  // Field for the image URL
 
     // Constructor for the ImagePostNoteEntity
-    public ImagePostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap) {
+    public ImagePostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap, String imageUrl) {
         super(x, y, width, height, mindMap);
+        if (x < 0 || y < 0) {
+            throw new IllegalArgumentException("Coordinates cannot be negative.");
+        }
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Width and height must be positive values.");
+        }
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("Image URL cannot be null or empty.");
+        }
+        this.imageUrl = imageUrl;
     }
 
     // Getter for imageUrl

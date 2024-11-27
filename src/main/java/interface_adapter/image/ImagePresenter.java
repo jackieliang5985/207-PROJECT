@@ -30,4 +30,8 @@ public class ImagePresenter implements ImageOutputBoundary {
     public void presentError(String errorMessage) {
         imageViewModel.setErrorMessage(errorMessage);
     }
+
+    public String getErrorMessage() {
+        return imageViewModel.getErrorMessage();
+    }
 }

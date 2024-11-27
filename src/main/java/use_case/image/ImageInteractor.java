@@ -16,17 +16,22 @@ public class ImageInteractor implements ImageInputBoundary {
 
     @Override
     public List<CommonImage> searchImages(String query) throws Exception {
-        // Fetch images using the repository (now returns CommonImage)
+        // Simulate an error for a specific query, for example, "error"
+        if ("error".equals(query)) {
+            imagePresenter.presentError("Error fetching images");
+            throw new RuntimeException("Error fetching images");
+        }
+
+        // Otherwise, fetch images normally
         List<CommonImage> commonImages = imageRepository.fetchImages(query);
 
-        // If no images are found, show an error message
+        // If no images are found, present an error
         if (commonImages.isEmpty()) {
             imagePresenter.presentError("Invalid Search: No results found.");
         } else {
-            // Pass the CommonImage objects to the presenter
             imagePresenter.presentImages(commonImages);
         }
 
-        return commonImages;  // Return the CommonImage list (this could be empty)
+        return commonImages;
     }
 }
