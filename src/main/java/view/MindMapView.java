@@ -11,8 +11,11 @@ import interface_adapter.export_mind_map.ExportController;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -306,15 +309,6 @@ public class MindMapView extends JPanel {
         repaint();
     }
 
-    private void saveMindMap() {
-        try {
-            exportController.handleExportCommand(this, "MindMap");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving Mind Map: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     private void logout() {
         JOptionPane.showMessageDialog(this, "You have been logged out. Returning to the Login page");
         cardLayout.show(cardPanel, "CreateNewMindMapView");
@@ -401,6 +395,48 @@ public class MindMapView extends JPanel {
         }
 
         return lines.toArray(new String[0]);
+    }
+
+    private void saveMindMap() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Mind Map");
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+
+        // Show the file chooser and wait for user selection
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        // If the user selects a file to save
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            // Get the selected file
+            File fileToSave = fileChooser.getSelectedFile();
+
+            // Get the selected file format (from the file filter)
+            String fileFormat = getFileFormat(fileChooser);
+
+            // Make sure the selected file has the appropriate extension
+            if (!fileToSave.getName().toLowerCase().endsWith("." + fileFormat)) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + "." + fileFormat);
+            }
+
+            // Create a BufferedImage of the boardPanel (or any renderable content)
+            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = image.createGraphics();
+            this.paint(g2d); // Render the boardPanel to the image
+            g2d.dispose(); // Dispose of the graphics context
+
+            // Pass the image, file, and format to the ExportController to handle the export
+            exportController.execute(image, fileToSave, fileFormat);
+        }
+    }
+
+    private String getFileFormat(JFileChooser fileChooser) {
+        String description = fileChooser.getFileFilter().getDescription();
+        if (description.contains("PNG")) return "png";
+        if (description.contains("JPEG")) return "jpg";
+        if (description.contains("PDF")) return "pdf";
+        return "";
     }
 
 }

@@ -1,30 +1,28 @@
 package use_case.export_mind_map;
 
-import javax.swing.*;
-import java.util.List;
+import java.io.File;
+import java.awt.image.BufferedImage;
 
 public class ExportInputData {
-    private final JPanel panel;
-    private final String dialogTitle;
-    private final List<String> supportedFormats;
+    private final BufferedImage image;  // Pre-rendered image
+    private final File fileToSave;      // File selected by the user
+    private final String fileFormat;    // Format (e.g., "png", "jpg", "pdf")
 
-    // Constructor
-    public ExportInputData(JPanel panel, String dialogTitle, List<String> supportedFormats) {
-        this.panel = panel;
-        this.dialogTitle = dialogTitle;
-        this.supportedFormats = supportedFormats;
+    public ExportInputData(BufferedImage image, File fileToSave, String fileFormat) {
+        this.image = image;
+        this.fileToSave = fileToSave;
+        this.fileFormat = fileFormat;
     }
 
-    // Getters
-    public JPanel getPanel() {
-        return panel;
+    public BufferedImage getImage() {
+        return image;
     }
 
-    public String getDialogTitle() {
-        return dialogTitle;
+    public File getFileToSave() {
+        return fileToSave;
     }
 
-    public List<String> getSupportedFormats() {
-        return supportedFormats;
+    public String getFileFormat() {
+        return fileFormat;
     }
 }

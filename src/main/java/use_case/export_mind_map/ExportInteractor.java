@@ -3,16 +3,9 @@ package use_case.export_mind_map;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
-import use_case.export_mind_map.ExportInputBoundary;
-import use_case.export_mind_map.ExportInputData;
-import use_case.export_mind_map.ExportOutputBoundary;
-import use_case.export_mind_map.ExportOutputData;
-
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -26,72 +19,35 @@ public class ExportInteractor implements ExportInputBoundary {
     @Override
     public void execute(ExportInputData inputData) {
         try {
-            // Capture the JPanel as a BufferedImage
-            BufferedImage screenshot = new BufferedImage(
-                    inputData.getPanel().getWidth(),
-                    inputData.getPanel().getHeight(),
-                    BufferedImage.TYPE_INT_RGB
-            );
-            Graphics2D g2d = screenshot.createGraphics();
-            inputData.getPanel().paint(g2d);
-            g2d.dispose();
+            // Get the pre-rendered image
+            BufferedImage image = inputData.getImage();
 
-            // Handle file saving logic
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Save Mind Map");
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
-            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+            // Save the file
+            saveFile(image, inputData.getFileToSave(), inputData.getFileFormat());
 
-            int userSelection = fileChooser.showSaveDialog(null);
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                java.io.File fileToSave = fileChooser.getSelectedFile();
-                String selectedExtension = getFileExtension(fileChooser);
-
-                if (!fileToSave.getName().toLowerCase().endsWith("." + selectedExtension)) {
-                    fileToSave = new java.io.File(fileToSave.getAbsolutePath() + "." + selectedExtension);
-                }
-
-                if (selectedExtension.equals("png") || selectedExtension.equals("jpg")) {
-                    ImageIO.write(screenshot, selectedExtension, fileToSave);
-                } else if (selectedExtension.equals("pdf")) {
-                    saveAsPdf(screenshot, fileToSave);
-                }
-
-                presenter.prepareSuccessView(new ExportOutputData(fileToSave.getAbsolutePath()));
-            }
+            // Notify the presenter of success
+            presenter.prepareSuccessView(new ExportOutputData(inputData.getFileToSave().getAbsolutePath()));
         } catch (IOException | DocumentException e) {
-            presenter.prepareFailView(e.getMessage());
+            // Notify the presenter of failure
+            presenter.prepareFailView("Failed to export: " + e.getMessage());
         }
     }
 
-    private static String getFileExtension(JFileChooser fileChooser) {
-        String description = fileChooser.getFileFilter().getDescription();
-        if (description.contains("PNG")) {
-            return "png";
-        } else if (description.contains("JPEG")) {
-            return "jpg";
-        } else if (description.contains("PDF")) {
-            return "pdf";
+    private void saveFile(BufferedImage image, File file, String format) throws IOException, DocumentException {
+        if (format.equals("png") || format.equals("jpg")) {
+            ImageIO.write(image, format, file);
+        } else if (format.equals("pdf")) {
+            saveAsPdf(image, file);
+        } else {
+            throw new IOException("Unsupported file format: " + format);
         }
-        return "";
     }
 
-    private void saveAsPdf(BufferedImage image, java.io.File file) throws DocumentException, IOException {
-        // Convert dimensions to float
-        float width = (float) image.getWidth();
-        float height = (float) image.getHeight();
-
-        // Create a rectangle with the dimensions of the image
-        Document document = new Document(new com.itextpdf.text.Rectangle(width, height));
+    private void saveAsPdf(BufferedImage image, File file) throws IOException, DocumentException {
+        Document document = new Document(new com.itextpdf.text.Rectangle(image.getWidth(), image.getHeight()));
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
         document.open();
-
-        // Convert the BufferedImage to an iText Image
         com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(image, null);
-
-        // Add the image to the PDF
         document.add(pdfImage);
         document.close();
     }
