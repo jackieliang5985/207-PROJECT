@@ -6,6 +6,7 @@ import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 import interface_adapter.export_mind_map.ExportController;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,7 @@ public class MindMapView extends JPanel {
     private final ImageController imageController;
     private final ImagePostNoteController imagePostNoteController;
     private final ImagePostNoteViewModel imagePostNoteViewModel;
-    private List<ImagePostNoteViewModel> postNotes;  // List of post-notes (image post notes)
+    private List<ImagePostNoteViewModel> postNotes;  // List to store all post-notes
 
     public MindMapView(CardLayout cardLayout, Container cardPanel,
                        ImageController imageController,
@@ -80,14 +81,12 @@ public class MindMapView extends JPanel {
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    System.out.println("Right-click detected, showing popup menu...");
                     popupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
 
             public void mouseReleased(java.awt.event.MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    System.out.println("Right-click detected, showing popup menu...");
                     popupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
@@ -97,16 +96,12 @@ public class MindMapView extends JPanel {
         revalidate();
         repaint();
 
-        System.out.println("UI setup completed.");
-
         // Listen for property changes from the ImageViewModel
         imageViewModel.addPropertyChangeListener(evt -> {
             if ("images".equals(evt.getPropertyName())) {
                 List<ImageViewModel.ImageDisplayData> images = (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
-                System.out.println("Images received: " + images.size());
                 showImageSelectionDialog(images);
             } else if ("errorMessage".equals(evt.getPropertyName())) {
-                System.out.println("Error message: " + imageViewModel.getErrorMessage());
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
@@ -114,14 +109,10 @@ public class MindMapView extends JPanel {
 
     // Method to fetch images based on a query
     private void fetchAndAddImage() {
-        System.out.println("Fetching images based on query...");
         final String query = JOptionPane.showInputDialog(this, "Enter a search term for images:");
         if (query == null || query.isEmpty()) {
-            System.out.println("User canceled the query.");
             return; // User canceled
         }
-
-        System.out.println("Searching for images with query: " + query);
 
         // Create an instance of ImagePresenter
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
@@ -145,23 +136,18 @@ public class MindMapView extends JPanel {
                 Image image = ImageIO.read(imageUrl);  // Read the image using ImageIO
 
                 // Resize the image to a smaller size (e.g., 100x100)
-                Image resizedImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-
-                // Create an ImageIcon from the resized image
-                ImageIcon icon = new ImageIcon(resizedImage);
+                ImageIcon icon = new ImageIcon(image);
 
                 // Create a button with the resized image icon
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
                     dialog.dispose();  // Close the dialog
-
-                    // Set the dimensions of the image post note view model
                     imagePostNoteViewModel.setImageUrl(imageData.getUrl());
                     imagePostNoteViewModel.setX(50);  // Default X position
                     imagePostNoteViewModel.setY(50);  // Default Y position
+                    imagePostNoteViewModel.setWidth(image.getWidth(null));  // Set width to the image width
+                    imagePostNoteViewModel.setHeight(image.getHeight(null));  // Set height to the image height
                     imagePostNoteViewModel.setColor(Color.ORANGE);
-                    imagePostNoteViewModel.setWidth(resizedImage.getWidth(null));  // Set width based on resized image
-                    imagePostNoteViewModel.setHeight(resizedImage.getHeight(null));  // Set height based on resized image
 
                     // Add image post note via the controller
                     imagePostNoteController.addImagePostNote(imagePostNoteViewModel.getImageUrl(), imagePostNoteViewModel.getX(),
@@ -184,15 +170,27 @@ public class MindMapView extends JPanel {
         dialog.setVisible(true);
     }
 
-
     // Method to update and display post notes on the board
     public void updatePostNotes(ImagePostNoteViewModel postNoteViewModel) {
-        System.out.println("Updating post notes with new note: " + postNoteViewModel.getImageUrl());
-        this.postNotes.add(postNoteViewModel);  // Add the new post note to the list
-        System.out.println("Total post notes: " + postNotes.size());  // Debugging line to print number of post notes
-        revalidate();  // Revalidate the component to ensure the layout is updated
-        repaint();  // Repaint the panel to render the new post notes
+        // Create a new instance with the current properties
+        ImagePostNoteViewModel newPostNote = new ImagePostNoteViewModel();
+        newPostNote.setX(postNoteViewModel.getX());
+        newPostNote.setY(postNoteViewModel.getY());
+        newPostNote.setWidth(postNoteViewModel.getWidth());
+        newPostNote.setHeight(postNoteViewModel.getHeight());
+        newPostNote.setColor(postNoteViewModel.getColor());
+        newPostNote.setImageUrl(postNoteViewModel.getImageUrl());
+
+        // Add this new instance to the list
+        this.postNotes.add(newPostNote);
+
+        System.out.println("Adding post-note to list...");
+        System.out.println("Total post-notes: " + postNotes.size());
+        System.out.println("Current post-notes: " + postNotes);
+        revalidate();
+        repaint();
     }
+
 
     // Method to save the MindMap
     private void saveMindMap() {
@@ -212,49 +210,31 @@ public class MindMapView extends JPanel {
 
     // Overridden paintComponent to render the post-notes on the MindMap
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);  // Ensures the panel is cleared before painting
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
+        System.out.println("Repainting all post-notes...");
         if (postNotes != null && !postNotes.isEmpty()) {
             for (ImagePostNoteViewModel postNote : postNotes) {
-                // If postNote has an image, adjust the post-it note size to match the image's size + padding
+                System.out.println("Painting post-note: " + postNote);
+
+                // Paint logic here
+                g.setColor(postNote.getColor());
+                g.fillRect(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+
                 if (postNote.getImageUrl() != null && !postNote.getImageUrl().isEmpty()) {
                     try {
-                        // Load the image from the URL
                         Image image = ImageIO.read(new URL(postNote.getImageUrl()));
-
-                        // Get the original image dimensions
-                        int imageWidth = image.getWidth(null);
-                        int imageHeight = image.getHeight(null);
-
-                        // Increase the post-it note size by 10 pixels on each side of the image
-                        int postNoteWidth = imageWidth + 20;  // +10 on each side
-                        int postNoteHeight = imageHeight + 20;  // +10 on each side
-
-                        // Calculate the x and y offsets to center the image within the post-it note
-                        int xOffset = (postNoteWidth - imageWidth) / 2;
-                        int yOffset = (postNoteHeight - imageHeight) / 2;
-
-                        // Resize the image
-                        Image resizedImage = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
-
-                        // Draw the post-it note (a rectangle with border)
-                        g.setColor(postNote.getColor());  // Set the post-it note color
-                        g.fillRect(postNote.getX(), postNote.getY(), postNoteWidth, postNoteHeight);  // Adjusted width and height
-
-                        // Draw the border around the post-it note
-                        g.setColor(Color.BLACK);  // Border color
-                        g.drawRect(postNote.getX(), postNote.getY(), postNoteWidth, postNoteHeight);  // Draw border
-
-                        // Draw the resized image in the center of the post-it note
-                        g.drawImage(resizedImage, postNote.getX() + xOffset, postNote.getY() + yOffset, this);
+                        g.drawImage(image, postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight(), this);
+                        System.out.println("Image drawn for post-note: " + postNote.getImageUrl());
                     } catch (Exception e) {
-                        e.printStackTrace();  // Handle image loading errors
+                        e.printStackTrace();
                     }
                 }
             }
+        } else {
+            System.out.println("No post-notes to paint.");
         }
     }
 
 }
-
