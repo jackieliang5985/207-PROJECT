@@ -2,18 +2,14 @@ package app;
 
 import java.awt.CardLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
-import data_access.InMemoryImageDataAccessObject;
 import data_access.InMemoryPostNoteDAO;
 import data_access.InMemoryUserDataAccessObject;
-import data_access.UnsplashImageRepository;
 import entity.*;
 import interface_adapter.UnsplashImageInputBoundary;
 import interface_adapter.ViewManagerModel;
@@ -79,8 +75,10 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
-    Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the ...env file (default is root)
+
+    private final Dotenv dotenv = Dotenv.configure()
+            // Directory of the ..env file (default is root)
+            .directory(".")
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
@@ -196,51 +194,57 @@ public class AppBuilder {
      */
     public AppBuilder addMindMapView() {
         // Initialize the ImageViewModel and ImagePostNoteViewModel
-        ImageViewModel imageViewModel = new ImageViewModel();
-        ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
+        final ImageViewModel imageViewModel = new ImageViewModel();
+        final ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
 
         // Initialize the TextPostNoteViewModel
-        TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
+        final TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
 
         // Initialize ImagePresenter (uses ImageViewModel)
-        ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
         // Use UnsplashImageInputBoundary as ImageRepository and create ImageInteractor
-        ImageInteractor imageInteractor = new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
-        ImageController imageController = new ImageController(imageInteractor);
+        final ImageInteractor imageInteractor =
+                new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
+        final ImageController imageController = new ImageController(imageInteractor);
 
         // Initialize ExportController and related components
-        ExportState exportState = new ExportState();
-        ExportViewModel exportViewModel = new ExportViewModel(exportState);
-        ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
-        ExportController exportController = new ExportController(exportInteractor);
+        final ExportState exportState = new ExportState();
+        final ExportViewModel exportViewModel = new ExportViewModel(exportState);
+        final ExportInteractor exportInteractor = new ExportInteractor(exportViewModel);
+        final ExportController exportController = new ExportController(exportInteractor);
 
         // Create an empty list of PostNotes
-        ArrayList<PostNoteEntity> postNotes = new ArrayList<>();
+        final ArrayList<PostNoteEntity> postNotes = new ArrayList<>();
 
         // Initialize ImagePostNotePresenter (this is the output boundary)
-        ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel);
+        final ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel);
 
         // Initialize TextPostNotePresenter (this is the output boundary for TextPostNotes)
-        TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
+        final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDAO postNoteDAO =
+                new InMemoryPostNoteDAO();
 
         // Initialize MindMapEntity
-        MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);  // You can change the title as needed
-
+        // Change the title as needed
+        final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
         // Initialize the ImagePostNoteInteractor with the presenter, DAO, and MindMapEntity
-        ImagePostNoteInteractor imagePostNoteInteractor = new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
+        final ImagePostNoteInteractor imagePostNoteInteractor =
+                new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
 
         // Initialize the TextPostNoteInteractor with the presenter, DAO, and MindMapEntity
-        TextPostNoteInteractor textPostNoteInteractor = new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
+        final TextPostNoteInteractor textPostNoteInteractor =
+                new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
 
         // Initialize the ImagePostNoteController, passing the interactor and view model
-        ImagePostNoteController imagePostNoteController = new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
+        final ImagePostNoteController imagePostNoteController =
+                new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
 
         // Initialize the TextPostNoteController, passing the interactor and view model
-        TextPostNoteController textPostNoteController = new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
+        final TextPostNoteController textPostNoteController =
+                new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
 
         // Initialize MindMapView and pass both controllers
         final MindMapView mindMapView = new MindMapView(
@@ -255,10 +259,6 @@ public class AppBuilder {
 
         return this;
     }
-
-
-
-
 
     /**
      * Switches to display the MindMap view.

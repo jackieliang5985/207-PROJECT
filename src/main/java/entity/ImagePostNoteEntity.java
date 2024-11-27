@@ -1,12 +1,11 @@
 package entity;
 
-import java.awt.*;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
 
 public class ImagePostNoteEntity extends PostNoteEntity {
-    private String imageUrl;  // Field for the image URL
+    private String imageUrl;
 
     // Constructor for the ImagePostNoteEntity
     public ImagePostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap, String imageUrl) {
@@ -37,9 +36,10 @@ public class ImagePostNoteEntity extends PostNoteEntity {
     public ImageIcon getImageIcon() {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             try {
-                ImageIcon imageIcon = new ImageIcon(new URL(imageUrl));
+                final ImageIcon imageIcon = new ImageIcon(new URL(imageUrl));
                 return imageIcon;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
