@@ -29,6 +29,11 @@ import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
 
+/**
+ * The MindMapView class represents the main visual component of the Mind Map application.
+ * It manages and displays post-notes, both image and text, and provides functionalities like
+ * drag-and-drop, right-click menus, and interaction with external controllers.
+ */
 public class MindMapView extends JPanel {
     public static final String VIEW_NAME = "MINDMAP";
 
@@ -61,6 +66,7 @@ public class MindMapView extends JPanel {
     private static final int FONT_STYLE = Font.BOLD;
     private static final int FONT_SIZE = 15;
     private static final Font LABEL_FONT = new Font(FONT_NAME, FONT_STYLE, FONT_SIZE);
+    private static final String SPACE = " ";
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
@@ -72,19 +78,26 @@ public class MindMapView extends JPanel {
     private final ImagePostNoteViewModel imagePostNoteViewModel;
     private final TextPostNoteViewModel textPostNoteViewModel;
 
-    // List to store all image post-notes
     private List<ImagePostNoteViewModel> imagePostNotes;
-    // List to store all text post-notes
     private List<TextPostNoteViewModel> textPostNotes;
-
-    // Currently dragged image post note
     private ImagePostNoteViewModel draggedImagePostNote;
-    // Currently dragged text post note
     private TextPostNoteViewModel draggedTextPostNote;
-    // Offset for dragging position
     private Point dragOffset;
     private Point lastClickLocation;
 
+    /**
+     * Constructor for the MindMapView class.
+     *
+     * @param cardLayout                 The CardLayout for managing views.
+     * @param cardPanel                  The parent container for switching views.
+     * @param imageController            The controller for image-related actions.
+     * @param imageViewModel             The view model for image data.
+     * @param imagePostNoteViewModel     The view model for image post-notes.
+     * @param textPostNoteViewModel      The view model for text post-notes.
+     * @param exportController           The controller for exporting the mind map.
+     * @param imagePostNoteController    The controller for managing image post-notes.
+     * @param textPostNoteController     The controller for managing text post-notes.
+     */
     public MindMapView(CardLayout cardLayout, Container cardPanel,
                        ImageController imageController,
                        ImageViewModel imageViewModel,
@@ -104,16 +117,17 @@ public class MindMapView extends JPanel {
         this.imagePostNoteViewModel = imagePostNoteViewModel;
         this.textPostNoteViewModel = textPostNoteViewModel;
 
-        // Initialize postNotes as an empty list
         this.imagePostNotes = new ArrayList<>();
         this.textPostNotes = new ArrayList<>();
 
         setupUI();
-
-        // Add drag functionality
         setupDragFunctionality();
     }
 
+    /**
+     * Sets up the UI components for the Mind Map View, including the title label
+     * and the context menu for adding notes and managing the view.
+     */
     private void setupUI() {
         setLayout(null);
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -126,7 +140,6 @@ public class MindMapView extends JPanel {
         titleLabel.setBounds(ZERO, ZERO, getWidth(), TITLE_LABEL_HEIGHT);
         add(titleLabel);
 
-        // Set up right-click context menu
         final JPopupMenu popupMenu = new JPopupMenu();
 
         final JMenuItem addImageMenuItem = new JMenuItem("Add Image Post It");
@@ -168,7 +181,8 @@ public class MindMapView extends JPanel {
 
         imageViewModel.addPropertyChangeListener(evt -> {
             if ("images".equals(evt.getPropertyName())) {
-                final List<ImageViewModel.ImageDisplayData> images = (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
+                final List<ImageViewModel.ImageDisplayData> images =
+                        (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
                 showImageSelectionDialog(images, lastClickLocation);
             }
             else if ("errorMessage".equals(evt.getPropertyName())) {
@@ -177,8 +191,11 @@ public class MindMapView extends JPanel {
         });
     }
 
+    /**
+     * Configures the drag functionality for both image and text post-notes.
+     * Handles mouse events for initiating and stopping the drag actions.
+     */
     private void setupDragFunctionality() {
-        // Add mouse listeners for dragging behavior for both image and text post-notes
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -207,7 +224,6 @@ public class MindMapView extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // Reset dragging state
                 draggedImagePostNote = null;
                 draggedTextPostNote = null;
             }
@@ -231,6 +247,13 @@ public class MindMapView extends JPanel {
         });
     }
 
+    /**
+     * Checks if the point is within the bounds of the image post note.
+     *
+     * @param postNote The image post note to check against.
+     * @param point The point to check if it lies within the post note's bounds.
+     * @return True if the point is within the bounds of the image post note, otherwise false.
+     */
     private boolean isWithinBounds(ImagePostNoteViewModel postNote, Point point) {
         return point.x >= postNote.getX()
                 && point.x <= postNote.getX() + postNote.getWidth()
@@ -238,6 +261,13 @@ public class MindMapView extends JPanel {
                 && point.y <= postNote.getY() + postNote.getHeight();
     }
 
+    /**
+     * Checks if the point is within the bounds of the text post note.
+     *
+     * @param postNote The text post note to check against.
+     * @param point The point to check if it lies within the post note's bounds.
+     * @return True if the point is within the bounds of the text post note, otherwise false.
+     */
     private boolean isWithinBounds(TextPostNoteViewModel postNote, Point point) {
         return point.x >= postNote.getX()
                 && point.x <= postNote.getX() + postNote.getWidth()
@@ -245,59 +275,56 @@ public class MindMapView extends JPanel {
                 && point.y <= postNote.getY() + postNote.getHeight();
     }
 
+    /**
+     * Fetches and adds an image to the mind map based on a search query.
+     * Displays a dialog for the user to choose an image.
+     *
+     * @param location The location where the image post note should be placed.
+     */
     private void fetchAndAddImage(Point location) {
         final String query = JOptionPane.showInputDialog(this, "Enter a search term for images:");
         if (query == null || query.isEmpty()) {
             return;
         }
 
-        // Save the click location to use it later
         lastClickLocation = location;
 
         final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-        // Trigger fetching images
         imageController.fetchImages(query, imagePresenter);
     }
 
+    /**
+     * Displays a dialog for the user to select an image from a list of available images.
+     *
+     * @param imageDisplayDataList List of images fetched from the search.
+     * @param location The location where the image post note should be placed.
+     */
     private void showImageSelectionDialog(List<ImageViewModel.ImageDisplayData> imageDisplayDataList, Point location) {
         final JDialog dialog = new JDialog((Frame) null, "Select an Image", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setLayout(new BorderLayout());
 
         final JPanel imagePanel = new JPanel();
-        // Layout with 3 columns
         imagePanel.setLayout(new GridLayout(ZERO, GRID_LAYOUT_COLUMNS, GRID_LAYOUT_HGAP, GRID_LAYOUT_VGAP));
 
         for (ImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
             try {
-                // Fetch the image from the URL
                 final URL imageUrl = new URL(imageData.getUrl());
                 final Image image = ImageIO.read(imageUrl);
 
-                // Resize the icon for the button
-                final int iconWidth = ICON_WIDTH;
-                final int iconHeight = ICON_HEIGHT;
-                final Image resizedIcon = image.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
-
-                // Create an ImageIcon with the resized image for the button
+                final Image resizedIcon = image.getScaledInstance(ICON_WIDTH, ICON_HEIGHT, Image.SCALE_SMOOTH);
                 final ImageIcon icon = new ImageIcon(resizedIcon);
 
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
                     dialog.dispose();
 
-                    // Set the original image size for the post note at the clicked location
                     imagePostNoteViewModel.setImageUrl(imageData.getUrl());
-
-                    // Click Positions
                     imagePostNoteViewModel.setX(location.x);
                     imagePostNoteViewModel.setY(location.y);
-
-                    // Reszing OG image
                     imagePostNoteViewModel.setWidth(image.getWidth(null) - IMAGE_POST_NOTE_RESIZE_OFFSET);
                     imagePostNoteViewModel.setHeight(image.getHeight(null) - IMAGE_POST_NOTE_RESIZE_OFFSET);
-                    imagePostNoteViewModel.setColor(Color.ORANGE);
+                    imagePostNoteViewModel.setColor(DEFAULT_IMAGE_NOTE_COLOR);
 
-                    // Add image post note via the controller
                     imagePostNoteController.addImagePostNote(
                             imagePostNoteViewModel.getImageUrl(),
                             imagePostNoteViewModel.getX(),
@@ -307,7 +334,6 @@ public class MindMapView extends JPanel {
                             imagePostNoteViewModel.getColor()
                     );
 
-                    // Once the post note is added, update the MindMapView
                     updateImagePostNotes(imagePostNoteViewModel);
                 });
                 imagePanel.add(imageButton);
@@ -323,25 +349,24 @@ public class MindMapView extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Fetches and adds a text post-it note to the mind map.
+     *
+     * @param location The location where the text post note should be placed.
+     */
     private void fetchAndAddText(Point location) {
         final String text = JOptionPane.showInputDialog(this, "Enter text for the post-it:");
         if (text == null || text.isEmpty()) {
             return;
         }
 
-        // Set default values for the text post-it note at the clicked location
         textPostNoteViewModel.setText(text);
-
-        // Using Click location
         textPostNoteViewModel.setX(location.x);
         textPostNoteViewModel.setY(location.y);
-
-        // Default parameters.
         textPostNoteViewModel.setWidth(DEFAULT_TEXT_NOTE_WIDTH);
         textPostNoteViewModel.setHeight(DEFAULT_TEXT_NOTE_HEIGHT);
-        textPostNoteViewModel.setColor(Color.YELLOW);
+        textPostNoteViewModel.setColor(DEFAULT_TEXT_NOTE_COLOR);
 
-        // Add text post note via the controller
         textPostNoteController.addTextPostNote(
                 textPostNoteViewModel.getText(),
                 textPostNoteViewModel.getX(),
@@ -351,10 +376,14 @@ public class MindMapView extends JPanel {
                 textPostNoteViewModel.getColor()
         );
 
-        // Once the post note is added, update the MindMapView
         updateTextPostNotes(textPostNoteViewModel);
     }
 
+    /**
+     * Updates the image post-notes in the mind map view by adding a new image post-note.
+     *
+     * @param postNoteViewModel The image post-note view model to add.
+     */
     public void updateImagePostNotes(ImagePostNoteViewModel postNoteViewModel) {
         final ImagePostNoteViewModel newPostNote = new ImagePostNoteViewModel();
         newPostNote.setX(postNoteViewModel.getX());
@@ -365,10 +394,14 @@ public class MindMapView extends JPanel {
         newPostNote.setImageUrl(postNoteViewModel.getImageUrl());
 
         this.imagePostNotes.add(newPostNote);
-
         repaint();
     }
 
+    /**
+     * Updates the text post-notes in the mind map view by adding a new text post-note.
+     *
+     * @param postNoteViewModel The text post-note view model to add.
+     */
     public void updateTextPostNotes(TextPostNoteViewModel postNoteViewModel) {
         final TextPostNoteViewModel newPostNote = new TextPostNoteViewModel();
         newPostNote.setX(postNoteViewModel.getX());
@@ -379,10 +412,12 @@ public class MindMapView extends JPanel {
         newPostNote.setText(postNoteViewModel.getText());
 
         this.textPostNotes.add(newPostNote);
-
         repaint();
     }
 
+    /**
+     * Saves the current mind map to an external file.
+     */
     private void saveMindMap() {
         try {
             exportController.handleExportCommand(this, "MindMap");
@@ -393,11 +428,19 @@ public class MindMapView extends JPanel {
         }
     }
 
+    /**
+     * Logs out the user and navigates back to the login page.
+     */
     private void logout() {
         JOptionPane.showMessageDialog(this, "You have been logged out. Returning to the Login page");
         cardLayout.show(cardPanel, "CreateNewMindMapView");
     }
 
+    /**
+     * Paints the components on the panel.
+     *
+     * @param g The Graphics object used for painting.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -447,22 +490,27 @@ public class MindMapView extends JPanel {
 
     /**
      * Wraps text to fit within the specified width.
+     *
+     * @param text The text to wrap.
+     * @param fm The FontMetrics used to measure the width.
+     * @param maxWidth The maximum allowed width.
+     * @return An array of lines that fit within the width.
      */
     private String[] wrapText(String text, FontMetrics fm, int maxWidth) {
         final List<String> lines = new ArrayList<>();
-        final String[] words = text.split(" ");
+        final String[] words = text.split(SPACE);
 
         StringBuilder currentLine = new StringBuilder();
 
         for (String word : words) {
             // Check if adding the word exceeds the max width
             if (fm.stringWidth(currentLine.toString() + word) <= maxWidth) {
-                currentLine.append(word).append(" ");
+                currentLine.append(word).append(SPACE);
             }
             else {
                 // If the line exceeds the width, add the current line and start a new one
                 lines.add(currentLine.toString().trim());
-                currentLine = new StringBuilder(word + " ");
+                currentLine = new StringBuilder(word + SPACE);
             }
         }
 
@@ -473,5 +521,4 @@ public class MindMapView extends JPanel {
 
         return lines.toArray(new String[ZERO]);
     }
-
 }
