@@ -80,6 +80,7 @@ public class MindMapView extends JPanel {
     private TextPostNoteViewModel draggedTextPostNote;
     private Point dragOffset;
     private Point lastClickLocation;
+    private Point rightClickLocation = null;
 
     /**
      * Constructor for the MindMapView class.
@@ -147,6 +148,16 @@ public class MindMapView extends JPanel {
         final JMenuItem logoutMenuItem = new JMenuItem("Logout");
         JMenuItem deleteMenuItem = new JMenuItem("Delete Post It");
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    rightClickLocation = e.getPoint(); // Store the point of the right-click
+                    System.out.println("Right-click location stored: " + rightClickLocation);
+                }
+            }
+        });
+
         addTextMenuItem.addActionListener(e -> {
             final Point clickLocation = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(clickLocation, this);
@@ -166,7 +177,7 @@ public class MindMapView extends JPanel {
             final Point clickLocation = MouseInfo.getPointerInfo().getLocation();
             SwingUtilities.convertPointFromScreen(clickLocation, this);
             System.out.println("this is the click location" + clickLocation);
-            deletePostNoteAtLocation(clickLocation);  // Call the deletion logic
+            deletePostNoteAtLocation(rightClickLocation);  // Call the deletion logic
 
         });
 
