@@ -80,7 +80,7 @@ public class AppBuilder {
     private LoadedInView loadedInView;
     private MindMapLoadingView mindMapLoadingView;
     Dotenv dotenv = Dotenv.configure()
-            .directory(".") // Directory of the ..env file (default is root)
+            .directory(".") // Directory of the ...env file (default is root)
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
