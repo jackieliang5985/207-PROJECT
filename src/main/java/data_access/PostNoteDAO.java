@@ -10,4 +10,7 @@ public interface PostNoteDAO {
 
     // Get all post notes
     List<PostNoteEntity> getAllPostNotes();
+
+    void deletePostNote(PostNoteEntity postNote);
+
 }

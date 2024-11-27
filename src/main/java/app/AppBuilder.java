@@ -25,6 +25,8 @@ import interface_adapter.change_password.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
+import interface_adapter.delete_note.DeletePostNoteController;
+import interface_adapter.delete_note.DeletePostNotePresenter;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
@@ -43,6 +45,7 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
+import use_case.delete_note.DeletePostNoteInteractor;
 import use_case.export_mind_map.ExportInteractor;
 import use_case.image.ImageInteractor;
 import use_case.loading.LoadingInputBoundary;
@@ -246,18 +249,27 @@ public class AppBuilder {
         final TextPostNoteController textPostNoteController =
                 new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
 
-        // Initialize MindMapView and pass both controllers
+        // Initialize DeletePostNoteInteractor (passing output boundary, DAO, and MindMapEntity)
+        final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter();  // Assuming a simple presenter implementation
+        final DeletePostNoteInteractor deletePostNoteInteractor =
+                new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
+
+        // Initialize the DeletePostNoteController
+        final DeletePostNoteController deletePostNoteController =
+                new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
+
+        // Initialize MindMapView and pass all the controllers including DeletePostNoteController
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
-                exportController, imagePostNoteController, textPostNoteController
+                exportController, imagePostNoteController, textPostNoteController,
+                deletePostNoteController // Pass the delete controller here
         );
 
-        // Add the MindMapView to the cardPanel
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 
-        return this;
+        return this;  // Return the builder for method chaining
     }
 
     /**
