@@ -19,9 +19,14 @@ public class ImageInteractor implements ImageInputBoundary {
         // Fetch images using the repository (now returns CommonImage)
         List<CommonImage> commonImages = imageRepository.fetchImages(query);
 
-        // Pass the CommonImage objects to the presenter
-        imagePresenter.presentImages(commonImages);
+        // If no images are found, show an error message
+        if (commonImages.isEmpty()) {
+            imagePresenter.presentError("Invalid Search: No results found.");
+        } else {
+            // Pass the CommonImage objects to the presenter
+            imagePresenter.presentImages(commonImages);
+        }
 
-        return commonImages;  // Return the CommonImage list
+        return commonImages;  // Return the CommonImage list (this could be empty)
     }
 }

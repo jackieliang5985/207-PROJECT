@@ -166,26 +166,37 @@ public class MindMapView extends JPanel {
 
         for (ImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
             try {
+                // Fetch the image from the URL
                 URL imageUrl = new URL(imageData.getUrl());
                 Image image = ImageIO.read(imageUrl);
 
-                ImageIcon icon = new ImageIcon(image);
+                // Resize the icon for the button
+                int iconWidth = 100;  // desired width for icon
+                int iconHeight = 100; // desired height for icon
+                Image resizedIcon = image.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+
+                // Create an ImageIcon with the resized image for the button
+                ImageIcon icon = new ImageIcon(resizedIcon);
 
                 final JButton imageButton = new JButton(icon);
                 imageButton.addActionListener(evt -> {
-                    dialog.dispose(); // Close dialog
+                    dialog.dispose(); // Close the dialog
+
+                    // Set the original image size for the post note
                     imagePostNoteViewModel.setImageUrl(imageData.getUrl());
-                    imagePostNoteViewModel.setX(50);
-                    imagePostNoteViewModel.setY(50);
-                    imagePostNoteViewModel.setWidth(image.getWidth(null));
-                    imagePostNoteViewModel.setHeight(image.getHeight(null));
+                    imagePostNoteViewModel.setX(50); // Default X position
+                    imagePostNoteViewModel.setY(50); // Default Y position
+                    imagePostNoteViewModel.setWidth(image.getWidth(null)-100); // Use original image width
+                    imagePostNoteViewModel.setHeight(image.getHeight(null)-100); // Use original image height
                     imagePostNoteViewModel.setColor(Color.ORANGE);
 
+                    // Add image post note via the controller
                     imagePostNoteController.addImagePostNote(imagePostNoteViewModel.getImageUrl(), imagePostNoteViewModel.getX(),
                             imagePostNoteViewModel.getY(), imagePostNoteViewModel.getWidth(), imagePostNoteViewModel.getHeight(),
                             imagePostNoteViewModel.getColor());
 
-                    updatePostNotes(imagePostNoteViewModel);
+                    // Once the post note is added, update the MindMapView
+                    updatePostNotes(imagePostNoteViewModel);  // This will repaint the board with the new image
                 });
                 imagePanel.add(imageButton);
             } catch (Exception e) {
