@@ -117,6 +117,7 @@ public class MindMapView extends JPanel {
         this.imagePostNoteViewModel = imagePostNoteViewModel;
         this.textPostNoteViewModel = textPostNoteViewModel;
 
+        // Initialize postNotes as an empty list
         this.imagePostNotes = new ArrayList<>();
         this.textPostNotes = new ArrayList<>();
 
@@ -162,6 +163,7 @@ public class MindMapView extends JPanel {
         saveMenuItem.addActionListener(e -> saveMindMap());
         logoutMenuItem.addActionListener(e -> logout());
 
+        // Add the menu items to the popup menu
         popupMenu.add(addImageMenuItem);
         popupMenu.add(addTextMenuItem);
         popupMenu.add(saveMenuItem);
@@ -196,6 +198,7 @@ public class MindMapView extends JPanel {
      * Handles mouse events for initiating and stopping the drag actions.
      */
     private void setupDragFunctionality() {
+        // Add mouse listeners for dragging behavior for both image and text post-notes
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -367,6 +370,7 @@ public class MindMapView extends JPanel {
         textPostNoteViewModel.setHeight(DEFAULT_TEXT_NOTE_HEIGHT);
         textPostNoteViewModel.setColor(DEFAULT_TEXT_NOTE_COLOR);
 
+        // Add text post note via the controller
         textPostNoteController.addTextPostNote(
                 textPostNoteViewModel.getText(),
                 textPostNoteViewModel.getX(),
@@ -376,6 +380,7 @@ public class MindMapView extends JPanel {
                 textPostNoteViewModel.getColor()
         );
 
+        // Once the post note is added, update the MindMapView
         updateTextPostNotes(textPostNoteViewModel);
     }
 
@@ -394,6 +399,7 @@ public class MindMapView extends JPanel {
         newPostNote.setImageUrl(postNoteViewModel.getImageUrl());
 
         this.imagePostNotes.add(newPostNote);
+
         repaint();
     }
 
@@ -415,22 +421,15 @@ public class MindMapView extends JPanel {
         repaint();
     }
 
-    /**
-     * Saves the current mind map to an external file.
-     */
     private void saveMindMap() {
         try {
             exportController.handleExportCommand(this, "MindMap");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error saving Mind Map: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    /**
-     * Logs out the user and navigates back to the login page.
-     */
     private void logout() {
         JOptionPane.showMessageDialog(this, "You have been logged out. Returning to the Login page");
         cardLayout.show(cardPanel, "CreateNewMindMapView");
@@ -464,6 +463,7 @@ public class MindMapView extends JPanel {
             }
         }
 
+        // Paint text post-notes
         if (textPostNotes != null && !textPostNotes.isEmpty()) {
             for (TextPostNoteViewModel postNote : textPostNotes) {
                 g.setColor(postNote.getColor());
@@ -521,4 +521,47 @@ public class MindMapView extends JPanel {
 
         return lines.toArray(new String[ZERO]);
     }
+
+    private void saveMindMap() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Mind Map");
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+
+        // Show the file chooser and wait for user selection
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        // If the user selects a file to save
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            // Get the selected file
+            File fileToSave = fileChooser.getSelectedFile();
+
+            // Get the selected file format (from the file filter)
+            String fileFormat = getFileFormat(fileChooser);
+
+            // Make sure the selected file has the appropriate extension
+            if (!fileToSave.getName().toLowerCase().endsWith("." + fileFormat)) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + "." + fileFormat);
+            }
+
+            // Create a BufferedImage of the boardPanel (or any renderable content)
+            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = image.createGraphics();
+            this.paint(g2d); // Render the boardPanel to the image
+            g2d.dispose(); // Dispose of the graphics context
+
+            // Pass the image, file, and format to the ExportController to handle the export
+            exportController.execute(image, fileToSave, fileFormat);
+        }
+    }
+
+    private String getFileFormat(JFileChooser fileChooser) {
+        String description = fileChooser.getFileFilter().getDescription();
+        if (description.contains("PNG")) return "png";
+        if (description.contains("JPEG")) return "jpg";
+        if (description.contains("PDF")) return "pdf";
+        return "";
+    }
+
 }
