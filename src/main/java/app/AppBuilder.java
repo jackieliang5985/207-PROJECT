@@ -20,6 +20,9 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNotePresenter;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
+import interface_adapter.add_Text_PostNote.TextPostNoteController;
+import interface_adapter.add_Text_PostNote.TextPostNotePresenter;
+import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import interface_adapter.change_password.ChangePasswordController;
 import interface_adapter.change_password.ChangePasswordPresenter;
 import interface_adapter.change_password.LoggedInViewModel;
@@ -37,6 +40,7 @@ import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import io.github.cdimascio.dotenv.Dotenv;
 import use_case.add_Image_PostNote.ImagePostNoteInteractor;
+import use_case.add_Text_PostNote.TextPostNoteInteractor;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -195,6 +199,9 @@ public class AppBuilder {
         ImageViewModel imageViewModel = new ImageViewModel();
         ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
 
+        // Initialize the TextPostNoteViewModel
+        TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
+
         // Initialize ImagePresenter (uses ImageViewModel)
         ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
 
@@ -214,27 +221,42 @@ public class AppBuilder {
         // Initialize ImagePostNotePresenter (this is the output boundary)
         ImagePostNotePresenter imagePostNotePresenter = new ImagePostNotePresenter(imagePostNoteViewModel);
 
+        // Initialize TextPostNotePresenter (this is the output boundary for TextPostNotes)
+        TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
+
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
         InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
 
         // Initialize MindMapEntity
         MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);  // You can change the title as needed
 
-        // Initialize the ImagePostNoteInteractor with both the presenter, DAO, and MindMapEntity
+        // Initialize the ImagePostNoteInteractor with the presenter, DAO, and MindMapEntity
         ImagePostNoteInteractor imagePostNoteInteractor = new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
 
-        // Initialize the ImagePostNoteController, passing the interactor, the view model, and the MindMapView
+        // Initialize the TextPostNoteInteractor with the presenter, DAO, and MindMapEntity
+        TextPostNoteInteractor textPostNoteInteractor = new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
+
+        // Initialize the ImagePostNoteController, passing the interactor and view model
         ImagePostNoteController imagePostNoteController = new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
 
-        // Initialize MindMapView and pass the controller
-        final MindMapView mindMapView = new MindMapView(cardLayout, cardPanel, imageController,
-                imageViewModel, imagePostNoteViewModel, exportController, imagePostNoteController);
+        // Initialize the TextPostNoteController, passing the interactor and view model
+        TextPostNoteController textPostNoteController = new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
+
+        // Initialize MindMapView and pass both controllers
+        final MindMapView mindMapView = new MindMapView(
+                cardLayout, cardPanel,
+                imageController, imageViewModel,
+                imagePostNoteViewModel, textPostNoteViewModel,
+                exportController, imagePostNoteController, textPostNoteController
+        );
 
         // Add the MindMapView to the cardPanel
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 
         return this;
     }
+
+
 
 
 
