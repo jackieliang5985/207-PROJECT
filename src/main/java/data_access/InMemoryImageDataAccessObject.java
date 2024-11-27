@@ -1,11 +1,14 @@
 package data_access;
 
+import interface_adapter.image.ImageRepository;
+import entity.CommonImage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemoryImageDataAccessObject {
+public class InMemoryImageDataAccessObject implements ImageRepository {
     private final Map<String, SimpleImage> images = new HashMap<>();
 
     // Save a SimpleImage
@@ -31,5 +34,18 @@ public class InMemoryImageDataAccessObject {
     // Check if a SimpleImage exists by ID
     public boolean existsById(String id) {
         return images.containsKey(id);
+    }
+
+    // Implementing the method from ImageRepository to fetch images
+    @Override
+    public List<CommonImage> fetchImages(String query) throws Exception {
+        // Assuming we are just searching by description in this mockup
+        List<CommonImage> result = new ArrayList<>();
+        for (SimpleImage simpleImage : images.values()) {
+            if (simpleImage.getDescription().toLowerCase().contains(query.toLowerCase())) {
+                result.add(new CommonImage(simpleImage.getUrl(), simpleImage.getDescription(), simpleImage.getId()));
+            }
+        }
+        return result;
     }
 }
