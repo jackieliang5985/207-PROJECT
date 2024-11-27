@@ -2,6 +2,8 @@ package view;
 
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
+import interface_adapter.add_Text_PostNote.TextPostNoteController;
+import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
@@ -24,18 +26,25 @@ public class MindMapView extends JPanel {
     private final ExportController exportController;
     private final ImageController imageController;
     private final ImagePostNoteController imagePostNoteController;
+    private final TextPostNoteController textPostNoteController;
     private final ImagePostNoteViewModel imagePostNoteViewModel;
-    private List<ImagePostNoteViewModel> postNotes; // List to store all post-notes
+    private final TextPostNoteViewModel textPostNoteViewModel;
 
-    private ImagePostNoteViewModel draggedPostNote; // Currently dragged post note
+    private List<ImagePostNoteViewModel> imagePostNotes;  // List to store all image post-notes
+    private List<TextPostNoteViewModel> textPostNotes;  // List to store all text post-notes
+
+    private ImagePostNoteViewModel draggedImagePostNote; // Currently dragged image post note
+    private TextPostNoteViewModel draggedTextPostNote;  // Currently dragged text post note
     private Point dragOffset; // Offset for dragging position
 
     public MindMapView(CardLayout cardLayout, Container cardPanel,
                        ImageController imageController,
                        ImageViewModel imageViewModel,
                        ImagePostNoteViewModel imagePostNoteViewModel,
+                       TextPostNoteViewModel textPostNoteViewModel,
                        ExportController exportController,
-                       ImagePostNoteController imagePostNoteController) {
+                       ImagePostNoteController imagePostNoteController,
+                       TextPostNoteController textPostNoteController) {
 
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -43,10 +52,13 @@ public class MindMapView extends JPanel {
         this.imageViewModel = imageViewModel;
         this.exportController = exportController;
         this.imagePostNoteController = imagePostNoteController;
+        this.textPostNoteController = textPostNoteController;
         this.imagePostNoteViewModel = imagePostNoteViewModel;
+        this.textPostNoteViewModel = textPostNoteViewModel;
 
         // Initialize postNotes as an empty list
-        this.postNotes = new ArrayList<>();
+        this.imagePostNotes = new ArrayList<>();
+        this.textPostNotes = new ArrayList<>();
 
         setupUI();
         setupDragFunctionality(); // Add drag functionality
@@ -69,16 +81,19 @@ public class MindMapView extends JPanel {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem addImageMenuItem = new JMenuItem("Add Image Post It");
+        JMenuItem addTextMenuItem = new JMenuItem("Add Text Post It");
         JMenuItem saveMenuItem = new JMenuItem("Save");
         JMenuItem logoutMenuItem = new JMenuItem("Logout");
 
         // Add action listeners for each item
         addImageMenuItem.addActionListener(e -> fetchAndAddImage());
+        addTextMenuItem.addActionListener(e -> fetchAndAddText());
         saveMenuItem.addActionListener(e -> saveMindMap());
         logoutMenuItem.addActionListener(e -> logout());
 
         // Add the menu items to the popup menu
         popupMenu.add(addImageMenuItem);
+        popupMenu.add(addTextMenuItem);
         popupMenu.add(saveMenuItem);
         popupMenu.add(logoutMenuItem);
 
@@ -106,13 +121,24 @@ public class MindMapView extends JPanel {
     }
 
     private void setupDragFunctionality() {
-        // Add mouse listeners for dragging behavior
+        // Add mouse listeners for dragging behavior for both image and text post-notes
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                for (ImagePostNoteViewModel postNote : postNotes) {
+                for (ImagePostNoteViewModel postNote : imagePostNotes) {
                     if (isWithinBounds(postNote, e.getPoint())) {
-                        draggedPostNote = postNote;
+                        draggedImagePostNote = postNote;
+                        dragOffset = new Point(
+                                e.getX() - postNote.getX(),
+                                e.getY() - postNote.getY()
+                        );
+                        break;
+                    }
+                }
+
+                for (TextPostNoteViewModel postNote : textPostNotes) {
+                    if (isWithinBounds(postNote, e.getPoint())) {
+                        draggedTextPostNote = postNote;
                         dragOffset = new Point(
                                 e.getX() - postNote.getX(),
                                 e.getY() - postNote.getY()
@@ -124,16 +150,23 @@ public class MindMapView extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                draggedPostNote = null; // Reset dragging state
+                draggedImagePostNote = null;  // Reset dragging state
+                draggedTextPostNote = null;   // Reset dragging state
             }
         });
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (draggedPostNote != null) {
-                    draggedPostNote.setX(e.getX() - dragOffset.x);
-                    draggedPostNote.setY(e.getY() - dragOffset.y);
+                if (draggedImagePostNote != null) {
+                    draggedImagePostNote.setX(e.getX() - dragOffset.x);
+                    draggedImagePostNote.setY(e.getY() - dragOffset.y);
+                    repaint();
+                }
+
+                if (draggedTextPostNote != null) {
+                    draggedTextPostNote.setX(e.getX() - dragOffset.x);
+                    draggedTextPostNote.setY(e.getY() - dragOffset.y);
                     repaint();
                 }
             }
@@ -141,6 +174,13 @@ public class MindMapView extends JPanel {
     }
 
     private boolean isWithinBounds(ImagePostNoteViewModel postNote, Point point) {
+        return point.x >= postNote.getX()
+                && point.x <= postNote.getX() + postNote.getWidth()
+                && point.y >= postNote.getY()
+                && point.y <= postNote.getY() + postNote.getHeight();
+    }
+
+    private boolean isWithinBounds(TextPostNoteViewModel postNote, Point point) {
         return point.x >= postNote.getX()
                 && point.x <= postNote.getX() + postNote.getWidth()
                 && point.y >= postNote.getY()
@@ -196,7 +236,7 @@ public class MindMapView extends JPanel {
                             imagePostNoteViewModel.getColor());
 
                     // Once the post note is added, update the MindMapView
-                    updatePostNotes(imagePostNoteViewModel);  // This will repaint the board with the new image
+                    updateImagePostNotes(imagePostNoteViewModel);  // This will repaint the board with the new image
                 });
                 imagePanel.add(imageButton);
             } catch (Exception e) {
@@ -210,7 +250,35 @@ public class MindMapView extends JPanel {
         dialog.setVisible(true);
     }
 
-    public void updatePostNotes(ImagePostNoteViewModel postNoteViewModel) {
+    private void fetchAndAddText() {
+        final String text = JOptionPane.showInputDialog(this, "Enter text for the post-it:");
+        if (text == null || text.isEmpty()) {
+            return; // User canceled or left empty
+        }
+
+        // Set default values for text post-it note
+        textPostNoteViewModel.setText(text);
+        textPostNoteViewModel.setX(50); // Default X position
+        textPostNoteViewModel.setY(50); // Default Y position
+        textPostNoteViewModel.setWidth(150); // Default width
+        textPostNoteViewModel.setHeight(100); // Default height
+        textPostNoteViewModel.setColor(Color.YELLOW); // Default color
+
+        // Add text post note via the controller
+        textPostNoteController.addTextPostNote(
+                textPostNoteViewModel.getText(),
+                textPostNoteViewModel.getX(),
+                textPostNoteViewModel.getY(),
+                textPostNoteViewModel.getWidth(),
+                textPostNoteViewModel.getHeight(),
+                textPostNoteViewModel.getColor()
+        );
+
+        // Once the post note is added, update the MindMapView
+        updateTextPostNotes(textPostNoteViewModel);
+    }
+
+    public void updateImagePostNotes(ImagePostNoteViewModel postNoteViewModel) {
         ImagePostNoteViewModel newPostNote = new ImagePostNoteViewModel();
         newPostNote.setX(postNoteViewModel.getX());
         newPostNote.setY(postNoteViewModel.getY());
@@ -219,10 +287,22 @@ public class MindMapView extends JPanel {
         newPostNote.setColor(postNoteViewModel.getColor());
         newPostNote.setImageUrl(postNoteViewModel.getImageUrl());
 
-        this.postNotes.add(newPostNote);
+        this.imagePostNotes.add(newPostNote);
 
-        System.out.println("Adding post-note to list...");
-        System.out.println("Total post-notes: " + postNotes.size());
+        repaint();
+    }
+
+    public void updateTextPostNotes(TextPostNoteViewModel postNoteViewModel) {
+        TextPostNoteViewModel newPostNote = new TextPostNoteViewModel();
+        newPostNote.setX(postNoteViewModel.getX());
+        newPostNote.setY(postNoteViewModel.getY());
+        newPostNote.setWidth(postNoteViewModel.getWidth());
+        newPostNote.setHeight(postNoteViewModel.getHeight());
+        newPostNote.setColor(postNoteViewModel.getColor());
+        newPostNote.setText(postNoteViewModel.getText());
+
+        this.textPostNotes.add(newPostNote);
+
         repaint();
     }
 
@@ -244,11 +324,13 @@ public class MindMapView extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        System.out.println("Repainting all post-notes...");
-        if (postNotes != null && !postNotes.isEmpty()) {
-            for (ImagePostNoteViewModel postNote : postNotes) {
-                System.out.println("Painting post-note: " + postNote);
+        // Set the font to Arial Bold
+        Font font = new Font("Arial", Font.BOLD, 12);  // Arial, Bold, Font size 12
+        g.setFont(font);
 
+        // Paint image post-notes
+        if (imagePostNotes != null && !imagePostNotes.isEmpty()) {
+            for (ImagePostNoteViewModel postNote : imagePostNotes) {
                 g.setColor(postNote.getColor());
                 g.fillRect(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
 
@@ -256,14 +338,69 @@ public class MindMapView extends JPanel {
                     try {
                         Image image = ImageIO.read(new URL(postNote.getImageUrl()));
                         g.drawImage(image, postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight(), this);
-                        System.out.println("Image drawn for post-note: " + postNote.getImageUrl());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-        } else {
-            System.out.println("No post-notes to paint.");
+        }
+
+        // Paint text post-notes
+        if (textPostNotes != null && !textPostNotes.isEmpty()) {
+            for (TextPostNoteViewModel postNote : textPostNotes) {
+                g.setColor(postNote.getColor());
+                g.fillRect(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+
+                // Setup the font and color for the text
+                g.setColor(Color.BLACK);
+                String text = postNote.getText();
+                FontMetrics fm = g.getFontMetrics();
+                int lineHeight = fm.getHeight();
+
+                // Split the text into lines to make sure it fits within the note's width
+                String[] lines = wrapText(text, fm, postNote.getWidth() - 20); // 20 is padding
+                int totalHeight = lines.length * lineHeight;
+
+                // Calculate the vertical starting position for centering the text
+                int yPos = postNote.getY() + (postNote.getHeight() - totalHeight) / 2;
+
+                // Draw each line of text centered horizontally
+                for (String line : lines) {
+                    int lineWidth = fm.stringWidth(line);
+                    int xPos = postNote.getX() + (postNote.getWidth() - lineWidth) / 2; // Center the text horizontally
+                    g.drawString(line, xPos, yPos);
+                    yPos += lineHeight;
+                }
+            }
         }
     }
+
+    /**
+     * Wraps text to fit within the specified width.
+     */
+    private String[] wrapText(String text, FontMetrics fm, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        String[] words = text.split(" ");
+
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            // Check if adding the word exceeds the max width
+            if (fm.stringWidth(currentLine.toString() + word) <= maxWidth) {
+                currentLine.append(word).append(" ");
+            } else {
+                // If the line exceeds the width, add the current line and start a new one
+                lines.add(currentLine.toString().trim());
+                currentLine = new StringBuilder(word + " ");
+            }
+        }
+
+        // Add the last line if there's any remaining text
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString().trim());
+        }
+
+        return lines.toArray(new String[0]);
+    }
+
 }
