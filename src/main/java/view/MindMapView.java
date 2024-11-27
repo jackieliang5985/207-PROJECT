@@ -4,21 +4,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
@@ -419,15 +413,6 @@ public class MindMapView extends JPanel {
 
         this.textPostNotes.add(newPostNote);
         repaint();
-    }
-
-    private void saveMindMap() {
-        try {
-            exportController.handleExportCommand(this, "MindMap");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving Mind Map: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     private void logout() {
