@@ -18,6 +18,7 @@ import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.add_Text_PostNote.TextPostNoteController;
 import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
+import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
@@ -71,6 +72,7 @@ public class MindMapView extends JPanel {
     private final TextPostNoteController textPostNoteController;
     private final ImagePostNoteViewModel imagePostNoteViewModel;
     private final TextPostNoteViewModel textPostNoteViewModel;
+    private final DeletePostNoteController deletePostNoteController;
 
     private List<ImagePostNoteViewModel> imagePostNotes;
     private List<TextPostNoteViewModel> textPostNotes;
@@ -91,6 +93,7 @@ public class MindMapView extends JPanel {
      * @param exportController           The controller for exporting the mind map.
      * @param imagePostNoteController    The controller for managing image post-notes.
      * @param textPostNoteController     The controller for managing text post-notes.
+     * @param deletePostNoteController The controller for managing deleting post-notes
      */
     public MindMapView(CardLayout cardLayout, Container cardPanel,
                        ImageController imageController,
@@ -99,7 +102,7 @@ public class MindMapView extends JPanel {
                        TextPostNoteViewModel textPostNoteViewModel,
                        ExportController exportController,
                        ImagePostNoteController imagePostNoteController,
-                       TextPostNoteController textPostNoteController) {
+                       TextPostNoteController textPostNoteController, DeletePostNoteController deletePostNoteController) {
 
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -110,6 +113,7 @@ public class MindMapView extends JPanel {
         this.textPostNoteController = textPostNoteController;
         this.imagePostNoteViewModel = imagePostNoteViewModel;
         this.textPostNoteViewModel = textPostNoteViewModel;
+        this.deletePostNoteController = deletePostNoteController;
 
         // Initialize postNotes as an empty list
         this.imagePostNotes = new ArrayList<>();
@@ -141,6 +145,7 @@ public class MindMapView extends JPanel {
         final JMenuItem addTextMenuItem = new JMenuItem("Add Text Post It");
         final JMenuItem saveMenuItem = new JMenuItem("Save");
         final JMenuItem logoutMenuItem = new JMenuItem("Logout");
+        JMenuItem deleteMenuItem = new JMenuItem("Delete Post It");
 
         addTextMenuItem.addActionListener(e -> {
             final Point clickLocation = MouseInfo.getPointerInfo().getLocation();
@@ -157,11 +162,20 @@ public class MindMapView extends JPanel {
         saveMenuItem.addActionListener(e -> saveMindMap());
         logoutMenuItem.addActionListener(e -> logout());
 
+        deleteMenuItem.addActionListener(e -> {
+            final Point clickLocation = MouseInfo.getPointerInfo().getLocation();
+            SwingUtilities.convertPointFromScreen(clickLocation, this);
+            System.out.println("this is the click location" + clickLocation);
+            deletePostNoteAtLocation(clickLocation);  // Call the deletion logic
+
+        });
+
         // Add the menu items to the popup menu
         popupMenu.add(addImageMenuItem);
         popupMenu.add(addTextMenuItem);
         popupMenu.add(saveMenuItem);
         popupMenu.add(logoutMenuItem);
+        popupMenu.add(deleteMenuItem);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -547,6 +561,34 @@ public class MindMapView extends JPanel {
         if (description.contains("JPEG")) return "jpg";
         if (description.contains("PDF")) return "pdf";
         return "";
+    }
+
+    private void deletePostNoteAtLocation(Point location) {
+        // Check if the click is within the bounds of any image post note
+        for (ImagePostNoteViewModel postNote : imagePostNotes) {
+            if (isWithinBounds(postNote, location)) {
+                // Call the delete controller with the post-note's coordinates and size
+                deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+                imagePostNotes.remove(postNote);  // Remove the post note from the list
+                repaint();  // Repaint to reflect the deletion
+                return;
+            }
+        }
+
+        // Check if the click is within the bounds of any text post note
+        for (TextPostNoteViewModel postNote : textPostNotes) {
+            System.out.println("it is going through the loop");
+            if (isWithinBounds(postNote, location)) {
+                // Call the delete controller with the post-note's coordinates and size
+                deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+                textPostNotes.remove(postNote);  // Remove the post note from the list
+                repaint();  // Repaint to reflect the deletion
+                return;
+            }
+        }
+
+        // If no post note is found at the location, notify the user
+        JOptionPane.showMessageDialog(this, "No post-it found at the clicked location.");
     }
 
 }
