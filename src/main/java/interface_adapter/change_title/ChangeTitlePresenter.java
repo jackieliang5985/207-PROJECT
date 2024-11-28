@@ -12,13 +12,17 @@ public class ChangeTitlePresenter implements ChangeTitleOutputBoundary {
 
     @Override
     public void prepareSuccessView(ChangeTitleOutputData outputData) {
-        // Update the logged-in view with the new title
-        loggedInViewModel.firePropertyChanged("title");
+        // Update the name in the ViewModel's state (ensure property change is fired)
+        LoggedInState state = loggedInViewModel.getState();
+        state.setName(outputData.getNewTitle());  // Update name to the new title
+        loggedInViewModel.setState(state);        // Set the new state
+        loggedInViewModel.firePropertyChanged();  // Notify the view
     }
 
     @Override
     public void prepareFailView(String error) {
-        // Handle failure case (e.g., title is invalid)
-        // You could show an error message in the UI if needed
+        // Handle failure case
+        System.out.println("Error: " + error);  // Log the error for debugging
     }
 }
+

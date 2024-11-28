@@ -9,14 +9,17 @@ public class ChangeTitleInteractor implements ChangeTitleInputBoundary {
 
     @Override
     public void execute(ChangeTitleInputData inputData) {
-        // Perform logic to change the title, e.g., validate the new title
-        String newTitle = inputData.getNewTitle();
         String currentTitle = inputData.getCurrentTitle();
-        System.out.println("test" + " " + currentTitle + newTitle);
+        String newTitle = inputData.getNewTitle();
 
-        // Assuming the title change is successful
-        ChangeTitleOutputData outputData = new ChangeTitleOutputData(newTitle);
-        outputBoundary.prepareSuccessView(outputData);
+        // Ensure the title is different and valid
+        if (currentTitle != null && !currentTitle.trim().equals(newTitle)) {
+            // Update the title in LoggedInState (this part might be missing)
+            ChangeTitleOutputData outputData = new ChangeTitleOutputData(newTitle);
+            outputBoundary.prepareSuccessView(outputData);  // Notify the presenter
+        } else {
+            // Handle failure (if titles are the same or invalid)
+            outputBoundary.prepareFailView("The new title is the same as the current one.");
+        }
     }
 }
-

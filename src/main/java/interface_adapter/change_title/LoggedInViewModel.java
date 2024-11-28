@@ -15,6 +15,6 @@ public class LoggedInViewModel extends ViewModel<LoggedInState> {
     public void setName(String name) {
         LoggedInState currentState = getState();
         currentState.setName(name);
-        firePropertyChanged("name");  // This triggers the PropertyChangeListener in the view
+        firePropertyChanged("name");  // Fire property change to notify the view
     }
 }

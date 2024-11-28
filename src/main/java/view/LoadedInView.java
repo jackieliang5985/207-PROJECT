@@ -22,7 +22,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
     private LogoutController logoutController;
     private final JLabel username;
     private final JButton returnToCreateMindmap;
-    private final JTextField passwordInputField = new JTextField(15);
     private final JButton changeMindMap;
     private final JButton continueToMindMap;
 
@@ -67,20 +66,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridy = 1;
         centerPanel.add(username, gbc);
 
-        final JLabel passwordLabel = new JLabel("ID:");
-        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        passwordLabel.setForeground(new Color(50, 50, 50)); // Dark gray
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        centerPanel.add(passwordLabel, gbc);
-
-        passwordInputField.setPreferredSize(new Dimension(200, 30));
-        passwordInputField.setFont(new Font("Arial", Font.PLAIN, 14));
-        passwordInputField.setBackground(new Color(255, 255, 255)); // White background for input field
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        centerPanel.add(passwordInputField, gbc);
-
         returnToCreateMindmap = new JButton("Go back to home page");
         returnToCreateMindmap.setPreferredSize(new Dimension(250, 35));
         returnToCreateMindmap.setFont(new Font("Arial", Font.BOLD, 14));
@@ -89,7 +74,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         returnToCreateMindmap.setFocusPainted(false);
         returnToCreateMindmap.setBorder(BorderFactory.createLineBorder(new Color(50, 100, 150), 2));
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
         centerPanel.add(returnToCreateMindmap, gbc);
 
@@ -101,7 +86,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         changeMindMap.setFocusPainted(false);
         changeMindMap.setBorder(BorderFactory.createLineBorder(new Color(70, 140, 70), 2));
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         centerPanel.add(changeMindMap, gbc);
 
         continueToMindMap = new JButton("Continue to Mind Map");
@@ -112,7 +97,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         continueToMindMap.setFocusPainted(false);
         continueToMindMap.setBorder(BorderFactory.createLineBorder(new Color(70, 110, 140), 2));
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 4;
         centerPanel.add(continueToMindMap, gbc);
 
         this.add(centerPanel, BorderLayout.CENTER);
@@ -129,7 +114,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         changeMindMap.addActionListener(evt -> {
             String newTitle = JOptionPane.showInputDialog(this, "Enter a new title for the mind map:");
             if (newTitle != null && !newTitle.isEmpty()) {
-                System.out.println("Attempting to change title to: " + newTitle);
+                // Call ChangeTitleController to change the title
                 changeTitleController.execute(newTitle, username.getText());
             } else {
                 JOptionPane.showMessageDialog(this, "Title cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);

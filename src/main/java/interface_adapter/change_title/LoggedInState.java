@@ -1,7 +1,7 @@
 package interface_adapter.change_title;
 
 public class LoggedInState {
-    private String name = "Default MindMap";  // Default mind map name
+    private String name = "Default MindMap";  // Initial default name
     private String description = "";
 
     public String getName() {
@@ -9,7 +9,9 @@ public class LoggedInState {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name != null && !name.trim().isEmpty()) {
+            this.name = name;
+        }
     }
 
     public String getDescription() {
@@ -20,3 +22,4 @@ public class LoggedInState {
         this.description = description;
     }
 }
+
