@@ -10,18 +10,17 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import app.AppBuilder;
-import interface_adapter.change_password.ChangePasswordController;
-import interface_adapter.change_password.LoggedInState;
-import interface_adapter.change_password.LoggedInViewModel;
+import interface_adapter.change_title.ChangeTitleController;
+import interface_adapter.change_title.LoggedInState;
+import interface_adapter.change_title.LoggedInViewModel;
 import interface_adapter.logout.LogoutController;
 
 public class LoadedInView extends JPanel implements PropertyChangeListener {
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
-    private final JLabel passwordErrorField = new JLabel();
-    private ChangePasswordController changePasswordController;
+    private ChangeTitleController changeTitleController;
     private LogoutController logoutController;
-    private final JLabel username;
+    private final JLabel username; // Label to display mind map title
     private final JButton returnToCreateMindmap;
     private final JTextField passwordInputField = new JTextField(15);
     private final JButton changeMindMap;
@@ -34,7 +33,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Center panel setup
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
         centerPanel.setBackground(new Color(240, 240, 240)); // Light gray background
@@ -44,7 +42,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Title Label
         final JLabel title = new JLabel("LOADED MIND MAP");
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setHorizontalAlignment(JLabel.CENTER);
@@ -55,7 +52,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridwidth = 2;
         centerPanel.add(title, gbc);
 
-        // Label and input for current MindMap name
         final JLabel usernameInfo = new JLabel("Currently Loaded MindMap Name:");
         usernameInfo.setFont(new Font("Arial", Font.PLAIN, 14));
         usernameInfo.setForeground(new Color(50, 50, 50)); // Dark gray
@@ -64,14 +60,19 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridwidth = 1;
         centerPanel.add(usernameInfo, gbc);
 
+        // Initialize the username JLabel here
         username = new JLabel();
         username.setFont(new Font("Arial", Font.PLAIN, 14));
         username.setForeground(new Color(70, 70, 70)); // Slightly lighter gray
+
+        // Set the initial title when the view is first loaded
+        LoggedInState state = loggedInViewModel.getState();
+        username.setText(state.getName());  // Set the name (mind map title) to the username label
+
         gbc.gridx = 1;
         gbc.gridy = 1;
         centerPanel.add(username, gbc);
 
-        // Label and input for password (ID)
         final JLabel passwordLabel = new JLabel("ID:");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         passwordLabel.setForeground(new Color(50, 50, 50)); // Dark gray
@@ -86,7 +87,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridy = 2;
         centerPanel.add(passwordInputField, gbc);
 
-        // Button for returning to the MindMap creation page
         returnToCreateMindmap = new JButton("Go back to home page");
         returnToCreateMindmap.setPreferredSize(new Dimension(250, 35));
         returnToCreateMindmap.setFont(new Font("Arial", Font.BOLD, 14));
@@ -99,8 +99,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridwidth = 2;
         centerPanel.add(returnToCreateMindmap, gbc);
 
-        // Button for changing ID to load existing MindMap
-        changeMindMap = new JButton("Change ID to load existing MindMap");
+        changeMindMap = new JButton("Change MindMap Title");
         changeMindMap.setPreferredSize(new Dimension(250, 35));
         changeMindMap.setFont(new Font("Arial", Font.BOLD, 14));
         changeMindMap.setBackground(new Color(100, 200, 100)); // Green button
@@ -111,7 +110,6 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridy = 4;
         centerPanel.add(changeMindMap, gbc);
 
-        // Button for continuing to the MindMap
         continueToMindMap = new JButton("Continue to Mind Map");
         continueToMindMap.setPreferredSize(new Dimension(250, 35));
         continueToMindMap.setFont(new Font("Arial", Font.BOLD, 14));
@@ -123,30 +121,33 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridy = 5;
         centerPanel.add(continueToMindMap, gbc);
 
-        // Add center panel to the main panel
         this.add(centerPanel, BorderLayout.CENTER);
 
-        // Action listener for the continueToMindMap button
         continueToMindMap.addActionListener(evt -> appBuilder.showMindMapView());
 
-        // Action listener for the returnToCreateMindmap button
         returnToCreateMindmap.addActionListener(evt -> {
             final String createNewMindMapViewName = "CreateNewMindMapView";
             JOptionPane.showMessageDialog(LoadedInView.this, "Loading canceled, returning to Mindmap Creation page");
             cardLayout.show(cardPanel, createNewMindMapViewName);
         });
 
-        // Action listener for the changeMindMap button
+        // Action listener for changing the mind map title
         changeMindMap.addActionListener(evt -> {
-            // Handle the logic for changing the MindMap ID
+            String newTitle = JOptionPane.showInputDialog(this, "Enter a new title for the mind map:");
+            if (newTitle != null && !newTitle.isEmpty()) {
+                // Call ChangeTitleController to change the title
+                changeTitleController.execute(newTitle, username.getText());
+            } else {
+                JOptionPane.showMessageDialog(this, "Title cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("state")) {
-            final LoggedInState state = (LoggedInState) evt.getNewValue();
-            username.setText(state.getName());
+        if ("name".equals(evt.getPropertyName())) {
+            LoggedInState state = (LoggedInState) evt.getNewValue();
+            username.setText(state.getName());  // Update the username label with the new title
         }
     }
 
@@ -154,8 +155,8 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         return viewName;
     }
 
-    public void setChangePasswordController(ChangePasswordController changePasswordController) {
-        this.changePasswordController = changePasswordController;
+    public void setChangeTitleController(ChangeTitleController changeTitleController) {
+        this.changeTitleController = changeTitleController;
     }
 
     public void setLogoutController(LogoutController logoutController) {

@@ -1,8 +1,8 @@
 package interface_adapter.logout;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.change_password.LoggedInState;
-import interface_adapter.change_password.LoggedInViewModel;
+import interface_adapter.change_title.LoggedInState;
+import interface_adapter.change_title.LoggedInViewModel;
 import interface_adapter.loading.LoadingState;
 import interface_adapter.loading.LoadingViewModel;
 import use_case.logout.LogoutOutputBoundary;

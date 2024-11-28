@@ -19,9 +19,11 @@ import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.add_Text_PostNote.TextPostNoteController;
 import interface_adapter.add_Text_PostNote.TextPostNotePresenter;
 import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
-import interface_adapter.change_password.ChangePasswordController;
-import interface_adapter.change_password.ChangePasswordPresenter;
-import interface_adapter.change_password.LoggedInViewModel;
+import interface_adapter.change_title.ChangeTitleController;
+import interface_adapter.change_title.ChangeTitlePresenter;
+import interface_adapter.change_title.ChangeTitleController;
+import interface_adapter.change_title.ChangeTitlePresenter;
+import interface_adapter.change_title.LoggedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
@@ -42,6 +44,9 @@ import use_case.add_Text_PostNote.TextPostNoteInteractor;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.change_title.ChangeTitleInputBoundary;
+import use_case.change_title.ChangeTitleInteractor;
+import use_case.change_title.ChangeTitleOutputBoundary;
 import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
@@ -163,16 +168,25 @@ public class AppBuilder {
      *
      * @return this builder
      */
-    public AppBuilder addChangePasswordUseCase() {
-        final ChangePasswordOutputBoundary changePasswordOutputBoundary =
-                new ChangePasswordPresenter(loggedInViewModel);
-        final ChangePasswordInputBoundary changePasswordInteractor =
-                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
-        final ChangePasswordController changePasswordController =
-                new ChangePasswordController(changePasswordInteractor);
-        loadedInView.setChangePasswordController(changePasswordController);
+    public AppBuilder addChangeTitleUseCase() {
+        // Create the ChangeTitleOutputBoundary to handle the success/failure of the title change
+        final ChangeTitleOutputBoundary changeTitleOutputBoundary =
+                new ChangeTitlePresenter(loggedInViewModel);
+
+        // Create the ChangeTitleInteractor which contains the business logic for title change
+        final ChangeTitleInputBoundary changeTitleInteractor =
+                new ChangeTitleInteractor(changeTitleOutputBoundary);
+
+        // Instantiate the ChangeTitleController to handle the request
+        final ChangeTitleController changeTitleController =
+                new ChangeTitleController(changeTitleInteractor, loggedInViewModel);  // Pass loggedInViewModel here
+
+        // Inject the ChangeTitleController into the LoadedInView
+        loadedInView.setChangeTitleController(changeTitleController);
+
         return this;
     }
+
 
     /**
      * Adds the Logout Use Case to the application.

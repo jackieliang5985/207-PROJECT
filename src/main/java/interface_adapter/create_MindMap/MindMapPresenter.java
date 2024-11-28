@@ -2,7 +2,7 @@ package interface_adapter.create_MindMap;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.ViewModel;
-import interface_adapter.change_password.LoggedInState;
+import interface_adapter.change_title.LoggedInState;
 import interface_adapter.loading.LoadingViewModel;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.create_MindMap.MindMapOutputData;
