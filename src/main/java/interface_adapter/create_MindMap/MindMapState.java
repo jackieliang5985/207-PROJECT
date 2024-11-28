@@ -6,7 +6,7 @@ package interface_adapter.create_MindMap;
 public class MindMapState {
     private String name = "";
     private String nameError;
-    private String description = "";
+//    private String description = "";
 
     public MindMapState(String nameError) {
         this.nameError = nameError;
@@ -20,9 +20,9 @@ public class MindMapState {
         return nameError;
     }
 
-    public String getDescription() {
-        return description;
-    }
+//    public String getDescription() {
+//        return description;
+//    }
 
     public void setName(String name) {
         this.name = name;
@@ -32,9 +32,9 @@ public class MindMapState {
         this.nameError = nameError;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
 
     public boolean isValidName() {
         // System.out.println("Validating name: '" + name + "'");
@@ -50,7 +50,7 @@ public class MindMapState {
     public String toString() {
         return "MindMapState{"
                 + "name='" + name + '\''
-                + ", description='" + description + '\''
+//                + ", description='" + description + '\''
                 + '}';
     }
 }
