@@ -12,6 +12,7 @@ public class ChangeTitleInteractor implements ChangeTitleInputBoundary {
         // Perform logic to change the title, e.g., validate the new title
         String newTitle = inputData.getNewTitle();
         String currentTitle = inputData.getCurrentTitle();
+        System.out.println("test" + " " + currentTitle + newTitle);
 
         // Assuming the title change is successful
         ChangeTitleOutputData outputData = new ChangeTitleOutputData(newTitle);

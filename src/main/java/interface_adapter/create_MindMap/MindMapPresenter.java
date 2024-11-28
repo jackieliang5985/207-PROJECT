@@ -6,11 +6,8 @@ import interface_adapter.change_title.LoggedInState;
 import interface_adapter.loading.LoadingViewModel;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.create_MindMap.MindMapOutputData;
+import interface_adapter.create_MindMap.MindMapState;
 
-
-/**
- * The Presenter for the Signup Use Case.
- */
 public class MindMapPresenter implements MindMapOutputBoundary {
 
     private final MindMapViewModel mindMapViewModel;
@@ -30,11 +27,13 @@ public class MindMapPresenter implements MindMapOutputBoundary {
 
     @Override
     public void prepareSuccessView(MindMapOutputData response) {
-        // Debugging: print out response to ensure it's correct
         final LoggedInState loggedInState = loggedInViewModel.getState();
         loggedInState.setName(response.getName());
-        this.loggedInViewModel.setState(loggedInState);
-        this.loggedInViewModel.firePropertyChanged();
+        System.out.println("Updated name in presenter: " + loggedInState.getName()); // Debugging output
+
+        // Trigger property change event for the initial name
+        loggedInViewModel.setState(loggedInState);
+        loggedInViewModel.firePropertyChanged("name"); // Fire the event for the name change
 
         this.viewManagerModel.setState(loggedInViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
@@ -50,11 +49,9 @@ public class MindMapPresenter implements MindMapOutputBoundary {
     @Override
     public void switchToLoginView() {
         if (viewManagerModel != null) {
-            // Assuming viewManagerModel is responsible for switching views
             viewManagerModel.setState(loadingViewModel.getViewName());
             viewManagerModel.firePropertyChanged();
-        }
-        else {
+        } else {
             System.err.println("Error: ViewManagerModel is null.");
         }
     }

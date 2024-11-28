@@ -1,10 +1,9 @@
 package interface_adapter.change_title;
 
 public class LoggedInState {
-    private String name = "";
+    private String name = "Default MindMap";  // Default mind map name
     private String description = "";
 
-    // Getters and setters for title and description
     public String getName() {
         return name;
     }

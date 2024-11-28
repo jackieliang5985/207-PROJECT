@@ -20,7 +20,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
     private final LoggedInViewModel loggedInViewModel;
     private ChangeTitleController changeTitleController;
     private LogoutController logoutController;
-    private final JLabel username; // Label to display mind map title
+    private final JLabel username;
     private final JButton returnToCreateMindmap;
     private final JTextField passwordInputField = new JTextField(15);
     private final JButton changeMindMap;
@@ -60,15 +60,9 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         gbc.gridwidth = 1;
         centerPanel.add(usernameInfo, gbc);
 
-        // Initialize the username JLabel here
         username = new JLabel();
         username.setFont(new Font("Arial", Font.PLAIN, 14));
         username.setForeground(new Color(70, 70, 70)); // Slightly lighter gray
-
-        // Set the initial title when the view is first loaded
-        LoggedInState state = loggedInViewModel.getState();
-        username.setText(state.getName());  // Set the name (mind map title) to the username label
-
         gbc.gridx = 1;
         gbc.gridy = 1;
         centerPanel.add(username, gbc);
@@ -135,7 +129,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
         changeMindMap.addActionListener(evt -> {
             String newTitle = JOptionPane.showInputDialog(this, "Enter a new title for the mind map:");
             if (newTitle != null && !newTitle.isEmpty()) {
-                // Call ChangeTitleController to change the title
+                System.out.println("Attempting to change title to: " + newTitle);
                 changeTitleController.execute(newTitle, username.getText());
             } else {
                 JOptionPane.showMessageDialog(this, "Title cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -147,6 +141,8 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if ("name".equals(evt.getPropertyName())) {
             LoggedInState state = (LoggedInState) evt.getNewValue();
+            System.out.println("Property change event triggered in LoadedInView.");
+            System.out.println("New Title from PropertyChangeEvent: " + state.getName());  // Debugging output
             username.setText(state.getName());  // Update the username label with the new title
         }
     }
