@@ -74,7 +74,7 @@
 
 **Deleting Nodes:**
 * User Story: John removes irrelevant nodes which automatically disconnects all the lines that connect the node to others.
-* Assigned to: Sudharsian
+* Assigned to: Sudharshan
 * Use Case: The user right-clicks a node to delete it, and the system automatically removes both the node and all lines connecting it to other nodes, ensuring a clean and organized mind map.
   * Interactor: Detects the node selected for deletion, removes the node and its associated lines (edges) in one operation.
   * Controller: Validates the deletion request and updates the mind map state by removing the node and all connected lines.
