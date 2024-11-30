@@ -53,7 +53,7 @@ public class MindMapView extends JPanel {
     private static final Color TITLE_LABEL_BG_COLOR = Color.LIGHT_GRAY;
     private static final Color TITLE_LABEL_TEXT_COLOR = Color.BLACK;
     private static final Color DEFAULT_IMAGE_NOTE_COLOR = Color.ORANGE;
-    private static final Color DEFAULT_TEXT_NOTE_COLOR = Color.YELLOW;
+    private static final Color DEFAULT_TEXT_NOTE_COLOR = Color.ORANGE;
     private static final Color TEXT_COLOR = Color.BLACK;
 
     // Constants for Font
