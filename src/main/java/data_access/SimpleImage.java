@@ -3,7 +3,7 @@ package data_access;
 public class SimpleImage {
     private String url;
     private String description;
-    private String id; // Ensure this field exists
+    private String id;
 
     public SimpleImage(String url, String description, String id) {
         this.url = url;
@@ -19,7 +19,7 @@ public class SimpleImage {
         return description;
     }
 
-    public String getId() { // Ensure this getter exists
+    public String getId() {
         return id;
     }
 }

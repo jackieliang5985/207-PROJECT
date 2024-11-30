@@ -10,9 +10,9 @@ public class PostNoteEntity {
     private int height;
     private MindMapEntity mindMap;
 
-    public PostNoteEntity(int x, int y, int width, int height, MindMapEntity mindMap) {
-        this.x = x;
-        this.y = y;
+    public PostNoteEntity(int xValue, int yValue, int width, int height, MindMapEntity mindMap) {
+        this.x = xValue;
+        this.y = yValue;
         this.width = width;
         this.height = height;
         this.mindMap = mindMap;

@@ -9,8 +9,8 @@ public class TextPostNoteEntity extends PostNoteEntity {
     private Color color;
     private String text;
 
-    public TextPostNoteEntity(int x, int y, int width, int height, Color color, MindMapEntity mindMap) {
-        super(x, y, width, height, mindMap);
+    public TextPostNoteEntity(int xValue, int yValue, int width, int height, Color color, MindMapEntity mindMap) {
+        super(xValue, yValue, width, height, mindMap);
         this.color = color;
         this.text = "";
     }
