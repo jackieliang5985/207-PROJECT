@@ -28,15 +28,15 @@ public class ChangeColorInteractor implements ChangeColorInputBoundary {
             // Get all the post notes
 //            final List<PostNoteEntity> postNotes = postNoteDAO.getAllPostNotes();
             // Try to find the post note to change the color of
-            boolean colorChanged = noteDataAccessObject.changeColorOfPostNote(changeColorInputData.getX(),
+            final TextPostNoteEntity targetNote = noteDataAccessObject.changeColorOfPostNote(changeColorInputData.getX(),
                     changeColorInputData.getY(), changeColorInputData.getWidth(), changeColorInputData.getHeight(),
                     changeColorInputData.getColor());
-            if (colorChanged) {
+            if (targetNote != null) {
                 System.out.println("Color was changed");
                 final ChangeColorOutputData changeColorOutputData =
-                        new ChangeColorOutputData(changeColorInputData.getX(),
-                    changeColorInputData.getY(), changeColorInputData.getWidth(),
-                    changeColorInputData.getHeight(), changeColorInputData.getColor());
+                        new ChangeColorOutputData(targetNote.getX(),
+                                targetNote.getY(), targetNote.getWidth(),
+                                targetNote.getHeight(), targetNote.getColor());
                 notePresenter.prepareSuccessView(changeColorOutputData);
             }
 //            for (PostNoteEntity postNote : postNotes) {

@@ -13,5 +13,5 @@ public interface ChangeColorNoteDataAccessInterface {
      * @param height the height of the textPostNote whose color to change
      * @param color the color to change the textPostNote to
      */
-    boolean changeColorOfPostNote(int x, int y, int width, int height, Color color);
+    TextPostNoteEntity changeColorOfPostNote(int x, int y, int width, int height, Color color);
 }

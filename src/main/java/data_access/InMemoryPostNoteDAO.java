@@ -43,17 +43,17 @@ public class InMemoryPostNoteDAO implements PostNoteDAO, ChangeColorNoteDataAcce
     }
 
     @Override
-    public boolean changeColorOfPostNote(int x, int y, int width, int height, Color color) {
-        boolean colorChanged = false;
+    public TextPostNoteEntity changeColorOfPostNote(int x, int y, int width, int height, Color color) {
+        TextPostNoteEntity targetNote = null;
         for (PostNoteEntity postNote : postNotes) {
             if (postNote.getX() == x && postNote.getY() == y
                     && postNote.getWidth() == width && postNote.getHeight() == height) {
                 ((TextPostNoteEntity) postNote).setColor(color);
-                colorChanged = true;
+                targetNote = (TextPostNoteEntity) postNote;
                 break;
             }
         }
-        return colorChanged;
+        return targetNote;
     }
 
     @Override
