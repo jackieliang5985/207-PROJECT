@@ -9,6 +9,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class ExportInteractor implements ExportInputBoundary {
     private final ExportOutputBoundary presenter;
 
@@ -18,29 +28,45 @@ public class ExportInteractor implements ExportInputBoundary {
 
     @Override
     public void execute(ExportInputData inputData) {
-        try {
-            // Get the pre-rendered image
-            BufferedImage image = inputData.getImage();
+        // Get the pre-rendered image
+        BufferedImage image = inputData.getImage();
 
-            // Save the file
-            saveFile(image, inputData.getFileToSave(), inputData.getFileFormat());
-
-            // Notify the presenter of success
-            presenter.prepareSuccessView(new ExportOutputData(inputData.getFileToSave().getAbsolutePath()));
-        } catch (IOException | DocumentException e) {
-            // Notify the presenter of failure
-            presenter.prepareFailView("Failed to export: " + e.getMessage());
+        if (validFile(inputData.getFileFormat())) {
+            final boolean success = saveFile(image, inputData.getFileToSave(), inputData.getFileFormat());
+            if (success) {
+                presenter.prepareSuccessView(new ExportOutputData(inputData.getFileToSave().getAbsolutePath()));
+                System.out.println("ran successfully");
+            }
+            else {
+                presenter.prepareFailView("Failed to export file. An error occurred during the saving process.");
+                System.out.println("ran unsuccessfully");
+            }
         }
     }
 
-    private void saveFile(BufferedImage image, File file, String format) throws IOException, DocumentException {
-        if (format.equals("png") || format.equals("jpg")) {
-            ImageIO.write(image, format, file);
-        } else if (format.equals("pdf")) {
-            saveAsPdf(image, file);
-        } else {
-            throw new IOException("Unsupported file format: " + format);
+    private boolean saveFile(BufferedImage image, File file, String format) {
+        try {
+            if (format.equals("png") || format.equals("jpg")) {
+                ImageIO.write(image, format, file);
+            } else if (format.equals("pdf")) {
+                saveAsPdf(image, file);
+            } else {
+                return false; // Unsupported file format
+            }
+            return true; // File saved successfully
         }
+        catch (IOException e) {
+            // Handle IO exceptions during file saving
+            return false;
+        }
+        catch (DocumentException e) {
+            // Handle document-related exceptions for PDF
+            return false;
+        }
+    }
+
+    private boolean validFile(String fileName) {
+        return fileName.equals("pdf") || fileName.equals("jpg") || fileName.equals("png");
     }
 
     private void saveAsPdf(BufferedImage image, File file) throws IOException, DocumentException {
