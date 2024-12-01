@@ -1,7 +1,6 @@
 package interface_adapter.image;
 
-import interface_adapter.image.ImageRepository;  // Import ImageRepository interface
-import entity.CommonImage;  // Use CommonImage
+import entity.CommonImage;
 import java.util.List;
 import java.util.ArrayList;
 import org.json.JSONArray;
@@ -10,7 +9,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UnsplashImageInputBoundary implements ImageRepository { // Implement ImageRepository interface
+public class UnsplashImageInputBoundary implements ImageRepository {
 
     private final String apiKey;
     // To find all photos

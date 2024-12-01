@@ -310,9 +310,7 @@ public class MindMapView extends JPanel {
         }
 
         lastClickLocation = location;
-
-        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-        imageController.fetchImages(query, imagePresenter);
+        imageController.fetchImages(query);
     }
 
     /**
