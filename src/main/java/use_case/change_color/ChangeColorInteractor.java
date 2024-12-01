@@ -35,13 +35,13 @@ public class ChangeColorInteractor implements ChangeColorInputBoundary {
                 final ChangeColorOutputData changeColorOutputData = new ChangeColorOutputData(
                         ((TextPostNoteEntity) postNote).getText(), postNote.getX(), postNote.getY(),
                         postNote.getWidth(), postNote.getHeight(), ((TextPostNoteEntity) postNote).getColor());
-                changeColorPresenter.prepareSuccessView(changeColorOutputData);
+                notePresenter.prepareSuccessView(changeColorOutputData);
                 break;
             }
         }
 
         if (!colorChanged) {
-            changeColorPresenter.prepareFailView("Post-it note not found or color could not be changed.");
+            notePresenter.prepareFailView("Post-it note not found or color could not be changed.");
         }
     }
 }
