@@ -1,4 +1,4 @@
-package interface_adapter;
+package interface_adapter.image;
 
 import interface_adapter.image.ImageRepository;  // Import ImageRepository interface
 import entity.CommonImage;  // Use CommonImage
@@ -15,7 +15,7 @@ public class UnsplashImageInputBoundary implements ImageRepository { // Implemen
     private final String apiKey;
     // To find all photos
     private final String baseUrl = "https://api.unsplash.com/search/photos";
-    // Additional info
+    // Additional info (second endpoint for image details, but not used now)
     private final String imageDetailsUrl = "https://api.unsplash.com/photos/";
 
     public UnsplashImageInputBoundary(String apiKey) {
@@ -48,10 +48,10 @@ public class UnsplashImageInputBoundary implements ImageRepository { // Implemen
                 String description = result.optString("description", "No description").trim();
                 String id = result.getString("id");
 
-                // Optionally fetch additional image details from the second API endpoint
-                CommonImage image = fetchImageDetails(id);
+                // Don't call the second API here, just use the basic details
+                commonImages.add(new CommonImage(imageUrl, description, id));
 
-                commonImages.add(image);
+                // Note: The second API call fetchImageDetails(imageId) is not being used here.
             }
 
             return commonImages;
@@ -65,6 +65,7 @@ public class UnsplashImageInputBoundary implements ImageRepository { // Implemen
         }
     }
 
+    // Keep the fetchImageDetails method but do not call it in the fetchImages method
     private CommonImage fetchImageDetails(String imageId) throws IOException {
         HttpURLConnection connection = null;
         try {
@@ -78,10 +79,8 @@ public class UnsplashImageInputBoundary implements ImageRepository { // Implemen
                 throw new RuntimeException("Failed to fetch image details: " + connection.getResponseMessage());
             }
 
-            // Read and parse the response
             String response = new String(connection.getInputStream().readAllBytes());
-            JSONArray jsonResponse = new JSONArray(response);
-            JSONObject imageDetails = jsonResponse.getJSONObject(0);
+            JSONObject imageDetails = new JSONObject(response);
 
             // Extract additional image details if needed (e.g., full size, additional metadata)
             String fullImageUrl = imageDetails.getJSONObject("urls").getString("full");
