@@ -1,8 +1,9 @@
 package use_case.image;
 
+import entity.CommonImage;
 import interface_adapter.image.ImageRepository;
-import entity.CommonImage;  // Use CommonImage instead of SimpleImage
 import interface_adapter.image.ImagePresenter;
+
 import java.util.List;
 
 public class ImageInteractor implements ImageInputBoundary {
@@ -18,7 +19,8 @@ public class ImageInteractor implements ImageInputBoundary {
     public List<CommonImage> searchImages(String query) throws Exception {
         // Simulate an error for a specific query, for example, "error"
         if ("error".equals(query)) {
-            imagePresenter.presentError("Error fetching images");
+            ImageOutputData outputData = new ImageOutputData(null, "Error fetching images");
+            imagePresenter.presentError(outputData);  // Pass the error message to the presenter
             throw new RuntimeException("Error fetching images");
         }
 
@@ -27,9 +29,11 @@ public class ImageInteractor implements ImageInputBoundary {
 
         // If no images are found, present an error
         if (commonImages.isEmpty()) {
-            imagePresenter.presentError("Invalid Search: No results found.");
+            ImageOutputData outputData = new ImageOutputData(null, "Invalid Search: No results found.");
+            imagePresenter.presentError(outputData);  // Pass the error message to the presenter
         } else {
-            imagePresenter.presentImages(commonImages);
+            ImageOutputData outputData = new ImageOutputData(commonImages, null);
+            imagePresenter.presentImages(outputData);  // Pass the images to the presenter
         }
 
         return commonImages;

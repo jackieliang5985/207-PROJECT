@@ -85,7 +85,7 @@ This project aims to provide a **seamless and intuitive experience** for **brain
 
 ### Adding Images as Nodes
 
-- **User Story:** John uploads an image as a draggable node on the board to incorporate visual elements.
+- **User Story:** John selects an image from the image selection as a draggable node on the board to incorporate visual elements.
   - **Assigned to**: Jackie
 
 #### Use Cases:
