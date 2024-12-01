@@ -1,8 +1,10 @@
 package interface_adapter.add_Image_PostNote;
 
+import interface_adapter.add_Connection.PostItNoteViewModel;
+
 import java.awt.*;
 
-public class ImagePostNoteViewModel {
+public class ImagePostNoteViewModel implements PostItNoteViewModel {
     private String imageUrl;
     private int x, y, width, height;
     private Color color;
@@ -55,4 +57,16 @@ public class ImagePostNoteViewModel {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }
+

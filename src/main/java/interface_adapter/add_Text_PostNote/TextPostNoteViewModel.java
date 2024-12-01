@@ -1,8 +1,10 @@
 package interface_adapter.add_Text_PostNote;
 
+import interface_adapter.add_Connection.PostItNoteViewModel;
+
 import java.awt.Color;
 
-public class TextPostNoteViewModel {
+public class TextPostNoteViewModel implements PostItNoteViewModel {
     private String text;
     private int x, y, width, height;
     private Color color;
@@ -25,4 +27,15 @@ public class TextPostNoteViewModel {
 
     public Color getColor() { return color; }
     public void setColor(Color color) { this.color = color; }
+
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }

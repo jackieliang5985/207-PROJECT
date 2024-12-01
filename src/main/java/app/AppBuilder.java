@@ -66,6 +66,15 @@ import view.LoadedInView;
 import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
+import data_access.ConnectionDAO;
+import data_access.InMemoryConnectionDAO;
+import interface_adapter.add_Connection.ConnectionViewModel;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import use_case.add_connection.AddConnectionInputBoundary;
+import use_case.add_connection.AddConnectionOutputBoundary;
+import use_case.add_connection.AddConnectionInteractor;
+
 
 /**
  * The AppBuilder class is responsible for putting together the components
@@ -78,6 +87,11 @@ public class AppBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final data_access.ConnectionDAO connectionDAO = new data_access.InMemoryConnectionDAO();
+    private final interface_adapter.add_Connection.ConnectionViewModel connectionViewModel = new interface_adapter.add_Connection.ConnectionViewModel();
+    private final use_case.add_connection.AddConnectionOutputBoundary addConnectionOutputBoundary = new interface_adapter.add_Connection.AddConnectionPresenter(connectionViewModel);
+    private final use_case.add_connection.AddConnectionInputBoundary addConnectionInteractor = new use_case.add_connection.AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+    private final interface_adapter.add_Connection.AddConnectionController addConnectionController = new interface_adapter.add_Connection.AddConnectionController(addConnectionInteractor);
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
@@ -190,23 +204,6 @@ public class AppBuilder {
     }
 
     /**
-     * Adds the Change Color Use Case to the application.
-     * @return this builder
-     */
-//    public AppBuilder addChangeColorUseCase() {
-//        final ChangeColorOutputBoundary changePasswordOutputBoundary =
-//                new ChangeColorPresenter(loggedInViewModel);
-//
-//        final ChangeColorInputBoundary changeColorInteractor =
-//                new ChangeColorInteractor(userDataAccessObject, changePasswordOutputBoundary, postNoteDAO);
-//
-//        final ChangeColorController changePasswordController =
-//                new ChangeColorController(changeColorInteractor);
-//        loggedInView.setChangePasswordController(changePasswordController);
-//        return this;
-//    }
-
-    /**
      * Adds the Logout Use Case to the application.
      *
      * @return this builder
@@ -287,6 +284,7 @@ public class AppBuilder {
         final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
         final DeletePostNoteInteractor deletePostNoteInteractor =
                 new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
+
         // Initialize the DeletePostNoteController
         deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
 
@@ -295,12 +293,26 @@ public class AppBuilder {
                 new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
+        // Initialize ConnectionDAO
+        final ConnectionDAO connectionDAO =
+                new InMemoryConnectionDAO();
+
+        // Initialize ConnectionViewModel
+        final ConnectionViewModel connectionViewModel =
+                new ConnectionViewModel();
+
+        final AddConnectionController connectionController =
+                new AddConnectionController(addConnectionInteractor);
+
         // Initialize MindMapView and pass all the controllers including DeletePostNoteController
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
+                deletePostNoteController,
+                connectionController, connectionViewModel, connectionDAO
+        );
                 deletePostNoteController, // Pass the delete controller here
                 changeColorController);
 
