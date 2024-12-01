@@ -11,7 +11,6 @@ import javax.swing.WindowConstants;
 import data_access.InMemoryPostNoteDAO;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
-import interface_adapter.image.UnsplashImageInputBoundary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNotePresenter;
@@ -19,6 +18,8 @@ import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.add_Text_PostNote.TextPostNoteController;
 import interface_adapter.add_Text_PostNote.TextPostNotePresenter;
 import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
+import interface_adapter.change_color.ChangeColorController;
+import interface_adapter.change_color.ChangeColorPresenter;
 import interface_adapter.change_title.ChangeTitleController;
 import interface_adapter.change_title.ChangeTitlePresenter;
 import interface_adapter.change_title.LoggedInViewModel;
@@ -32,6 +33,7 @@ import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
 import interface_adapter.image.*;
+import interface_adapter.image.UnsplashImageInputBoundary;
 import interface_adapter.loading.LoadingController;
 import interface_adapter.loading.LoadingPresenter;
 import interface_adapter.loading.LoadingViewModel;
@@ -40,6 +42,9 @@ import interface_adapter.logout.LogoutPresenter;
 import io.github.cdimascio.dotenv.Dotenv;
 import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.add_Text_PostNote.TextPostNoteInteractor;
+import use_case.change_color.ChangeColorInputBoundary;
+import use_case.change_color.ChangeColorInteractor;
+import use_case.change_color.ChangeColorOutputBoundary;
 import use_case.change_title.ChangeTitleInputBoundary;
 import use_case.change_title.ChangeTitleInteractor;
 import use_case.change_title.ChangeTitleOutputBoundary;
@@ -183,6 +188,22 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Adds the Change Color Use Case to the application.
+     * @return this builder
+     */
+//    public AppBuilder addChangeColorUseCase() {
+//        final ChangeColorOutputBoundary changePasswordOutputBoundary =
+//                new ChangeColorPresenter(loggedInViewModel);
+//
+//        final ChangeColorInputBoundary changeColorInteractor =
+//                new ChangeColorInteractor(userDataAccessObject, changePasswordOutputBoundary, postNoteDAO);
+//
+//        final ChangeColorController changePasswordController =
+//                new ChangeColorController(changeColorInteractor);
+//        loggedInView.setChangePasswordController(changePasswordController);
+//        return this;
+//    }
 
     /**
      * Adds the Logout Use Case to the application.
@@ -265,9 +286,13 @@ public class AppBuilder {
         final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
         final DeletePostNoteInteractor deletePostNoteInteractor =
                 new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
-
         // Initialize the DeletePostNoteController
         deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
+
+        final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
+        final ChangeColorInputBoundary changeColorInteractor =
+                new ChangeColorInteractor(changeColorOutputBoundary, postNoteDAO);
+        final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
         // Initialize MindMapView and pass all the controllers including DeletePostNoteController
         final MindMapView mindMapView = new MindMapView(
@@ -275,8 +300,8 @@ public class AppBuilder {
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
-                deletePostNoteController // Pass the delete controller here
-        );
+                deletePostNoteController, // Pass the delete controller here
+                changeColorController);
 
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 
