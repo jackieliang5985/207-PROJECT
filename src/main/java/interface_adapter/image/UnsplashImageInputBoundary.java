@@ -1,4 +1,4 @@
-package interface_adapter;
+package interface_adapter.image;
 
 import interface_adapter.image.ImageRepository;  // Import ImageRepository interface
 import entity.CommonImage;  // Use CommonImage
@@ -13,7 +13,10 @@ import java.net.URL;
 public class UnsplashImageInputBoundary implements ImageRepository { // Implement ImageRepository interface
 
     private final String apiKey;
+    // To find all photos
     private final String baseUrl = "https://api.unsplash.com/search/photos";
+    // Additional info (second endpoint for image details, but not used now)
+    private final String imageDetailsUrl = "https://api.unsplash.com/photos/";
 
     public UnsplashImageInputBoundary(String apiKey) {
         this.apiKey = apiKey;
