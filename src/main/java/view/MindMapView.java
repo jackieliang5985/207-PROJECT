@@ -23,6 +23,13 @@ import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
 import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
+import data_access.ConnectionDAO;
+import data_access.InMemoryConnectionDAO;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import use_case.add_connection.AddConnectionInteractor;
+import use_case.add_connection.AddConnectionOutputBoundary;
+import interface_adapter.add_Connection.ConnectionViewModel;
 
 /**
  * The MindMapView class represents the main visual component of the Mind Map application.
@@ -82,18 +89,24 @@ public class MindMapView extends JPanel {
     private Point lastClickLocation;
     private Point rightClickLocation = null;
 
+    private final AddConnectionController addConnectionController;
+    private final ConnectionViewModel connectionViewModel;
+    private final ConnectionDAO connectionDAO;
+    private boolean isAddingConnection = false;
+    private String firstSelectedNoteId = null;
+
     /**
      * Constructor for the MindMapView class.
      *
-     * @param cardLayout                 The CardLayout for managing views.
-     * @param cardPanel                  The parent container for switching views.
-     * @param imageController            The controller for image-related actions.
-     * @param imageViewModel             The view model for image data.
-     * @param imagePostNoteViewModel     The view model for image post-notes.
-     * @param textPostNoteViewModel      The view model for text post-notes.
-     * @param exportController           The controller for exporting the mind map.
-     * @param imagePostNoteController    The controller for managing image post-notes.
-     * @param textPostNoteController     The controller for managing text post-notes.
+     * @param cardLayout               The CardLayout for managing views.
+     * @param cardPanel                The parent container for switching views.
+     * @param imageController          The controller for image-related actions.
+     * @param imageViewModel           The view model for image data.
+     * @param imagePostNoteViewModel   The view model for image post-notes.
+     * @param textPostNoteViewModel    The view model for text post-notes.
+     * @param exportController         The controller for exporting the mind map.
+     * @param imagePostNoteController  The controller for managing image post-notes.
+     * @param textPostNoteController   The controller for managing text post-notes.
      * @param deletePostNoteController The controller for managing deleting post-notes
      */
     public MindMapView(CardLayout cardLayout, Container cardPanel,
@@ -103,7 +116,7 @@ public class MindMapView extends JPanel {
                        TextPostNoteViewModel textPostNoteViewModel,
                        ExportController exportController,
                        ImagePostNoteController imagePostNoteController,
-                       TextPostNoteController textPostNoteController, DeletePostNoteController deletePostNoteController) {
+                       TextPostNoteController textPostNoteController, DeletePostNoteController deletePostNoteController, AddConnectionController addConnectionController, ConnectionViewModel connectionViewModel, ConnectionDAO connectionDAO) {
 
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -115,6 +128,11 @@ public class MindMapView extends JPanel {
         this.imagePostNoteViewModel = imagePostNoteViewModel;
         this.textPostNoteViewModel = textPostNoteViewModel;
         this.deletePostNoteController = deletePostNoteController;
+        this.connectionDAO = new InMemoryConnectionDAO();
+        this.connectionViewModel = new ConnectionViewModel();
+        AddConnectionOutputBoundary outputBoundary = new AddConnectionPresenter(connectionViewModel);
+        AddConnectionInteractor interactor = new AddConnectionInteractor(outputBoundary, connectionDAO);
+        this.addConnectionController = new AddConnectionController(interactor);
 
         // Initialize postNotes as an empty list
         this.imagePostNotes = new ArrayList<>();
@@ -147,6 +165,7 @@ public class MindMapView extends JPanel {
         final JMenuItem saveMenuItem = new JMenuItem("Save");
         final JMenuItem logoutMenuItem = new JMenuItem("Logout");
         JMenuItem deleteMenuItem = new JMenuItem("Delete Post It");
+        JMenuItem addConnectionMenuItem = new JMenuItem("Add Connection");
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -181,12 +200,17 @@ public class MindMapView extends JPanel {
 
         });
 
+        addConnectionMenuItem.addActionListener(e -> {
+            startAddingConnection(rightClickLocation);
+        });
+
         // Add the menu items to the popup menu
         popupMenu.add(addImageMenuItem);
         popupMenu.add(addTextMenuItem);
         popupMenu.add(saveMenuItem);
         popupMenu.add(logoutMenuItem);
         popupMenu.add(deleteMenuItem);
+        popupMenu.add(addConnectionMenuItem);
 
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -205,8 +229,7 @@ public class MindMapView extends JPanel {
                 final List<ImageViewModel.ImageDisplayData> images =
                         (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
                 showImageSelectionDialog(images, lastClickLocation);
-            }
-            else if ("errorMessage".equals(evt.getPropertyName())) {
+            } else if ("errorMessage".equals(evt.getPropertyName())) {
                 JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
             }
         });
@@ -221,25 +244,49 @@ public class MindMapView extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                for (ImagePostNoteViewModel postNote : imagePostNotes) {
-                    if (isWithinBounds(postNote, e.getPoint())) {
-                        draggedImagePostNote = postNote;
-                        dragOffset = new Point(
-                                e.getX() - postNote.getX(),
-                                e.getY() - postNote.getY()
-                        );
-                        break;
-                    }
-                }
+                if (isAddingConnection) {
+                    String secondNoteId = getNoteIdAtLocation(e.getPoint());
+                    if (secondNoteId == null) {
+                        JOptionPane.showMessageDialog(MindMapView.this, "No post-it found at the clicked location.");
+                        isAddingConnection = false;
+                        firstSelectedNoteId = null;
+                    } else if (secondNoteId.equals(firstSelectedNoteId)) {
+                        JOptionPane.showMessageDialog(MindMapView.this, "Cannot connect a note to itself.");
+                        isAddingConnection = false;
+                        firstSelectedNoteId = null;
+                    } else {
+                        addConnectionController.addConnection(firstSelectedNoteId, secondNoteId);
+                        isAddingConnection = false;
+                        firstSelectedNoteId = null;
 
-                for (TextPostNoteViewModel postNote : textPostNotes) {
-                    if (isWithinBounds(postNote, e.getPoint())) {
-                        draggedTextPostNote = postNote;
-                        dragOffset = new Point(
-                                e.getX() - postNote.getX(),
-                                e.getY() - postNote.getY()
-                        );
-                        break;
+                        // Check if the connection was successful
+                        if (connectionViewModel.isSuccess()) {
+                            repaint();
+                        } else {
+                            JOptionPane.showMessageDialog(MindMapView.this, connectionViewModel.getMessage());
+                        }
+                    }
+                } else {
+                    for (ImagePostNoteViewModel postNote : imagePostNotes) {
+                        if (isWithinBounds(postNote, e.getPoint())) {
+                            draggedImagePostNote = postNote;
+                            dragOffset = new Point(
+                                    e.getX() - postNote.getX(),
+                                    e.getY() - postNote.getY()
+                            );
+                            break;
+                        }
+                    }
+
+                    for (TextPostNoteViewModel postNote : textPostNotes) {
+                        if (isWithinBounds(postNote, e.getPoint())) {
+                            draggedTextPostNote = postNote;
+                            dragOffset = new Point(
+                                    e.getX() - postNote.getX(),
+                                    e.getY() - postNote.getY()
+                            );
+                            break;
+                        }
                     }
                 }
             }
@@ -273,7 +320,7 @@ public class MindMapView extends JPanel {
      * Checks if the point is within the bounds of the image post note.
      *
      * @param postNote The image post note to check against.
-     * @param point The point to check if it lies within the post note's bounds.
+     * @param point    The point to check if it lies within the post note's bounds.
      * @return True if the point is within the bounds of the image post note, otherwise false.
      */
     private boolean isWithinBounds(ImagePostNoteViewModel postNote, Point point) {
@@ -287,7 +334,7 @@ public class MindMapView extends JPanel {
      * Checks if the point is within the bounds of the text post note.
      *
      * @param postNote The text post note to check against.
-     * @param point The point to check if it lies within the post note's bounds.
+     * @param point    The point to check if it lies within the post note's bounds.
      * @return True if the point is within the bounds of the text post note, otherwise false.
      */
     private boolean isWithinBounds(TextPostNoteViewModel postNote, Point point) {
@@ -319,7 +366,7 @@ public class MindMapView extends JPanel {
      * Displays a dialog for the user to select an image from a list of available images.
      *
      * @param imageDisplayDataList List of images fetched from the search.
-     * @param location The location where the image post note should be placed.
+     * @param location             The location where the image post note should be placed.
      */
     private void showImageSelectionDialog(List<ImageViewModel.ImageDisplayData> imageDisplayDataList, Point location) {
         final JDialog dialog = new JDialog((Frame) null, "Select an Image", Dialog.ModalityType.APPLICATION_MODAL);
@@ -359,8 +406,7 @@ public class MindMapView extends JPanel {
                     updateImagePostNotes(imagePostNoteViewModel);
                 });
                 imagePanel.add(imageButton);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -416,6 +462,7 @@ public class MindMapView extends JPanel {
         newPostNote.setHeight(postNoteViewModel.getHeight());
         newPostNote.setColor(postNoteViewModel.getColor());
         newPostNote.setImageUrl(postNoteViewModel.getImageUrl());
+        newPostNote.setId(UUID.randomUUID().toString());
 
         this.imagePostNotes.add(newPostNote);
 
@@ -435,6 +482,8 @@ public class MindMapView extends JPanel {
         newPostNote.setHeight(postNoteViewModel.getHeight());
         newPostNote.setColor(postNoteViewModel.getColor());
         newPostNote.setText(postNoteViewModel.getText());
+        newPostNote.setId(UUID.randomUUID().toString());
+
 
         this.textPostNotes.add(newPostNote);
         repaint();
@@ -465,8 +514,7 @@ public class MindMapView extends JPanel {
                     try {
                         final Image image = ImageIO.read(new URL(postNote.getImageUrl()));
                         g.drawImage(image, postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight(), this);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -496,110 +544,164 @@ public class MindMapView extends JPanel {
                 }
             }
         }
-    }
+        List<ConnectionEntity> connections = connectionDAO.getAllConnections();
+        if (connections != null) {
+            g.setColor(Color.BLACK); // Set line color
+            for (ConnectionEntity connection : connections) {
+                PostItNoteViewModel fromNote = getPostNoteById(connection.getFromNoteId());
+                PostItNoteViewModel toNote = getPostNoteById(connection.getToNoteId());
 
-    /**
-     * Wraps text to fit within the specified width.
-     *
-     * @param text The text to wrap.
-     * @param fm The FontMetrics used to measure the width.
-     * @param maxWidth The maximum allowed width.
-     * @return An array of lines that fit within the width.
-     */
-    private String[] wrapText(String text, FontMetrics fm, int maxWidth) {
-        final List<String> lines = new ArrayList<>();
-        final String[] words = text.split(SPACE);
+                if (fromNote != null && toNote != null) {
+                    int x1 = fromNote.getX() + fromNote.getWidth() / 2;
+                    int y1 = fromNote.getY() + fromNote.getHeight() / 2;
+                    int x2 = toNote.getX() + toNote.getWidth() / 2;
+                    int y2 = toNote.getY() + toNote.getHeight() / 2;
 
-        StringBuilder currentLine = new StringBuilder();
-
-        for (String word : words) {
-            // Check if adding the word exceeds the max width
-            if (fm.stringWidth(currentLine.toString() + word) <= maxWidth) {
-                currentLine.append(word).append(SPACE);
+                    g.drawLine(x1, y1, x2, y2);
+                }
             }
-            else {
-                // If the line exceeds the width, add the current line and start a new one
+        }
+    }
+        /**
+         * Wraps text to fit within the specified width.
+         *
+         * @param text The text to wrap.
+         * @param fm The FontMetrics used to measure the width.
+         * @param maxWidth The maximum allowed width.
+         * @return An array of lines that fit within the width.
+         */
+        private String[] wrapText (String text, FontMetrics fm,int maxWidth){
+            final List<String> lines = new ArrayList<>();
+            final String[] words = text.split(SPACE);
+
+            StringBuilder currentLine = new StringBuilder();
+
+            for (String word : words) {
+                // Check if adding the word exceeds the max width
+                if (fm.stringWidth(currentLine.toString() + word) <= maxWidth) {
+                    currentLine.append(word).append(SPACE);
+                } else {
+                    // If the line exceeds the width, add the current line and start a new one
+                    lines.add(currentLine.toString().trim());
+                    currentLine = new StringBuilder(word + SPACE);
+                }
+            }
+
+            // Add the last line if there's any remaining text
+            if (currentLine.length() > ZERO) {
                 lines.add(currentLine.toString().trim());
-                currentLine = new StringBuilder(word + SPACE);
+            }
+
+            return lines.toArray(new String[ZERO]);
+        }
+
+        private void saveMindMap () {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Mind Map");
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
+
+            // Show the file chooser and wait for user selection
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            // If the user selects a file to save
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                // Get the selected file
+                File fileToSave = fileChooser.getSelectedFile();
+
+                // Get the selected file format (from the file filter)
+                String fileFormat = getFileFormat(fileChooser);
+
+                // Make sure the selected file has the appropriate extension
+                if (!fileToSave.getName().toLowerCase().endsWith("." + fileFormat)) {
+                    fileToSave = new File(fileToSave.getAbsolutePath() + "." + fileFormat);
+                }
+
+                // Create a BufferedImage of the boardPanel (or any renderable content)
+                BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = image.createGraphics();
+                this.paint(g2d); // Render the boardPanel to the image
+                g2d.dispose(); // Dispose of the graphics context
+
+                // Pass the image, file, and format to the ExportController to handle the export
+                exportController.execute(image, fileToSave, fileFormat);
             }
         }
 
-        // Add the last line if there's any remaining text
-        if (currentLine.length() > ZERO) {
-            lines.add(currentLine.toString().trim());
+        private String getFileFormat (JFileChooser fileChooser){
+            String description = fileChooser.getFileFilter().getDescription();
+            if (description.contains("PNG")) return "png";
+            if (description.contains("JPEG")) return "jpg";
+            if (description.contains("PDF")) return "pdf";
+            return "";
         }
 
-        return lines.toArray(new String[ZERO]);
-    }
-
-    private void saveMindMap() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save Mind Map");
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Image (*.png)", "png"));
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG Image (*.jpg)", "jpg"));
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PDF Document (*.pdf)", "pdf"));
-
-        // Show the file chooser and wait for user selection
-        int userSelection = fileChooser.showSaveDialog(null);
-
-        // If the user selects a file to save
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            // Get the selected file
-            File fileToSave = fileChooser.getSelectedFile();
-
-            // Get the selected file format (from the file filter)
-            String fileFormat = getFileFormat(fileChooser);
-
-            // Make sure the selected file has the appropriate extension
-            if (!fileToSave.getName().toLowerCase().endsWith("." + fileFormat)) {
-                fileToSave = new File(fileToSave.getAbsolutePath() + "." + fileFormat);
+        private void deletePostNoteAtLocation (Point location){
+            // Check if the click is within the bounds of any image post note
+            for (ImagePostNoteViewModel postNote : imagePostNotes) {
+                if (isWithinBounds(postNote, location)) {
+                    // Call the delete controller with the post-note's coordinates and size
+                    deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+                    imagePostNotes.remove(postNote);  // Remove the post note from the list
+                    connectionDAO.deleteConnectionsByNoteId(postNote.getId());
+                    repaint();  // Repaint to reflect the deletion
+                    return;
+                }
             }
 
-            // Create a BufferedImage of the boardPanel (or any renderable content)
-            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2d = image.createGraphics();
-            this.paint(g2d); // Render the boardPanel to the image
-            g2d.dispose(); // Dispose of the graphics context
+            // Check if the click is within the bounds of any text post note
+            for (TextPostNoteViewModel postNote : textPostNotes) {
+                System.out.println("it is going through the loop");
+                if (isWithinBounds(postNote, location)) {
+                    // Call the delete controller with the post-note's coordinates and size
+                    deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+                    textPostNotes.remove(postNote);  // Remove the post note from the list
+                    connectionDAO.deleteConnectionsByNoteId(postNote.getId());
+                    repaint();  // Repaint to reflect the deletion
+                    return;
+                }
+            }
 
-            // Pass the image, file, and format to the ExportController to handle the export
-            exportController.execute(image, fileToSave, fileFormat);
+            // If no post note is found at the location, notify the user
+            JOptionPane.showMessageDialog(this, "No post-it found at the clicked location.");
         }
-    }
 
-    private String getFileFormat(JFileChooser fileChooser) {
-        String description = fileChooser.getFileFilter().getDescription();
-        if (description.contains("PNG")) return "png";
-        if (description.contains("JPEG")) return "jpg";
-        if (description.contains("PDF")) return "pdf";
-        return "";
-    }
-
-    private void deletePostNoteAtLocation(Point location) {
-        // Check if the click is within the bounds of any image post note
-        for (ImagePostNoteViewModel postNote : imagePostNotes) {
-            if (isWithinBounds(postNote, location)) {
-                // Call the delete controller with the post-note's coordinates and size
-                deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
-                imagePostNotes.remove(postNote);  // Remove the post note from the list
-                repaint();  // Repaint to reflect the deletion
-                return;
+        private void startAddingConnection (Point location){
+            isAddingConnection = true;
+            firstSelectedNoteId = getNoteIdAtLocation(location);
+            if (firstSelectedNoteId == null) {
+                JOptionPane.showMessageDialog(this, "No post-it found at the selected location.");
+                isAddingConnection = false;
+            } else {
+                JOptionPane.showMessageDialog(this, "Select the second post-it to connect.");
             }
         }
 
-        // Check if the click is within the bounds of any text post note
-        for (TextPostNoteViewModel postNote : textPostNotes) {
-            System.out.println("it is going through the loop");
-            if (isWithinBounds(postNote, location)) {
-                // Call the delete controller with the post-note's coordinates and size
-                deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
-                textPostNotes.remove(postNote);  // Remove the post note from the list
-                repaint();  // Repaint to reflect the deletion
-                return;
+        private String getNoteIdAtLocation (Point location){
+            for (ImagePostNoteViewModel postNote : imagePostNotes) {
+                if (isWithinBounds(postNote, location)) {
+                    return postNote.getId();
+                }
             }
+            for (TextPostNoteViewModel postNote : textPostNotes) {
+                if (isWithinBounds(postNote, location)) {
+                    return postNote.getId();
+                }
+            }
+            return null;
         }
-
-        // If no post note is found at the location, notify the user
-        JOptionPane.showMessageDialog(this, "No post-it found at the clicked location.");
+        private PostItNoteViewModel getPostNoteById (String noteId){
+            for (ImagePostNoteViewModel note : imagePostNotes) {
+                if (note.getId().equals(noteId)) {
+                    return note;
+                }
+            }
+            for (TextPostNoteViewModel note : textPostNotes) {
+                if (note.getId().equals(noteId)) {
+                    return note;
+                }
+            }
+            return null;
+        }
     }
-
-}

@@ -80,7 +80,7 @@ public class AppBuilder {
     private MindMapLoadingView mindMapLoadingView;
 
     private final Dotenv dotenv = Dotenv.configure()
-            // Directory of the ..env file (default is root)
+            // Directory of the ...env file (default is root)
             .directory(".")
             .load();
 

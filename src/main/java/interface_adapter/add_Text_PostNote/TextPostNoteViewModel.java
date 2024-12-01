@@ -25,4 +25,15 @@ public class TextPostNoteViewModel {
 
     public Color getColor() { return color; }
     public void setColor(Color color) { this.color = color; }
+
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }
