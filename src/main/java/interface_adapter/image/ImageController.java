@@ -9,7 +9,7 @@ public class ImageController {
         this.imageInteractor = imageInteractor;
     }
 
-    public void fetchImages(String query) {
+    public void fetchImages(String query, ImagePresenter imagePresenter) {
         try {
             // Pass the query to the interactor; errors are handled within the interactor
             imageInteractor.searchImages(query);
