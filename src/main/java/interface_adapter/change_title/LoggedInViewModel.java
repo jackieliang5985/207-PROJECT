@@ -1,4 +1,4 @@
-package interface_adapter.change_password;
+package interface_adapter.change_title;
 
 import interface_adapter.ViewModel;
 
@@ -12,4 +12,9 @@ public class LoggedInViewModel extends ViewModel<LoggedInState> {
         setState(new LoggedInState());
     }
 
+    public void setName(String name) {
+        LoggedInState currentState = getState();
+        currentState.setName(name);
+        firePropertyChanged("name");  // Fire property change to notify the view
+    }
 }

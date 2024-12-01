@@ -19,7 +19,7 @@ public class Main {
                 .addMindMapView()
                 .addSignupUseCase()
                 .addLoginUseCase()
-                .addChangePasswordUseCase()
+                .addChangeTitleUseCase()
                 .addLogoutUseCase()
                 .build();
 

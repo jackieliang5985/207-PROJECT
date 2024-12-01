@@ -19,7 +19,7 @@ public class TextPostNoteInteractor implements TextPostNoteInputBoundary {
     @Override
     public void addTextPostNote(TextPostNoteInputData inputData) {
         // Create a TextPostNoteEntity
-        TextPostNoteEntity postNoteEntity = new TextPostNoteEntity(
+        final TextPostNoteEntity postNoteEntity = new TextPostNoteEntity(
                 inputData.getX(), inputData.getY(), inputData.getWidth(), inputData.getHeight(), inputData.getColor(), mindMapEntity
         );
 

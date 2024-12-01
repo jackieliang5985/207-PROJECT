@@ -4,13 +4,22 @@ import use_case.delete_note.DeletePostNoteOutputBoundary;
 import use_case.delete_note.DeletePostNoteOutputData;
 
 public class DeletePostNotePresenter implements DeletePostNoteOutputBoundary {
+
+    private final DeletePostNoteViewModel viewModel;
+
+    public DeletePostNotePresenter(DeletePostNoteViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
     @Override
     public void presentDeletePostNoteResult(DeletePostNoteOutputData outputData) {
-        // Here you can format the message however you want, for now let's just print it
+        // Check if the deletion was successful
         if (outputData.isSuccess()) {
-            System.out.println("Success: " + outputData.getMessage());
+            // If successful, update the ViewModel to reflect the success state
+            viewModel.onPostNoteDeleted();  // This will set isDeletedSuccessfully to true and clear the errorMessage
         } else {
-            System.out.println("Failure: " + outputData.getMessage());
+            // If failure, update the ViewModel with the failure message
+            viewModel.onDeleteFailed(outputData.getMessage());  // This will set isDeletedSuccessfully to false and set the errorMessage
         }
     }
 }

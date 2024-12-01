@@ -1,8 +1,8 @@
 package use_case.add_Text_PostNote;
 
-import entity.TextPostNoteEntity;
-
 import java.awt.*;
+
+import entity.TextPostNoteEntity;
 
 public class TextPostNoteOutputData {
     private final String text;
