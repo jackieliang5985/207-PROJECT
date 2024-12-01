@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -30,6 +31,16 @@ import interface_adapter.add_Connection.AddConnectionPresenter;
 import use_case.add_connection.AddConnectionInteractor;
 import use_case.add_connection.AddConnectionOutputBoundary;
 import interface_adapter.add_Connection.ConnectionViewModel;
+import interface_adapter.add_Connection.PostItNoteViewModel;
+import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
+import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
+import interface_adapter.add_Connection.PostItNoteViewModel;
+import use_case.add_connection.AddConnectionOutputBoundary;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import use_case.add_connection.AddConnectionInputBoundary;
+import use_case.add_connection.AddConnectionInteractor;
+import entity.ConnectionEntity;
+
 
 /**
  * The MindMapView class represents the main visual component of the Mind Map application.

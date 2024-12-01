@@ -1,9 +1,9 @@
 package interface_adapter.add_Connection;
 
 import use_case.add_connection.AddConnectionOutputData;
+import use_case.add_connection.AddConnectionOutputBoundary;
 
-
-public class AddConnectionPresenter {
+public class AddConnectionPresenter implements AddConnectionOutputBoundary {
     private final ConnectionViewModel viewModel;
 
     public AddConnectionPresenter(ConnectionViewModel viewModel) {

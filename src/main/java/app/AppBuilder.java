@@ -71,6 +71,11 @@ public class AppBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final data_access.ConnectionDAO connectionDAO = new data_access.InMemoryConnectionDAO();
+    private final interface_adapter.add_Connection.ConnectionViewModel connectionViewModel = new interface_adapter.add_Connection.ConnectionViewModel();
+    private final use_case.add_connection.AddConnectionOutputBoundary addConnectionOutputBoundary = new interface_adapter.add_Connection.AddConnectionPresenter(connectionViewModel);
+    private final use_case.add_connection.AddConnectionInputBoundary addConnectionInteractor = new use_case.add_connection.AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+    private final interface_adapter.add_Connection.AddConnectionController addConnectionController = new interface_adapter.add_Connection.AddConnectionController(addConnectionInteractor);
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
@@ -85,6 +90,27 @@ public class AppBuilder {
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
+
+    final MindMapView MindMapView = new MindMapView(
+            cardLayout,
+            cardPanel,
+            imageController,
+            imageViewModel,
+            imagePostNoteViewModel,
+            textPostNoteViewModel,
+            exportController,
+            imagePostNoteController,
+            textPostNoteController,
+            deletePostNoteController,
+            addConnectionController, // Newly added
+            connectionViewModel,     // Newly added
+            connectionDAO            // Newly added
+    );
+
+    cardPanel.add(mindMapView,MindMapView.VIEW_NAME);
+
+    return this;  // Return the builder for method chaining
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
