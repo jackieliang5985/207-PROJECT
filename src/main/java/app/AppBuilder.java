@@ -87,11 +87,11 @@ public class AppBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
-    private final data_access.ConnectionDAO connectionDAO = new data_access.InMemoryConnectionDAO();
-    private final interface_adapter.add_Connection.ConnectionViewModel connectionViewModel = new interface_adapter.add_Connection.ConnectionViewModel();
-    private final use_case.add_connection.AddConnectionOutputBoundary addConnectionOutputBoundary = new interface_adapter.add_Connection.AddConnectionPresenter(connectionViewModel);
-    private final use_case.add_connection.AddConnectionInputBoundary addConnectionInteractor = new use_case.add_connection.AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
-    private final interface_adapter.add_Connection.AddConnectionController addConnectionController = new interface_adapter.add_Connection.AddConnectionController(addConnectionInteractor);
+    private final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+    private final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
+    private final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
+    private final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+    private final AddConnectionController addConnectionController = new AddConnectionController(addConnectionInteractor);
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
@@ -256,65 +256,55 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDAO postNoteDAO =
-                new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
 
         // Initialize MindMapEntity
-        // Change the title as needed
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
-        // Initialize the ImagePostNoteInteractor with the presenter, DAO, and MindMapEntity
+
+        // Initialize the Interactors
         final ImagePostNoteInteractor imagePostNoteInteractor =
                 new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
-
-        // Initialize the TextPostNoteInteractor with the presenter, DAO, and MindMapEntity
         final TextPostNoteInteractor textPostNoteInteractor =
                 new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
 
-        // Initialize the ImagePostNoteController, passing the interactor and view model
+        // Initialize the Controllers
         final ImagePostNoteController imagePostNoteController =
                 new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
-
-        // Initialize the TextPostNoteController, passing the interactor and view model
         final TextPostNoteController textPostNoteController =
                 new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
 
-        // Initialize DeletePostNoteInteractor (passing output boundary, DAO, and MindMapEntity)
+        // Initialize DeletePostNote components
         DeletePostNoteController deletePostNoteController = null;
         final DeletePostNoteViewModel deletePostNoteViewModel = new DeletePostNoteViewModel(deletePostNoteController);
         final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
         final DeletePostNoteInteractor deletePostNoteInteractor =
                 new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
-
         // Initialize the DeletePostNoteController
         deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
 
+        // Initialize ChangeColor components
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
         final ChangeColorInputBoundary changeColorInteractor =
                 new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
-        // Initialize ConnectionDAO
-        final ConnectionDAO connectionDAO =
-                new InMemoryConnectionDAO();
+        // Initialize Connection components
+        final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+        final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
+        final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
+        final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+        final AddConnectionController connectionController = new AddConnectionController(addConnectionInteractor);
 
-        // Initialize ConnectionViewModel
-        final ConnectionViewModel connectionViewModel =
-                new ConnectionViewModel();
-
-        final AddConnectionController connectionController =
-                new AddConnectionController(addConnectionInteractor);
-
-        // Initialize MindMapView and pass all the controllers including DeletePostNoteController
+        // Initialize MindMapView
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
-                deletePostNoteController,
+                deletePostNoteController,  // Correctly placed
+                changeColorController,     // Correctly placed
                 connectionController, connectionViewModel, connectionDAO
         );
-                deletePostNoteController, // Pass the delete controller here
-                changeColorController);
 
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 

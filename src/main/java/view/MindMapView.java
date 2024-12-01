@@ -19,6 +19,7 @@ import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.add_Text_PostNote.TextPostNoteController;
 import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
+import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
@@ -115,7 +116,8 @@ public class MindMapView extends JPanel {
      * @param deletePostNoteController   The controller for managing deleting post-notes.
      * @param changeColorController      The controller for customizing the color of post-notes.
      */
-    public MindMapView(CardLayout cardLayout, Container cardPanel,
+    public MindMapView(CardLayout cardLayout,
+                       Container cardPanel,
                        ImageController imageController,
                        ImageViewModel imageViewModel,
                        ImagePostNoteViewModel imagePostNoteViewModel,
@@ -124,8 +126,10 @@ public class MindMapView extends JPanel {
                        ImagePostNoteController imagePostNoteController,
                        TextPostNoteController textPostNoteController,
                        DeletePostNoteController deletePostNoteController,
-                       ChangeColorController changeColorController) {
-                       TextPostNoteController textPostNoteController, DeletePostNoteController deletePostNoteController, AddConnectionController addConnectionController, ConnectionViewModel connectionViewModel, ConnectionDAO connectionDAO) {
+                       ChangeColorController changeColorController,
+                       AddConnectionController addConnectionController,
+                       ConnectionViewModel connectionViewModel,
+                       ConnectionDAO connectionDAO) {
 
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
@@ -139,18 +143,16 @@ public class MindMapView extends JPanel {
         this.deletePostNoteController = deletePostNoteController;
         this.changeColorController = changeColorController;
         this.connectionDAO = connectionDAO;
-        this.connectionViewModel = new ConnectionViewModel();
-        AddConnectionOutputBoundary outputBoundary = new AddConnectionPresenter(connectionViewModel);
-        AddConnectionInteractor interactor = new AddConnectionInteractor(outputBoundary, connectionDAO);
-        this.addConnectionController = new AddConnectionController(interactor);
+        this.connectionViewModel = connectionViewModel;
+        this.addConnectionController = addConnectionController;
 
-        // Initialize postNotes as an empty list
         this.imagePostNotes = new ArrayList<>();
         this.textPostNotes = new ArrayList<>();
 
         setupUI();
         setupDragFunctionality();
     }
+
 
     /**
      * Sets up the UI components for the Mind Map View, including the title label
@@ -176,8 +178,7 @@ public class MindMapView extends JPanel {
         final JMenuItem deleteMenuItem = new JMenuItem("Delete Post It");
         final JMenuItem saveMenuItem = new JMenuItem("Save");
         final JMenuItem logoutMenuItem = new JMenuItem("Logout");
-        JMenuItem deleteMenuItem = new JMenuItem("Delete Post It");
-        JMenuItem addConnectionMenuItem = new JMenuItem("Add Connection");
+        final JMenuItem addConnectionMenuItem = new JMenuItem("Add Connection");
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -384,7 +385,7 @@ public class MindMapView extends JPanel {
         imageController.fetchImages(query);
 
         final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
-        imageController.fetchImages(query, imagePresenter);
+        imageController.fetchImages(query);
         System.out.println("Creating Image Note with ID: " + imagePostNoteViewModel.getId());
 
     }
@@ -714,33 +715,22 @@ public class MindMapView extends JPanel {
                 // Call the delete controller with the post-note's coordinates and size
                 deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
                 imagePostNotes.remove(postNote);  // Remove the post note from the list
+                connectionDAO.deleteConnectionsByNoteId(postNote.getId());
                 repaint();  // Repaint to reflect the deletion
                 return;
             }
         }
-        private void deletePostNoteAtLocation (Point location){
-            // Check if the click is within the bounds of any image post note
-            for (ImagePostNoteViewModel postNote : imagePostNotes) {
-                if (isWithinBounds(postNote, location)) {
-                    // Call the delete controller with the post-note's coordinates and size
-                    deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
-                    imagePostNotes.remove(postNote);  // Remove the post note from the list
-                    connectionDAO.deleteConnectionsByNoteId(postNote.getId());
-                    repaint();  // Repaint to reflect the deletion
-                    return;
-                }
-            }
 
             // Check if the click is within the bounds of any text post note
-            for (TextPostNoteViewModel postNote : textPostNotes) {
-                System.out.println("it is going through the loop");
-                if (isWithinBounds(postNote, location)) {
-                    // Call the delete controller with the post-note's coordinates and size
-                    deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
-                    textPostNotes.remove(postNote);  // Remove the post note from the list
-                    connectionDAO.deleteConnectionsByNoteId(postNote.getId());
-                    repaint();  // Repaint to reflect the deletion
-                    return;
+        for (TextPostNoteViewModel postNote : textPostNotes) {
+            System.out.println("it is going through the loop");
+            if (isWithinBounds(postNote, location)) {
+                // Call the delete controller with the post-note's coordinates and size
+                deletePostNoteController.deletePostNote(postNote.getX(), postNote.getY(), postNote.getWidth(), postNote.getHeight());
+                textPostNotes.remove(postNote);  // Remove the post note from the list
+                connectionDAO.deleteConnectionsByNoteId(postNote.getId());
+                repaint();  // Repaint to reflect the deletion
+                return;
                 }
             }
 
