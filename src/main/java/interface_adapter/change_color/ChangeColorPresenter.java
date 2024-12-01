@@ -16,7 +16,7 @@ public class ChangeColorPresenter implements ChangeColorOutputBoundary {
     @Override
     public void prepareSuccessView(ChangeColorOutputData changeColorOutputData) {
         // Update the view model with the new data passed in outputData
-        textPostNoteViewModel.setText(changeColorOutputData.getText());
+//        textPostNoteViewModel.setText(changeColorOutputData.getText());
         textPostNoteViewModel.setX(changeColorOutputData.getX());
         textPostNoteViewModel.setY(changeColorOutputData.getY());
         textPostNoteViewModel.setWidth(changeColorOutputData.getWidth());

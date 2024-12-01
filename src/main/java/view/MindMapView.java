@@ -596,13 +596,17 @@ public class MindMapView extends JPanel {
             if (isWithinBounds(postNote, location)) {
                 // Call the delete controller with the post-note's coordinates and size
                 Color newColor = JColorChooser.showDialog(null, "Choose a color", postNote.getColor());
+                System.out.println("Color is " + newColor.toString());
                 changeColorController.execute(postNote.getX(), postNote.getY(), postNote.getWidth(),
                         postNote.getHeight(), newColor);
                 postNote.setColor(newColor);
-                repaint();  // Repaint to reflect the color change
+                repaint();
                 return;
             }
         }
+
+        // If no post note is found at the location, notify the user
+        JOptionPane.showMessageDialog(this, "No post-it found at the clicked location.");
     }
 
     private void deletePostNoteAtLocation(Point location) {

@@ -44,6 +44,7 @@ import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.add_Text_PostNote.TextPostNoteInteractor;
 import use_case.change_color.ChangeColorInputBoundary;
 import use_case.change_color.ChangeColorInteractor;
+import use_case.change_color.ChangeColorNoteDataAccessInterface;
 import use_case.change_color.ChangeColorOutputBoundary;
 import use_case.change_title.ChangeTitleInputBoundary;
 import use_case.change_title.ChangeTitleInteractor;
@@ -291,7 +292,7 @@ public class AppBuilder {
 
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
         final ChangeColorInputBoundary changeColorInteractor =
-                new ChangeColorInteractor(changeColorOutputBoundary, postNoteDAO);
+                new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
         // Initialize MindMapView and pass all the controllers including DeletePostNoteController
