@@ -9,4 +9,5 @@ public interface ChangeColorInputBoundary {
      * @param changeColorInputData the input data for this use case
      */
     void execute(ChangeColorInputData changeColorInputData);
+
 }

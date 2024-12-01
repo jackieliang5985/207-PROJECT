@@ -19,6 +19,10 @@ public class TextPostNoteEntity extends PostNoteEntity {
         return color;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     public String getText() {
         return text;
     }
