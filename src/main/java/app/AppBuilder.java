@@ -59,6 +59,15 @@ import view.LoadedInView;
 import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
+import data_access.ConnectionDAO;
+import data_access.InMemoryConnectionDAO;
+import interface_adapter.add_Connection.ConnectionViewModel;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import use_case.add_connection.AddConnectionInputBoundary;
+import use_case.add_connection.AddConnectionOutputBoundary;
+import use_case.add_connection.AddConnectionInteractor;
+
 
 /**
  * The AppBuilder class is responsible for putting together the components
@@ -90,26 +99,6 @@ public class AppBuilder {
             .load();
 
     private final String unsplashApiKey = dotenv.get("UNSPLASH_API_KEY");
-
-    final MindMapView MindMapView = new MindMapView(
-            cardLayout,
-            cardPanel,
-            imageController,
-            imageViewModel,
-            imagePostNoteViewModel,
-            textPostNoteViewModel,
-            exportController,
-            imagePostNoteController,
-            textPostNoteController,
-            deletePostNoteController,
-            addConnectionController, // Newly added
-            connectionViewModel,     // Newly added
-            connectionDAO            // Newly added
-    );
-
-    cardPanel.add(mindMapView,MindMapView.VIEW_NAME);
-
-    return this;  // Return the builder for method chaining
 
 
     public AppBuilder() {
@@ -284,13 +273,25 @@ public class AppBuilder {
         final DeletePostNoteController deletePostNoteController =
                 new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
 
+        // Initialize ConnectionDAO
+        final ConnectionDAO connectionDAO =
+                new InMemoryConnectionDAO();
+
+        // Initialize ConnectionViewModel
+        final ConnectionViewModel connectionViewModel =
+                new ConnectionViewModel();
+
+        final AddConnectionController connectionController =
+                new AddConnectionController(addConnectionInteractor);
+
         // Initialize MindMapView and pass all the controllers including DeletePostNoteController
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
-                deletePostNoteController // Pass the delete controller here
+                deletePostNoteController,
+                connectionController, connectionViewModel, connectionDAO
         );
 
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);

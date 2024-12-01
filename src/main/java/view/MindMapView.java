@@ -32,13 +32,6 @@ import use_case.add_connection.AddConnectionInteractor;
 import use_case.add_connection.AddConnectionOutputBoundary;
 import interface_adapter.add_Connection.ConnectionViewModel;
 import interface_adapter.add_Connection.PostItNoteViewModel;
-import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
-import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
-import interface_adapter.add_Connection.PostItNoteViewModel;
-import use_case.add_connection.AddConnectionOutputBoundary;
-import interface_adapter.add_Connection.AddConnectionPresenter;
-import use_case.add_connection.AddConnectionInputBoundary;
-import use_case.add_connection.AddConnectionInteractor;
 import entity.ConnectionEntity;
 
 
@@ -139,7 +132,7 @@ public class MindMapView extends JPanel {
         this.imagePostNoteViewModel = imagePostNoteViewModel;
         this.textPostNoteViewModel = textPostNoteViewModel;
         this.deletePostNoteController = deletePostNoteController;
-        this.connectionDAO = new InMemoryConnectionDAO();
+        this.connectionDAO = connectionDAO;
         this.connectionViewModel = new ConnectionViewModel();
         AddConnectionOutputBoundary outputBoundary = new AddConnectionPresenter(connectionViewModel);
         AddConnectionInteractor interactor = new AddConnectionInteractor(outputBoundary, connectionDAO);
@@ -257,6 +250,7 @@ public class MindMapView extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (isAddingConnection) {
                     String secondNoteId = getNoteIdAtLocation(e.getPoint());
+                    System.out.println("Second Selected Note ID: " + secondNoteId);
                     if (secondNoteId == null) {
                         JOptionPane.showMessageDialog(MindMapView.this, "No post-it found at the clicked location.");
                         isAddingConnection = false;
@@ -371,6 +365,8 @@ public class MindMapView extends JPanel {
 
         final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
         imageController.fetchImages(query, imagePresenter);
+        System.out.println("Creating Image Note with ID: " + imagePostNoteViewModel.getId());
+
     }
 
     /**
@@ -438,6 +434,8 @@ public class MindMapView extends JPanel {
         if (text == null || text.isEmpty()) {
             return;
         }
+        final String noteId = UUID.randomUUID().toString();
+        textPostNoteViewModel.setId(noteId);
 
         textPostNoteViewModel.setText(text);
         textPostNoteViewModel.setX(location.x);
@@ -458,6 +456,8 @@ public class MindMapView extends JPanel {
 
         // Once the post note is added, update the MindMapView
         updateTextPostNotes(textPostNoteViewModel);
+        System.out.println("Creating Text Note with ID: " + textPostNoteViewModel.getId());
+
     }
 
     /**
@@ -493,11 +493,12 @@ public class MindMapView extends JPanel {
         newPostNote.setHeight(postNoteViewModel.getHeight());
         newPostNote.setColor(postNoteViewModel.getColor());
         newPostNote.setText(postNoteViewModel.getText());
-        newPostNote.setId(UUID.randomUUID().toString());
+        newPostNote.setId(postNoteViewModel.getId());
 
 
         this.textPostNotes.add(newPostNote);
         repaint();
+        System.out.println("Creating Text Note with ID: " + textPostNoteViewModel.getId());
     }
 
     private void logout() {
@@ -556,6 +557,22 @@ public class MindMapView extends JPanel {
             }
         }
         List<ConnectionEntity> connections = connectionDAO.getAllConnections();
+        System.out.println("Connections retrieved for drawing:");
+
+        if (connections != null) {
+            System.out.println("Number of connections: " + connections.size());
+
+            if (connections.isEmpty()) {
+                System.out.println("No connections found");
+            } else {
+                for (ConnectionEntity connection : connections) {
+                    System.out.println(" - Connection between: " + connection.getFromNoteId() + " and " + connection.getToNoteId());
+                }
+            }
+        } else {
+            System.out.println("Connections list is null");
+        }
+
         if (connections != null) {
             g.setColor(Color.BLACK); // Set line color
             for (ConnectionEntity connection : connections) {
@@ -681,6 +698,7 @@ public class MindMapView extends JPanel {
         private void startAddingConnection (Point location){
             isAddingConnection = true;
             firstSelectedNoteId = getNoteIdAtLocation(location);
+            System.out.println("First Selected Note ID: " + firstSelectedNoteId);
             if (firstSelectedNoteId == null) {
                 JOptionPane.showMessageDialog(this, "No post-it found at the selected location.");
                 isAddingConnection = false;
@@ -716,3 +734,5 @@ public class MindMapView extends JPanel {
             return null;
         }
     }
+
+

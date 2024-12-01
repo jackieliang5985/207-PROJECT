@@ -20,7 +20,6 @@ public class TextPostNoteController {
      */
     public void addTextPostNote(String text, int x, int y, int width, int height, Color color) {
         // Create the input data object for adding a new TextPostNote
-        Color defaultColor = Color.YELLOW;
         TextPostNoteInputData inputData = new TextPostNoteInputData(text, x, y, width, height, color);
 
         // Pass the input data to the interactor to process it

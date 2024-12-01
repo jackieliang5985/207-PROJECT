@@ -31,6 +31,7 @@ public class AddConnectionInteractor implements AddConnectionInputBoundary {
 
         // Store the connection using the DAO
         connectionDAO.saveConnection(connection);
+        System.out.println("Connection saved between: " + inputData.getFromNoteID() + " and " + inputData.getToNoteID());
 
         // Notify success
         outputBoundary.present(new AddConnectionOutputData(true, "Connection added successfully."));
