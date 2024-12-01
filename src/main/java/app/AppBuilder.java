@@ -27,6 +27,7 @@ import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
 import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.delete_note.DeletePostNotePresenter;
+import interface_adapter.delete_note.DeletePostNoteViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
@@ -259,13 +260,14 @@ public class AppBuilder {
                 new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
 
         // Initialize DeletePostNoteInteractor (passing output boundary, DAO, and MindMapEntity)
-        final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter();  // Assuming a simple presenter implementation
+        DeletePostNoteController deletePostNoteController = null;
+        final DeletePostNoteViewModel deletePostNoteViewModel = new DeletePostNoteViewModel(deletePostNoteController);
+        final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
         final DeletePostNoteInteractor deletePostNoteInteractor =
                 new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
 
         // Initialize the DeletePostNoteController
-        final DeletePostNoteController deletePostNoteController =
-                new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
+        deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
 
         // Initialize MindMapView and pass all the controllers including DeletePostNoteController
         final MindMapView mindMapView = new MindMapView(
