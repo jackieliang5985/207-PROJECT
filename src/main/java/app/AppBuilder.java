@@ -66,6 +66,15 @@ import view.LoadedInView;
 import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
+import data_access.ConnectionDAO;
+import data_access.InMemoryConnectionDAO;
+import interface_adapter.add_Connection.ConnectionViewModel;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import use_case.add_connection.AddConnectionInputBoundary;
+import use_case.add_connection.AddConnectionOutputBoundary;
+import use_case.add_connection.AddConnectionInteractor;
+
 
 /**
  * The AppBuilder class is responsible for putting together the components
@@ -78,6 +87,11 @@ public class AppBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+    private final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
+    private final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
+    private final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+    private final AddConnectionController addConnectionController = new AddConnectionController(addConnectionInteractor);
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
@@ -190,23 +204,6 @@ public class AppBuilder {
     }
 
     /**
-     * Adds the Change Color Use Case to the application.
-     * @return this builder
-     */
-//    public AppBuilder addChangeColorUseCase() {
-//        final ChangeColorOutputBoundary changePasswordOutputBoundary =
-//                new ChangeColorPresenter(loggedInViewModel);
-//
-//        final ChangeColorInputBoundary changeColorInteractor =
-//                new ChangeColorInteractor(userDataAccessObject, changePasswordOutputBoundary, postNoteDAO);
-//
-//        final ChangeColorController changePasswordController =
-//                new ChangeColorController(changeColorInteractor);
-//        loggedInView.setChangePasswordController(changePasswordController);
-//        return this;
-//    }
-
-    /**
      * Adds the Logout Use Case to the application.
      *
      * @return this builder
@@ -259,29 +256,24 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDAO postNoteDAO =
-                new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
 
         // Initialize MindMapEntity
-        // Change the title as needed
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
-        // Initialize the ImagePostNoteInteractor with the presenter, DAO, and MindMapEntity
+
+        // Initialize the Interactors
         final ImagePostNoteInteractor imagePostNoteInteractor =
                 new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
-
-        // Initialize the TextPostNoteInteractor with the presenter, DAO, and MindMapEntity
         final TextPostNoteInteractor textPostNoteInteractor =
                 new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
 
-        // Initialize the ImagePostNoteController, passing the interactor and view model
+        // Initialize the Controllers
         final ImagePostNoteController imagePostNoteController =
                 new ImagePostNoteController(imagePostNoteInteractor, imagePostNoteViewModel);
-
-        // Initialize the TextPostNoteController, passing the interactor and view model
         final TextPostNoteController textPostNoteController =
                 new TextPostNoteController(textPostNoteInteractor, textPostNoteViewModel);
 
-        // Initialize DeletePostNoteInteractor (passing output boundary, DAO, and MindMapEntity)
+        // Initialize DeletePostNote components
         DeletePostNoteController deletePostNoteController = null;
         final DeletePostNoteViewModel deletePostNoteViewModel = new DeletePostNoteViewModel(deletePostNoteController);
         final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
@@ -290,19 +282,29 @@ public class AppBuilder {
         // Initialize the DeletePostNoteController
         deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
 
+        // Initialize ChangeColor components
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
         final ChangeColorInputBoundary changeColorInteractor =
                 new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
-        // Initialize MindMapView and pass all the controllers including DeletePostNoteController
+        // Initialize Connection components
+        final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+        final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
+        final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
+        final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+        final AddConnectionController connectionController = new AddConnectionController(addConnectionInteractor);
+
+        // Initialize MindMapView
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
                 imageController, imageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
-                deletePostNoteController, // Pass the delete controller here
-                changeColorController);
+                deletePostNoteController,  // Correctly placed
+                changeColorController,     // Correctly placed
+                connectionController, connectionViewModel, connectionDAO
+        );
 
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
 
