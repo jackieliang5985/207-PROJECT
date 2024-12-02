@@ -18,7 +18,7 @@ public class ImagePostNoteController {
     /**
      * Handles adding a new image post-it note.
      */
-    public void addImagePostNote(String imageUrl, int x, int y, int width, int height, Color color) {
+    public void execute(String imageUrl, int x, int y, int width, int height, Color color) {
         // Update the view model with the image data
         System.out.println("size of post note is, " + width + "by" + height);
 

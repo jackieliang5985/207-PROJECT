@@ -100,7 +100,7 @@ class ImagePostNoteInteractorTest {
         );
 
         // Act
-        controller.addImagePostNote(imageUrl, x, y, width, height, color);
+        controller.execute(imageUrl, x, y, width, height, color);
 
         // Assert: Make sure the post note is added with a null image URL
         PostNoteEntity addedPostNote = postNoteDAO.getAllPostNotes().get(0);
@@ -126,7 +126,7 @@ class ImagePostNoteInteractorTest {
         );
 
         // Act
-        controller.addImagePostNote(imageUrl, x, y, width, height, color);
+        controller.execute(imageUrl, x, y, width, height, color);
 
         // Assert: Make sure the post note is added with an empty image URL
         PostNoteEntity addedPostNote = postNoteDAO.getAllPostNotes().get(0);
@@ -156,7 +156,7 @@ class ImagePostNoteInteractorTest {
         ImagePostNoteController controller = new ImagePostNoteController(interactor, viewModel);
 
         // Act: Add the image post note using the controller
-        controller.addImagePostNote(imageUrl, x, y, width, height, color);
+        controller.execute(imageUrl, x, y, width, height, color);
 
         // Assert: Make sure the post note is added to the empty DAO
         assertEquals(1, postNoteDAO.getAllPostNotes().size(), "Post note should be added to the DAO.");
@@ -214,7 +214,7 @@ class ImagePostNoteInteractorTest {
 
         // Act: Add multiple image post notes using the controller
         for (int i = 0; i < imageUrls.length; i++) {
-            controller.addImagePostNote(imageUrls[i], xCoordinates[i], yCoordinates[i], widths[i], heights[i], color);
+            controller.execute(imageUrls[i], xCoordinates[i], yCoordinates[i], widths[i], heights[i], color);
         }
 
         // Assert: Verify that the DAO contains the correct number of post notes
@@ -262,7 +262,7 @@ class ImagePostNoteInteractorTest {
         ImagePostNoteController controller = new ImagePostNoteController(interactor, viewModel);
 
         // Act: Add image post note
-        controller.addImagePostNote(imageUrl, x, y, width, height, color);
+        controller.execute(imageUrl, x, y, width, height, color);
 
         // Assert: Ensure the view model is updated with the correct values
         assertEquals(imageUrl, viewModel.getImageUrl(), "Image URL should match the view model.");

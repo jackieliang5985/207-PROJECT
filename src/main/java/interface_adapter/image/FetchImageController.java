@@ -28,7 +28,7 @@ public class FetchImageController {
     public void fetchImages(String query) {
         try {
             FetchImageInputData inputData = new FetchImageInputData(query);
-            imageInteractor.searchImages(inputData);
+            imageInteractor.execute(inputData);
         } catch (Exception e) {
             // Honestly, presenter deals with this
         }
