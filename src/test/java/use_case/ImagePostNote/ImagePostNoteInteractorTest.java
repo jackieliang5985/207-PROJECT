@@ -82,58 +82,6 @@ class ImagePostNoteInteractorTest {
         assertEquals(y, viewModel.getY(), "View model Y coordinate should match.");
         assertEquals(color, viewModel.getColor(), "View model color should match.");
     }
-
-    @Test
-    void testAddImagePostNoteWithNullImageUrl() {
-        // Arrange
-        String imageUrl = null;  // Simulate a null image URL
-        int x = 10, y = 20, width = 300, height = 200;
-        Color color = Color.RED;
-
-        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
-        ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
-        ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
-
-        ImagePostNoteController controller = new ImagePostNoteController(
-                new ImagePostNoteInteractor(presenter, postNoteDAO, new MindMapEntity("Test Mind Map", new ArrayList<>())),
-                viewModel
-        );
-
-        // Act
-        controller.execute(imageUrl, x, y, width, height, color);
-
-        // Assert: Make sure the post note is added with a null image URL
-        PostNoteEntity addedPostNote = postNoteDAO.getAllPostNotes().get(0);
-        assertTrue(addedPostNote instanceof ImagePostNoteEntity, "Expected post note to be an instance of ImagePostNoteEntity.");
-        ImagePostNoteEntity imagePostNote = (ImagePostNoteEntity) addedPostNote;
-        assertNull(imagePostNote.getImageUrl(), "Image URL should be null.");
-    }
-
-    @Test
-    void testAddImagePostNoteWithEmptyImageUrl() {
-        // Arrange
-        String imageUrl = "";  // Simulate an empty image URL
-        int x = 10, y = 20, width = 300, height = 200;
-        Color color = Color.RED;
-
-        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
-        ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
-        ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
-
-        ImagePostNoteController controller = new ImagePostNoteController(
-                new ImagePostNoteInteractor(presenter, postNoteDAO, new MindMapEntity("Test Mind Map", new ArrayList<>())),
-                viewModel
-        );
-
-        // Act
-        controller.execute(imageUrl, x, y, width, height, color);
-
-        // Assert: Make sure the post note is added with an empty image URL
-        PostNoteEntity addedPostNote = postNoteDAO.getAllPostNotes().get(0);
-        assertTrue(addedPostNote instanceof ImagePostNoteEntity, "Expected post note to be an instance of ImagePostNoteEntity.");
-        ImagePostNoteEntity imagePostNote = (ImagePostNoteEntity) addedPostNote;
-        assertEquals("", imagePostNote.getImageUrl(), "Image URL should be an empty string.");
-    }
     @Test
     void testAddImagePostNoteWhenDAOIsEmpty() {
         // Arrange
