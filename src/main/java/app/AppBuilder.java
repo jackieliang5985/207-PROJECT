@@ -33,9 +33,7 @@ import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
 import interface_adapter.image.*;
-import interface_adapter.image.UnsplashImageInputBoundary;
-import interface_adapter.loading.LoadingController;
-import interface_adapter.loading.LoadingPresenter;
+import interface_adapter.image.UnsplashFetchImageInputBoundary;
 import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
@@ -53,10 +51,7 @@ import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.delete_note.DeletePostNoteInteractor;
 import use_case.export_mind_map.ExportInteractor;
-import use_case.image.ImageInteractor;
-import use_case.loading.LoadingInputBoundary;
-import use_case.loading.LoadingInteractor;
-import use_case.loading.LoadingOutputBoundary;
+import use_case.fetch_image.FetchImageInteractor;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
@@ -195,19 +190,19 @@ public class AppBuilder {
      */
     public AppBuilder addMindMapView() {
         // Initialize the ImageViewModel and ImagePostNoteViewModel
-        final ImageViewModel imageViewModel = new ImageViewModel();
+        final FetchImageViewModel fetchImageViewModel = new FetchImageViewModel();
         final ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
 
         // Initialize the TextPostNoteViewModel
         final TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
 
         // Initialize ImagePresenter (uses ImageViewModel)
-        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+        final FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(fetchImageViewModel);
 
         // Use UnsplashImageInputBoundary as ImageRepository and create ImageInteractor
-        final ImageInteractor imageInteractor =
-                new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
-        final ImageController imageController = new ImageController(imageInteractor);
+        final FetchImageInteractor imageInteractor =
+                new FetchImageInteractor(new UnsplashFetchImageInputBoundary(unsplashApiKey), fetchImagePresenter);
+        final FetchImageController fetchImageController = new FetchImageController(imageInteractor);
 
         // Initialize ExportController and related components
         final ExportState exportState = new ExportState();
@@ -267,7 +262,7 @@ public class AppBuilder {
         // Initialize MindMapView
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
-                imageController, imageViewModel,
+                fetchImageController, fetchImageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
                 deletePostNoteController,  // Correctly placed

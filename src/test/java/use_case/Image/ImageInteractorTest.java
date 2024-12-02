@@ -2,11 +2,11 @@ package use_case.Image;
 
 import data_access.SimpleImage;
 import entity.CommonImage;
-import data_access.InMemoryImageDataAccessObject;
-import interface_adapter.image.ImagePresenter;
-import interface_adapter.image.ImageViewModel;
+import data_access.InMemoryFetchImageDataAccessObject;
+import interface_adapter.image.FetchImagePresenter;
+import interface_adapter.image.FetchImageViewModel;
 import org.junit.jupiter.api.Test;
-import use_case.image.ImageInteractor;
+import use_case.fetch_image.FetchImageInteractor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +24,8 @@ class ImageInteractorTest {
     @Test
     void testSearchImages_Success() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Add some images to the repository
         CommonImage image1 = new CommonImage("https://images.unsplash.com/photo-1591729651527-4d09a51b1e2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2Nzg0NTF8MHwxfHNlYXJjaHw1fHxkYWR8ZW58MHx8fHwxNzMyNjU2OTY3fDA&ixlib=rb-4.0.3&q=80&w=400", "dad", "2");
@@ -36,7 +36,7 @@ class ImageInteractorTest {
         imageRepository.save(new SimpleImage(image2.getUrl(), image2.getDescription(), image2.getId()));
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Call the method to test with the query that matches the descriptions
         List<CommonImage> result = interactor.searchImages("dad");
@@ -51,11 +51,11 @@ class ImageInteractorTest {
     @Test
     void testSearchImages_NoResults() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Call the method to test
         List<CommonImage> result = interactor.searchImages("nonexistent");
@@ -65,18 +65,18 @@ class ImageInteractorTest {
 
         // Verify that the presenter handled the error (in your actual presenter implementation,
         // it would display this error to the view, so we simulate that handling in this test)
-        assertEquals("Invalid Search: No results found.", imagePresenter.getErrorMessage());
+        assertEquals("Invalid Search: No results found.", fetchImagePresenter.getErrorMessage());
     }
 
     // Test for failure when an exception is thrown by the repository (e.g., invalid query or internal error)
     @Test
     void testSearchImages_Failure() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Simulate an error by making the repository return an exception
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // We simulate an error scenario where repository fails to fetch images
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -88,17 +88,17 @@ class ImageInteractorTest {
         assertEquals("Error fetching images", exception.getMessage());
 
         // Verify that the presenter handles the error message (in real-world scenarios, this could show a dialog to the user)
-        assertEquals("Error fetching images", imagePresenter.getErrorMessage());
+        assertEquals("Error fetching images", fetchImagePresenter.getErrorMessage());
     }
 
     @Test
     void testSearchImages_EmptyRepository() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Call the method to test (search in an empty repository)
         List<CommonImage> result = interactor.searchImages("sunset");
@@ -110,8 +110,8 @@ class ImageInteractorTest {
     @Test
     void testSearchImages_CaseInsensitive() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Add some images to the repository
         CommonImage image1 = new CommonImage("https://images.unsplash.com/photo-1591729651527-4d09a51b1e2c", "Sunset", "2");
@@ -120,7 +120,7 @@ class ImageInteractorTest {
         imageRepository.save(new SimpleImage(image2.getUrl(), image2.getDescription(), image2.getId()));
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Test case insensitivity by searching for "sunset"
         List<CommonImage> result = interactor.searchImages("Sunset");
@@ -132,8 +132,8 @@ class ImageInteractorTest {
     @Test
     void testSearchImages_SpecialCharacters() throws Exception {
         // Create the in-memory image repository and presenter
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImagePresenter imagePresenter = new ImagePresenter(new ImageViewModel());
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(new FetchImageViewModel());
 
         // Add some images to the repository
         CommonImage image1 = new CommonImage("https://images.unsplash.com/photo-1591729651527-4d09a51b1e2c", "Beach Sunset", "2");
@@ -142,7 +142,7 @@ class ImageInteractorTest {
         imageRepository.save(new SimpleImage(image2.getUrl(), image2.getDescription(), image2.getId()));
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Test searching with special characters (e.g., space)
         List<CommonImage> result = interactor.searchImages("Beach Sunset");
@@ -154,16 +154,16 @@ class ImageInteractorTest {
     @Test
     void testImageURLInPresenter() throws Exception {
         // Arrange
-        InMemoryImageDataAccessObject imageRepository = new InMemoryImageDataAccessObject();
-        ImageViewModel viewModel = new ImageViewModel();
-        ImagePresenter imagePresenter = new ImagePresenter(viewModel);
+        InMemoryFetchImageDataAccessObject imageRepository = new InMemoryFetchImageDataAccessObject();
+        FetchImageViewModel viewModel = new FetchImageViewModel();
+        FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(viewModel);
 
         // Add an image to the repository
         CommonImage image = new CommonImage("https://example.com/image.jpg", "Sunset", "123");
         imageRepository.save(new SimpleImage(image.getUrl(), image.getDescription(), image.getId()));
 
         // Create the interactor instance
-        ImageInteractor interactor = new ImageInteractor(imageRepository, imagePresenter);
+        FetchImageInteractor interactor = new FetchImageInteractor(imageRepository, fetchImagePresenter);
 
         // Act: Search for images
         interactor.searchImages("sunset");
