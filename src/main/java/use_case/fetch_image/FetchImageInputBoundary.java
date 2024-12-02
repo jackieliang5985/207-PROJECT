@@ -17,5 +17,5 @@ public interface FetchImageInputBoundary {
      * @return a list of {@link CommonImage} objects representing the search results.
      * @throws Exception if an error occurs during the search operation.
      */
-    List<CommonImage> execute(FetchImageInputData inputData) throws Exception;
+    void execute(FetchImageInputData inputData) throws Exception;
 }

@@ -1,40 +1,33 @@
 package use_case.fetch_image;
 
 import java.util.List;
-
 import entity.CommonImage;
-import interface_adapter.fetch_image.FetchImagePresenter;
 import interface_adapter.fetch_image.FetchImageRepository;
 
 public class FetchImageInteractor implements FetchImageInputBoundary {
     private final FetchImageRepository fetchImageRepository;
-    private final FetchImagePresenter fetchImagePresenter;
+    private final FetchImageOutputBoundary fetchImageOutputBoundary;
 
-    public FetchImageInteractor(FetchImageRepository fetchImageRepository, FetchImagePresenter fetchImagePresenter) {
+    public FetchImageInteractor(FetchImageRepository fetchImageRepository, FetchImageOutputBoundary fetchImageOutputBoundary) {
         this.fetchImageRepository = fetchImageRepository;
-        this.fetchImagePresenter = fetchImagePresenter;
+        this.fetchImageOutputBoundary = fetchImageOutputBoundary;
     }
 
     @Override
-    public List<CommonImage> execute(FetchImageInputData inputData) throws Exception {
+    public void execute(FetchImageInputData inputData) throws Exception {
         final String query = inputData.getQuery();
 
-        if ("error".equals(inputData.getQuery())) {
+        if ("error".equals(query)) {
             throw new RuntimeException("Error fetching images");
         }
 
         final List<CommonImage> commonImages = fetchImageRepository.fetchImages(query);
 
-        // If no images are found, present an error
+        // If no images are found, use the output boundary to present an error
         if (commonImages.isEmpty()) {
-            final FetchImageOutputData outputData = new FetchImageOutputData(null, "Invalid Search: No results found.");
-            fetchImagePresenter.presentError(outputData);
+            fetchImageOutputBoundary.presentError("Invalid Search: No results found.");
+        } else {
+            fetchImageOutputBoundary.presentImages(commonImages);
         }
-        else {
-            final FetchImageOutputData outputData = new FetchImageOutputData(commonImages, null);
-            fetchImagePresenter.presentImages(outputData);
-        }
-
-        return commonImages;
     }
 }

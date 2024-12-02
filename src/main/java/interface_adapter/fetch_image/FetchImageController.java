@@ -1,5 +1,6 @@
 package interface_adapter.fetch_image;
 
+import use_case.fetch_image.FetchImageInputBoundary;
 import use_case.fetch_image.FetchImageInputData;
 import use_case.fetch_image.FetchImageInteractor;
 
@@ -9,15 +10,15 @@ import use_case.fetch_image.FetchImageInteractor;
  */
 public class FetchImageController {
 
-    private final FetchImageInteractor imageInteractor;
+    private final FetchImageInputBoundary imageInputBoundary;
 
     /**
      * Constructs an ImageController with the given interactor.
      *
      * @param imageInteractor the {@link FetchImageInteractor} that handles image-related operations.
      */
-    public FetchImageController(FetchImageInteractor imageInteractor) {
-        this.imageInteractor = imageInteractor;
+    public FetchImageController(FetchImageInteractor imageInputBoundary) {
+        this.imageInputBoundary = imageInputBoundary;
     }
 
     /**
@@ -28,7 +29,7 @@ public class FetchImageController {
     public void fetchImages(String query) {
         try {
             FetchImageInputData inputData = new FetchImageInputData(query);
-            imageInteractor.execute(inputData);
+            imageInputBoundary.execute(inputData);
         } catch (Exception e) {
             // Honestly, presenter deals with this
         }

@@ -52,6 +52,7 @@ import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.delete_note.DeletePostNoteInteractor;
 import use_case.export_mind_map.ExportInteractor;
 import use_case.fetch_image.FetchImageInteractor;
+import use_case.fetch_image.FetchImageOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
@@ -189,20 +190,26 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        // Initialize the ImageViewModel and ImagePostNoteViewModel
+        // Initialize the ViewModels
         final FetchImageViewModel fetchImageViewModel = new FetchImageViewModel();
         final ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
-
-        // Initialize the TextPostNoteViewModel
         final TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
 
-        // Initialize ImagePresenter (uses ImageViewModel)
+        // Initialize the Presenter with its associated ViewModel
         final FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(fetchImageViewModel);
 
-        // Use UnsplashImageInputBoundary as ImageRepository and create ImageInteractor
-        final FetchImageInteractor imageInteractor =
-                new FetchImageInteractor(new UnsplashFetchImageInputBoundary(unsplashApiKey), fetchImagePresenter);
-        final FetchImageController fetchImageController = new FetchImageController(imageInteractor);
+        // Set up the repository (UnsplashImageInputBoundary implementation)
+        FetchImageRepository fetchImageRepository = new UnsplashFetchImageInputBoundary(unsplashApiKey);
+
+        // Initialize the Output Boundary (typically the presenter)
+        FetchImageOutputBoundary fetchImageOutputBoundary = fetchImagePresenter;
+
+        // Initialize the Interactor (uses Repository and Output Boundary)
+        final FetchImageInteractor fetchImageInteractor = new FetchImageInteractor(fetchImageRepository, fetchImageOutputBoundary);
+
+        // Initialize the Controller (which uses the Interactor)
+        final FetchImageController fetchImageController = new FetchImageController(fetchImageInteractor);
+
 
         // Initialize ExportController and related components
         final ExportState exportState = new ExportState();
