@@ -1,6 +1,6 @@
 package use_case.add_Text_PostNote;
 
-import java.awt.*;
+import java.awt.Color;
 
 import entity.TextPostNoteEntity;
 

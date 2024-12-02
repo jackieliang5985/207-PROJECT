@@ -1,6 +1,6 @@
 package use_case.add_Text_PostNote;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class TextPostNoteInputData {
     private final String text;
@@ -11,10 +11,10 @@ public class TextPostNoteInputData {
     private final Color color;
 
     // Constructor
-    public TextPostNoteInputData(String text, int x, int y, int width, int height, Color color) {
+    public TextPostNoteInputData(String text, int xValue, int yValue, int width, int height, Color color) {
         this.text = text;
-        this.x = x;
-        this.y = y;
+        this.x = xValue;
+        this.y = yValue;
         this.width = width;
         this.height = height;
         this.color = color;
