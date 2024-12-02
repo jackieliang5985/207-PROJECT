@@ -44,7 +44,6 @@ import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.add_Text_PostNote.TextPostNoteInteractor;
 import use_case.change_color.ChangeColorInputBoundary;
 import use_case.change_color.ChangeColorInteractor;
-import use_case.change_color.ChangeColorNoteDataAccessInterface;
 import use_case.change_color.ChangeColorOutputBoundary;
 import use_case.change_title.ChangeTitleInputBoundary;
 import use_case.change_title.ChangeTitleInteractor;
@@ -63,7 +62,6 @@ import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
 import view.CreateNewMindMapView;
 import view.LoadedInView;
-import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
 import data_access.ConnectionDAO;
@@ -98,7 +96,6 @@ public class AppBuilder {
     private LoadingViewModel loadingViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LoadedInView loadedInView;
-    private MindMapLoadingView mindMapLoadingView;
 
     private final Dotenv dotenv = Dotenv.configure()
             // Directory of the ..env file (default is root)
@@ -120,19 +117,6 @@ public class AppBuilder {
         mindMapViewModel = new MindMapViewModel();
         createNewMindMapView = new CreateNewMindMapView(mindMapViewModel);
         cardPanel.add(createNewMindMapView, createNewMindMapView.getViewName());
-        return this;
-    }
-
-    /**
-     * Adds the Login View to the application.
-     *
-     * @return this builder
-     */
-    public AppBuilder addMindMapLoadingView() {
-        loadingViewModel = new LoadingViewModel();
-        final MindMapViewModel mindMapViewModel = new MindMapViewModel();
-        mindMapLoadingView = new MindMapLoadingView(mindMapViewModel, viewManagerModel, cardPanel, cardLayout);
-        cardPanel.add(mindMapLoadingView, mindMapLoadingView.getViewName());
         return this;
     }
 
@@ -161,21 +145,6 @@ public class AppBuilder {
         final MindMapController controller =
                 new MindMapController(userSignupInteractor);
         createNewMindMapView.setSignupController(controller);
-        return this;
-    }
-
-    /**
-     * Adds the Login Use Case to the application.
-     *
-     * @return this builder
-     */
-    public AppBuilder addLoginUseCase() {
-        loadingViewModel = new LoadingViewModel();
-        final LoadingOutputBoundary loadingOutputBoundary =
-                new LoadingPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
-        final LoadingInputBoundary loginInteractor = new LoadingInteractor(userDataAccessObject, loadingOutputBoundary);
-        final LoadingController loadingController = new LoadingController(loginInteractor);
-        mindMapLoadingView.setLoginController(loadingController);
         return this;
     }
 
