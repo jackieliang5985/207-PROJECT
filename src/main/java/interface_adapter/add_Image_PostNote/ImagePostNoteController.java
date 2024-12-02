@@ -30,6 +30,6 @@ public class ImagePostNoteController {
         viewModel.setColor(color);
 
         // Pass data to the interactor
-        inputBoundary.addImagePostNote(new ImagePostNoteInputData(imageUrl, x, y, width, height, color));
+        inputBoundary.execute(new ImagePostNoteInputData(imageUrl, x, y, width, height, color));
     }
 }

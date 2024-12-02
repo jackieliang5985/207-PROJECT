@@ -55,7 +55,7 @@ class ImagePostNoteInteractorTest {
         ImagePostNoteInputData inputData = new ImagePostNoteInputData(imageUrl, x, y, width, height, color);
 
         // Add the image post note using the interactor
-        interactor.addImagePostNote(inputData);
+        interactor.execute(inputData);
 
         // Get all post notes from the DAO
         List<PostNoteEntity> allPostNotes = postNoteDAO.getAllPostNotes();

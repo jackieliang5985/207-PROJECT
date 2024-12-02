@@ -19,7 +19,7 @@ public class ImagePostNoteInteractor implements ImagePostNoteInputBoundary {
     }
 
     @Override
-    public void addImagePostNote(ImagePostNoteInputData inputData) {
+    public void execute(ImagePostNoteInputData inputData) {
         final ImagePostNoteEntity imagePostNoteEntity = new ImagePostNoteEntity(
                 inputData.getX(),
                 inputData.getY(),
