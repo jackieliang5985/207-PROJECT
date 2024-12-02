@@ -94,6 +94,7 @@ public class MindMapView extends JPanel {
     private final ConnectionDAO connectionDAO;
     private boolean isAddingConnection = false;
     private String firstSelectedNoteId = null;
+    private boolean isStarting = true;
 
     /**
      * Constructor for the MindMapView class.
@@ -178,7 +179,7 @@ public class MindMapView extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    rightClickLocation = e.getPoint(); // Store the point of the right-click
+                    rightClickLocation = e.getPoint();
                     System.out.println("Right-click location stored: " + rightClickLocation);
                 }
             }
