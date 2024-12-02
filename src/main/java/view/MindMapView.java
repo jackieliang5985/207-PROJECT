@@ -414,7 +414,7 @@ public class MindMapView extends JPanel {
                     imagePostNoteViewModel.setHeight(image.getHeight(null) - IMAGE_POST_NOTE_RESIZE_OFFSET);
                     imagePostNoteViewModel.setColor(DEFAULT_IMAGE_NOTE_COLOR);
 
-                    imagePostNoteController.addImagePostNote(
+                    imagePostNoteController.execute(
                             imagePostNoteViewModel.getImageUrl(),
                             imagePostNoteViewModel.getX(),
                             imagePostNoteViewModel.getY(),

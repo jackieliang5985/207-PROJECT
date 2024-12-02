@@ -16,7 +16,7 @@ public class FetchImageInteractor implements FetchImageInputBoundary {
     }
 
     @Override
-    public List<CommonImage> searchImages(FetchImageInputData inputData) throws Exception {
+    public List<CommonImage> execute(FetchImageInputData inputData) throws Exception {
         final String query = inputData.getQuery();
 
         if ("error".equals(inputData.getQuery())) {
