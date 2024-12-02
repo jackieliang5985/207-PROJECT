@@ -15,6 +15,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import data_access.ConnectionDAO;
+import entity.ConnectionEntity;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.ConnectionViewModel;
+import interface_adapter.add_Connection.PostItNoteViewModel;
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import interface_adapter.add_Text_PostNote.TextPostNoteController;
@@ -23,18 +28,7 @@ import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.image.ImageController;
-import interface_adapter.image.ImagePresenter;
 import interface_adapter.image.ImageViewModel;
-import data_access.ConnectionDAO;
-import data_access.InMemoryConnectionDAO;
-import interface_adapter.add_Connection.AddConnectionController;
-import interface_adapter.add_Connection.AddConnectionPresenter;
-import use_case.add_connection.AddConnectionInteractor;
-import use_case.add_connection.AddConnectionOutputBoundary;
-import interface_adapter.add_Connection.ConnectionViewModel;
-import interface_adapter.add_Connection.PostItNoteViewModel;
-import entity.ConnectionEntity;
-
 
 /**
  * The MindMapView class represents the main visual component of the Mind Map application.
@@ -382,9 +376,6 @@ public class MindMapView extends JPanel {
         }
 
         lastClickLocation = location;
-        imageController.fetchImages(query);
-
-        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
         imageController.fetchImages(query);
         System.out.println("Creating Image Note with ID: " + imagePostNoteViewModel.getId());
 
