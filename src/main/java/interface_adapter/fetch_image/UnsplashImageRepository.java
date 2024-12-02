@@ -1,6 +1,6 @@
 package data_access;
 
-import interface_adapter.image.ImageRepository;
+import interface_adapter.fetch_image.ImageRepository;
 import entity.CommonImage;  // Use CommonImage
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -1,6 +1,6 @@
 package data_access;
 
-import interface_adapter.image.ImageRepository;
+import interface_adapter.fetch_image.ImageRepository;
 import entity.CommonImage;
 
 import java.util.ArrayList;

@@ -1,14 +1,14 @@
 package use_case.change_color;
 
-import data_access.PostNoteDataAcessInterface;
+import data_access.PostNoteDataAccessInterface;
 import entity.TextPostNoteEntity;
 
 public class ChangeColorInteractor implements ChangeColorInputBoundary {
     private final ChangeColorNoteDataAccessInterface noteDataAccessObject;
     private final ChangeColorOutputBoundary notePresenter;
-    private final PostNoteDataAcessInterface postNoteDAO;
+    private final PostNoteDataAccessInterface postNoteDAO;
 
-    public ChangeColorInteractor(ChangeColorNoteDataAccessInterface changeColorNoteDataAccessInterface, ChangeColorOutputBoundary changeColorOutputBoundary, PostNoteDataAcessInterface postNoteDAO) {
+    public ChangeColorInteractor(ChangeColorNoteDataAccessInterface changeColorNoteDataAccessInterface, ChangeColorOutputBoundary changeColorOutputBoundary, PostNoteDataAccessInterface postNoteDAO) {
         this.noteDataAccessObject = changeColorNoteDataAccessInterface;
         this.notePresenter = changeColorOutputBoundary;
         this.postNoteDAO = postNoteDAO;

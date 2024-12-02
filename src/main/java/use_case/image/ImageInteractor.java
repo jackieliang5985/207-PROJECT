@@ -1,8 +1,8 @@
 package use_case.image;
 
 import entity.CommonImage;
-import interface_adapter.image.ImageRepository;
-import interface_adapter.image.ImagePresenter;
+import interface_adapter.fetch_image.ImageRepository;
+import interface_adapter.fetch_image.ImagePresenter;
 
 import java.util.List;
 

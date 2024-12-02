@@ -3,8 +3,8 @@ package use_case.Image;
 import data_access.SimpleImage;
 import entity.CommonImage;
 import data_access.InMemoryImageDataAccessObject;
-import interface_adapter.image.ImagePresenter;
-import interface_adapter.image.ImageViewModel;
+import interface_adapter.fetch_image.ImagePresenter;
+import interface_adapter.fetch_image.ImageViewModel;
 import org.junit.jupiter.api.Test;
 import use_case.image.ImageInteractor;
 
