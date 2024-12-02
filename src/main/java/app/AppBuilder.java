@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
 import interface_adapter.ViewManagerModel;
@@ -220,7 +220,7 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
 
         // Initialize MindMapEntity
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);

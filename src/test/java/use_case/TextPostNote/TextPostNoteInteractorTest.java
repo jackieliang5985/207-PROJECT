@@ -1,6 +1,6 @@
 package use_case.TextPostNote;
 
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
 import entity.TextPostNoteEntity;
 import entity.PostNoteEntity;
@@ -21,7 +21,7 @@ class TextPostNoteInteractorTest {
     @Test
     void testAddTextPostNote() {
         // Create the in-memory DAO and presenter
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
         TextPostNoteViewModel viewModel = new TextPostNoteViewModel();
         TextPostNotePresenter presenter = new TextPostNotePresenter(viewModel);
 
@@ -78,7 +78,7 @@ class TextPostNoteInteractorTest {
         int x = 10, y = 20, width = 300, height = 200;
         Color color = Color.RED;
 
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Ensure DAO is created here
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
         TextPostNoteViewModel viewModel = new TextPostNoteViewModel();
         TextPostNotePresenter presenter = new TextPostNotePresenter(viewModel);
 
@@ -104,7 +104,7 @@ class TextPostNoteInteractorTest {
         int x = 10, y = 20, width = 300, height = 200;
         Color color = Color.RED;
 
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Ensure DAO is created here
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
         TextPostNoteViewModel viewModel = new TextPostNoteViewModel();
         TextPostNotePresenter presenter = new TextPostNotePresenter(viewModel);
 
@@ -131,7 +131,7 @@ class TextPostNoteInteractorTest {
         Color color = Color.YELLOW;
 
         // Create an in-memory DAO and presenter
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Instantiate DAO
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Instantiate DAO
         TextPostNoteViewModel viewModel = new TextPostNoteViewModel();
         TextPostNotePresenter presenter = new TextPostNotePresenter(viewModel);
 
