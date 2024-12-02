@@ -27,8 +27,8 @@ import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.export_mind_map.ExportController;
-import interface_adapter.image.FetchImageController;
-import interface_adapter.image.FetchImageViewModel;
+import interface_adapter.fetch_image.FetchImageController;
+import interface_adapter.fetch_image.FetchImageViewModel;
 
 /**
  * The MindMapView class represents the main visual component of the Mind Map application.

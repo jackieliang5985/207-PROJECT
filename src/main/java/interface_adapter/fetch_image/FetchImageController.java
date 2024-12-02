@@ -1,4 +1,4 @@
-package interface_adapter.image;
+package interface_adapter.fetch_image;
 
 import use_case.fetch_image.FetchImageInputData;
 import use_case.fetch_image.FetchImageInteractor;
