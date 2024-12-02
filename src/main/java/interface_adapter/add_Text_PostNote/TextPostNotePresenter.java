@@ -1,28 +1,30 @@
 package interface_adapter.add_Text_PostNote;
 
-import entity.TextPostNoteEntity;
 import use_case.add_Text_PostNote.TextPostNoteOutputBoundary;
 import use_case.add_Text_PostNote.TextPostNoteOutputData;
 
+/**
+ * The presenter for adding a text post-it note.
+ * It updates the view model based on the output data provided by the interactor.
+ */
 public class TextPostNotePresenter implements TextPostNoteOutputBoundary {
     private final TextPostNoteViewModel viewModel;
 
-    // Constructor
+    /**
+     * Constructs a TextPostNotePresenter.
+     *
+     * @param viewModel The view model that represents the UI state.
+     */
     public TextPostNotePresenter(TextPostNoteViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
-    // Method to update view model using TextPostNoteEntity (if needed for legacy reasons)
-    public void presentTextPostNotes(TextPostNoteEntity postNote) {
-        // Update the view model with the new post note data
-        viewModel.setText(postNote.getText());
-        viewModel.setX(postNote.getX());
-        viewModel.setY(postNote.getY());
-        viewModel.setColor(postNote.getColor());
-    }
-
-    // Method to update view model using TextPostNoteOutputData (the correct data format)
-    @Override
+     /**
+     * Updates the view model using TextPostNoteOutputData.
+     * This is the preferred method for updating the view model.
+     *
+     * @param outputData The output data containing the processed details of the text post-it note.
+     */    @Override
     public void presentTextPostNotes(TextPostNoteOutputData outputData) {
         // Update the view model with the new data passed in outputData
         viewModel.setText(outputData.getText());

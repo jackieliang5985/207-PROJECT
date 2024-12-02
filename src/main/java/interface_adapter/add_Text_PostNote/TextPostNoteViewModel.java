@@ -4,6 +4,10 @@ import java.awt.Color;
 
 import interface_adapter.add_Connection.PostItNoteViewModel;
 
+/**
+ * The view model for a text post-it note.
+ * This class stores the state of a text post-it note for presentation in the UI.
+ */
 public class TextPostNoteViewModel implements PostItNoteViewModel {
     private String text;
     private int x;
