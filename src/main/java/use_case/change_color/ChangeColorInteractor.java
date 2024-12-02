@@ -1,18 +1,14 @@
 package use_case.change_color;
 
-import data_access.PostNoteDAO;
-import entity.MindMapEntity;
-import entity.PostNoteEntity;
+import data_access.PostNoteDataAcessInterface;
 import entity.TextPostNoteEntity;
-
-import java.util.List;
 
 public class ChangeColorInteractor implements ChangeColorInputBoundary {
     private final ChangeColorNoteDataAccessInterface noteDataAccessObject;
     private final ChangeColorOutputBoundary notePresenter;
-    private final PostNoteDAO postNoteDAO;
+    private final PostNoteDataAcessInterface postNoteDAO;
 
-    public ChangeColorInteractor(ChangeColorNoteDataAccessInterface changeColorNoteDataAccessInterface, ChangeColorOutputBoundary changeColorOutputBoundary, PostNoteDAO postNoteDAO) {
+    public ChangeColorInteractor(ChangeColorNoteDataAccessInterface changeColorNoteDataAccessInterface, ChangeColorOutputBoundary changeColorOutputBoundary, PostNoteDataAcessInterface postNoteDAO) {
         this.noteDataAccessObject = changeColorNoteDataAccessInterface;
         this.notePresenter = changeColorOutputBoundary;
         this.postNoteDAO = postNoteDAO;

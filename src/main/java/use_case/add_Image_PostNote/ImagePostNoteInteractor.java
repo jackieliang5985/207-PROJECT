@@ -1,18 +1,18 @@
 package use_case.add_Image_PostNote;
 
-import data_access.PostNoteDAO;
+import data_access.PostNoteDataAcessInterface;
 import entity.ImagePostNoteEntity;
 import interface_adapter.add_Image_PostNote.ImagePostNoteData;
 import entity.MindMapEntity;
 
 public class ImagePostNoteInteractor implements ImagePostNoteInputBoundary {
     private final ImagePostNoteOutputBoundary outputBoundary;
-    private final PostNoteDAO postNoteDAO;
+    private final PostNoteDataAcessInterface postNoteDAO;
     private final MindMapEntity mindMapEntity;
 
     // Constructor
     public ImagePostNoteInteractor(ImagePostNoteOutputBoundary outputBoundary,
-                                   PostNoteDAO postNoteDAO, MindMapEntity mindMapEntity) {
+                                   PostNoteDataAcessInterface postNoteDAO, MindMapEntity mindMapEntity) {
         this.outputBoundary = outputBoundary;
         this.postNoteDAO = postNoteDAO;
         this.mindMapEntity = mindMapEntity;

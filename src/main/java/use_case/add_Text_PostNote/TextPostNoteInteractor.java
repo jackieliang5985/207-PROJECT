@@ -1,6 +1,6 @@
 package use_case.add_Text_PostNote;
 
-import data_access.PostNoteDAO;
+import data_access.PostNoteDataAcessInterface;
 import entity.MindMapEntity;
 import entity.TextPostNoteEntity;
 
@@ -12,7 +12,7 @@ import entity.TextPostNoteEntity;
  */
 public class TextPostNoteInteractor implements TextPostNoteInputBoundary {
     private final TextPostNoteOutputBoundary outputBoundary;
-    private final PostNoteDAO postNoteDao;
+    private final PostNoteDataAcessInterface postNoteDao;
     private final MindMapEntity mindMapEntity;
 
     /**
@@ -22,7 +22,7 @@ public class TextPostNoteInteractor implements TextPostNoteInputBoundary {
      * @param postNoteDao    The Data Access Object (DAO) for saving post-it notes.
      * @param mindMapEntity  The MindMapEntity that the text post-it note is associated with.
      */
-    public TextPostNoteInteractor(TextPostNoteOutputBoundary outputBoundary, PostNoteDAO postNoteDao,
+    public TextPostNoteInteractor(TextPostNoteOutputBoundary outputBoundary, PostNoteDataAcessInterface postNoteDao,
                                   MindMapEntity mindMapEntity) {
         this.outputBoundary = outputBoundary;
         this.postNoteDao = postNoteDao;

@@ -1,5 +1,5 @@
 package use_case.delete_note;
-import data_access.PostNoteDAO;
+import data_access.PostNoteDataAcessInterface;
 import entity.MindMapEntity;
 import entity.PostNoteEntity;
 
@@ -7,11 +7,11 @@ import java.util.List;
 
 public class DeletePostNoteInteractor implements DeletePostNoteInputBoundary {
     private final DeletePostNoteOutputBoundary outputBoundary;
-    private final PostNoteDAO postNoteDAO;
+    private final PostNoteDataAcessInterface postNoteDAO;
     private final MindMapEntity mindMapEntity;
 
     // Constructor
-    public DeletePostNoteInteractor(DeletePostNoteOutputBoundary outputBoundary, PostNoteDAO postNoteDAO, MindMapEntity mindMapEntity) {
+    public DeletePostNoteInteractor(DeletePostNoteOutputBoundary outputBoundary, PostNoteDataAcessInterface postNoteDAO, MindMapEntity mindMapEntity) {
         this.outputBoundary = outputBoundary;
         this.postNoteDAO = postNoteDAO;
         this.mindMapEntity = mindMapEntity;

@@ -4,7 +4,7 @@ import entity.PostNoteEntity;
 
 import java.util.List;
 
-public interface PostNoteDAO {
+public interface PostNoteDataAcessInterface {
     // Add a new post note (text or image)
     void addPostNote(PostNoteEntity postNote);
 
