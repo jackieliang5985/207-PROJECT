@@ -4,6 +4,10 @@ import java.awt.Color;
 
 import entity.TextPostNoteEntity;
 
+/**
+ * A data transfer object that encapsulates the output data for adding a text post-it note.
+ * This class is used to pass the results of the use case from the interactor to the presenter.
+ */
 public class TextPostNoteOutputData {
     private final String text;
     private final int x;
@@ -12,6 +16,11 @@ public class TextPostNoteOutputData {
     private final int height;
     private final Color color;
 
+    /**
+     * Constructs a new TextPostNoteOutputData object from the given TextPostNoteEntity.
+     *
+     * @param entity The TextPostNoteEntity containing the details of the added text post-it note.
+     */
     public TextPostNoteOutputData(TextPostNoteEntity entity) {
         this.text = entity.getText();
         this.x = entity.getX();
