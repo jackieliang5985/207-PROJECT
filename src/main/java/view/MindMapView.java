@@ -27,8 +27,8 @@ import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.delete_note.DeletePostNoteController;
 import interface_adapter.export_mind_map.ExportController;
-import interface_adapter.image.ImageController;
-import interface_adapter.image.ImageViewModel;
+import interface_adapter.fetch_image.FetchImageController;
+import interface_adapter.fetch_image.FetchImageViewModel;
 
 /**
  * The MindMapView class represents the main visual component of the Mind Map application.
@@ -71,9 +71,9 @@ public class MindMapView extends JPanel {
 
     private final CardLayout cardLayout;
     private final Container cardPanel;
-    private final ImageViewModel imageViewModel;
+    private final FetchImageViewModel fetchImageViewModel;
     private final ExportController exportController;
-    private final ImageController imageController;
+    private final FetchImageController fetchImageController;
     private final ImagePostNoteController imagePostNoteController;
     private final TextPostNoteController textPostNoteController;
     private final ImagePostNoteViewModel imagePostNoteViewModel;
@@ -94,14 +94,15 @@ public class MindMapView extends JPanel {
     private final ConnectionDAO connectionDAO;
     private boolean isAddingConnection = false;
     private String firstSelectedNoteId = null;
+    private boolean isStarting = true;
 
     /**
      * Constructor for the MindMapView class.
      *
      * @param cardLayout                 The CardLayout for managing views.
      * @param cardPanel                  The parent container for switching views.
-     * @param imageController            The controller for image-related actions.
-     * @param imageViewModel             The view model for image data.
+     * @param fetchImageController            The controller for image-related actions.
+     * @param fetchImageViewModel             The view model for image data.
      * @param imagePostNoteViewModel     The view model for image post-notes.
      * @param textPostNoteViewModel      The view model for text post-notes.
      * @param exportController           The controller for exporting the mind map.
@@ -112,8 +113,8 @@ public class MindMapView extends JPanel {
      */
     public MindMapView(CardLayout cardLayout,
                        Container cardPanel,
-                       ImageController imageController,
-                       ImageViewModel imageViewModel,
+                       FetchImageController fetchImageController,
+                       FetchImageViewModel fetchImageViewModel,
                        ImagePostNoteViewModel imagePostNoteViewModel,
                        TextPostNoteViewModel textPostNoteViewModel,
                        ExportController exportController,
@@ -127,8 +128,8 @@ public class MindMapView extends JPanel {
 
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
-        this.imageController = imageController;
-        this.imageViewModel = imageViewModel;
+        this.fetchImageController = fetchImageController;
+        this.fetchImageViewModel = fetchImageViewModel;
         this.exportController = exportController;
         this.imagePostNoteController = imagePostNoteController;
         this.textPostNoteController = textPostNoteController;
@@ -178,7 +179,7 @@ public class MindMapView extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    rightClickLocation = e.getPoint(); // Store the point of the right-click
+                    rightClickLocation = e.getPoint();
                     System.out.println("Right-click location stored: " + rightClickLocation);
                 }
             }
@@ -241,14 +242,14 @@ public class MindMapView extends JPanel {
         revalidate();
         repaint();
 
-        imageViewModel.addPropertyChangeListener(evt -> {
+        fetchImageViewModel.addPropertyChangeListener(evt -> {
             if ("images".equals(evt.getPropertyName())) {
-                final List<ImageViewModel.ImageDisplayData> images =
-                        (List<ImageViewModel.ImageDisplayData>) evt.getNewValue();
+                final List<FetchImageViewModel.ImageDisplayData> images =
+                        (List<FetchImageViewModel.ImageDisplayData>) evt.getNewValue();
                 showImageSelectionDialog(images, lastClickLocation);
             }
             else if ("errorMessage".equals(evt.getPropertyName())) {
-                JOptionPane.showMessageDialog(this, imageViewModel.getErrorMessage());
+                JOptionPane.showMessageDialog(this, fetchImageViewModel.getErrorMessage());
             }
         });
     }
@@ -376,7 +377,7 @@ public class MindMapView extends JPanel {
         }
 
         lastClickLocation = location;
-        imageController.fetchImages(query);
+        fetchImageController.fetchImages(query);
         System.out.println("Creating Image Note with ID: " + imagePostNoteViewModel.getId());
 
     }
@@ -387,14 +388,14 @@ public class MindMapView extends JPanel {
      * @param imageDisplayDataList List of images fetched from the search.
      * @param location The location where the image post note should be placed.
      */
-    private void showImageSelectionDialog(List<ImageViewModel.ImageDisplayData> imageDisplayDataList, Point location) {
+    private void showImageSelectionDialog(List<FetchImageViewModel.ImageDisplayData> imageDisplayDataList, Point location) {
         final JDialog dialog = new JDialog((Frame) null, "Select an Image", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setLayout(new BorderLayout());
 
         final JPanel imagePanel = new JPanel();
         imagePanel.setLayout(new GridLayout(ZERO, GRID_LAYOUT_COLUMNS, GRID_LAYOUT_HGAP, GRID_LAYOUT_VGAP));
 
-        for (ImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
+        for (FetchImageViewModel.ImageDisplayData imageData : imageDisplayDataList) {
             try {
                 final URL imageUrl = new URL(imageData.getUrl());
                 final Image image = ImageIO.read(imageUrl);
@@ -413,7 +414,7 @@ public class MindMapView extends JPanel {
                     imagePostNoteViewModel.setHeight(image.getHeight(null) - IMAGE_POST_NOTE_RESIZE_OFFSET);
                     imagePostNoteViewModel.setColor(DEFAULT_IMAGE_NOTE_COLOR);
 
-                    imagePostNoteController.addImagePostNote(
+                    imagePostNoteController.execute(
                             imagePostNoteViewModel.getImageUrl(),
                             imagePostNoteViewModel.getX(),
                             imagePostNoteViewModel.getY(),

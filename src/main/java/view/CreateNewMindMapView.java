@@ -28,7 +28,6 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
 
     private final JButton toCreate;
     private final JButton cancel;
-    private final JButton toLoad;
 
     public CreateNewMindMapView(MindMapViewModel mindMapViewModel) {
         this.mindMapViewModel = mindMapViewModel;
@@ -75,24 +74,6 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         gbc.gridy = 1;
         centerPanel.add(titleInputField, gbc);
 
-        // Commented out description fields
-        /*
-        // Label and input for description
-        final JLabel descriptionInputLabel = new JLabel("Description");
-        descriptionInputLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        descriptionInputLabel.setForeground(new Color(50, 50, 50)); // Dark gray text
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        centerPanel.add(descriptionInputLabel, gbc);
-
-        descriptionInputField.setPreferredSize(new Dimension(250, 30)); // Resize input fields
-        descriptionInputField.setFont(new Font("Arial", Font.PLAIN, 14));
-        descriptionInputField.setBackground(new Color(255, 255, 255));
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        centerPanel.add(descriptionInputField, gbc);
-        */
-
         // Button for creating a new mindmap
         toCreate = new JButton("Create New Mindmap");
         toCreate.setPreferredSize(new Dimension(200, 40));
@@ -106,20 +87,6 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         centerPanel.add(toCreate, gbc);
-
-        // Button for loading an existing mindmap
-        toLoad = new JButton("Load Existing Mindmap");
-        toLoad.setPreferredSize(new Dimension(200, 40));
-        toLoad.setFont(new Font("Arial", Font.BOLD, 14));
-        toLoad.setBackground(new Color(70, 140, 200)); // Blue button
-        toLoad.setForeground(Color.WHITE);
-        toLoad.setFocusPainted(false);
-        toLoad.setBorder(BorderFactory.createLineBorder(new Color(50, 100, 150), 2));
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        centerPanel.add(toLoad, gbc);
 
         // Cancel button
         cancel = new JButton("Cancel");
@@ -161,8 +128,6 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
                 }
             }
         });
-
-        toLoad.addActionListener(evt -> mindMapController.switchToLoginView());
 
         cancel.addActionListener(evt -> {
             JOptionPane.showMessageDialog(CreateNewMindMapView.this, "Creation canceled. Closing program...");

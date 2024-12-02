@@ -1,4 +1,4 @@
-package interface_adapter.image;
+package interface_adapter.fetch_image;
 
 import entity.CommonImage;
 import java.util.List;
@@ -9,18 +9,28 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class UnsplashImageInputBoundary implements ImageRepository {
+public class UnsplashFetchImageInputBoundary implements FetchImageRepository {
 
     private final String apiKey;
-    // To find all photos
+    // Base URL to search for photos
     private final String baseUrl = "https://api.unsplash.com/search/photos";
-    // Additional info (second endpoint for image details, but not used now)
+    // Endpoint for fetching image details
     private final String imageDetailsUrl = "https://api.unsplash.com/photos/";
 
-    public UnsplashImageInputBoundary(String apiKey) {
+    /**
+     * Constructor to initialize the UnsplashImageInputBoundary with the given API key.
+     * @param apiKey The API key for authenticating requests to the Unsplash API.
+     */
+    public UnsplashFetchImageInputBoundary(String apiKey) {
         this.apiKey = apiKey;
     }
 
+    /**
+     * Fetches images based on a search query.
+     * @param query The search query for fetching images.
+     * @return A list of CommonImage objects containing the image URL, description, and ID.
+     * @throws Exception If there is an error fetching images from the API.
+     */
     @Override
     public List<CommonImage> fetchImages(String query) throws Exception {
         HttpURLConnection connection = null;
@@ -47,10 +57,9 @@ public class UnsplashImageInputBoundary implements ImageRepository {
                 String description = result.optString("description", "No description").trim();
                 String id = result.getString("id");
 
-                // Don't call the second API here, just use the basic details
                 commonImages.add(new CommonImage(imageUrl, description, id));
 
-                // Note: The second API call fetchImageDetails(imageId) is not being used here.
+                // Note: The second API call fetchImageDetails(imageId) is not used here.
             }
 
             return commonImages;
@@ -64,12 +73,18 @@ public class UnsplashImageInputBoundary implements ImageRepository {
         }
     }
 
-    // Keep the fetchImageDetails method but do not call it in the fetchImages method
+    /**
+     * This method fetches additional details for a specific image by its ID.
+     * Currently not being called within fetchImages, but kept for potential future use.
+     * @param imageId The ID of the image to fetch details for.
+     * @return A CommonImage object containing the full image URL, description, and ID.
+     * @throws IOException If an error occurs while fetching image details.
+     */
     private CommonImage fetchImageDetails(String imageId) throws IOException {
         HttpURLConnection connection = null;
         try {
             // Construct the API URL to fetch the details for a specific image using its ID
-            URL url = new URL(imageDetailsUrl + imageId + "?client_id=" + apiKey);
+            final URL url = new URL(imageDetailsUrl + imageId + "?client_id=" + apiKey);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
@@ -78,12 +93,12 @@ public class UnsplashImageInputBoundary implements ImageRepository {
                 throw new RuntimeException("Failed to fetch image details: " + connection.getResponseMessage());
             }
 
-            String response = new String(connection.getInputStream().readAllBytes());
-            JSONObject imageDetails = new JSONObject(response);
+            final String response = new String(connection.getInputStream().readAllBytes());
+            final JSONObject imageDetails = new JSONObject(response);
 
             // Extract additional image details if needed (e.g., full size, additional metadata)
-            String fullImageUrl = imageDetails.getJSONObject("urls").getString("full");
-            String additionalDescription = imageDetails.optString("description", "No description").trim();
+            final String fullImageUrl = imageDetails.getJSONObject("urls").getString("full");
+            final String additionalDescription = imageDetails.optString("description", "No description").trim();
 
             return new CommonImage(fullImageUrl, additionalDescription, imageDetails.getString("id"));
 

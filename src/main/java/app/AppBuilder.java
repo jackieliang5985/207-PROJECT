@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
 import interface_adapter.ViewManagerModel;
@@ -32,10 +32,8 @@ import interface_adapter.delete_note.DeletePostNoteViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
-import interface_adapter.image.*;
-import interface_adapter.image.UnsplashImageInputBoundary;
-import interface_adapter.loading.LoadingController;
-import interface_adapter.loading.LoadingPresenter;
+import interface_adapter.fetch_image.*;
+import interface_adapter.fetch_image.UnsplashFetchImageInputBoundary;
 import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
@@ -44,7 +42,6 @@ import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.add_Text_PostNote.TextPostNoteInteractor;
 import use_case.change_color.ChangeColorInputBoundary;
 import use_case.change_color.ChangeColorInteractor;
-import use_case.change_color.ChangeColorNoteDataAccessInterface;
 import use_case.change_color.ChangeColorOutputBoundary;
 import use_case.change_title.ChangeTitleInputBoundary;
 import use_case.change_title.ChangeTitleInteractor;
@@ -54,16 +51,13 @@ import use_case.create_MindMap.MindMapInteractor;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.delete_note.DeletePostNoteInteractor;
 import use_case.export_mind_map.ExportInteractor;
-import use_case.image.ImageInteractor;
-import use_case.loading.LoadingInputBoundary;
-import use_case.loading.LoadingInteractor;
-import use_case.loading.LoadingOutputBoundary;
+import use_case.fetch_image.FetchImageInteractor;
+import use_case.fetch_image.FetchImageOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
 import view.CreateNewMindMapView;
 import view.LoadedInView;
-import view.MindMapLoadingView;
 import view.MindMapView;
 import view.ViewManager;
 import data_access.ConnectionDAO;
@@ -98,7 +92,6 @@ public class AppBuilder {
     private LoadingViewModel loadingViewModel;
     private LoggedInViewModel loggedInViewModel;
     private LoadedInView loadedInView;
-    private MindMapLoadingView mindMapLoadingView;
 
     private final Dotenv dotenv = Dotenv.configure()
             // Directory of the ..env file (default is root)
@@ -120,19 +113,6 @@ public class AppBuilder {
         mindMapViewModel = new MindMapViewModel();
         createNewMindMapView = new CreateNewMindMapView(mindMapViewModel);
         cardPanel.add(createNewMindMapView, createNewMindMapView.getViewName());
-        return this;
-    }
-
-    /**
-     * Adds the Login View to the application.
-     *
-     * @return this builder
-     */
-    public AppBuilder addMindMapLoadingView() {
-        loadingViewModel = new LoadingViewModel();
-        final MindMapViewModel mindMapViewModel = new MindMapViewModel();
-        mindMapLoadingView = new MindMapLoadingView(mindMapViewModel, viewManagerModel, cardPanel, cardLayout);
-        cardPanel.add(mindMapLoadingView, mindMapLoadingView.getViewName());
         return this;
     }
 
@@ -161,21 +141,6 @@ public class AppBuilder {
         final MindMapController controller =
                 new MindMapController(userSignupInteractor);
         createNewMindMapView.setSignupController(controller);
-        return this;
-    }
-
-    /**
-     * Adds the Login Use Case to the application.
-     *
-     * @return this builder
-     */
-    public AppBuilder addLoginUseCase() {
-        loadingViewModel = new LoadingViewModel();
-        final LoadingOutputBoundary loadingOutputBoundary =
-                new LoadingPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
-        final LoadingInputBoundary loginInteractor = new LoadingInteractor(userDataAccessObject, loadingOutputBoundary);
-        final LoadingController loadingController = new LoadingController(loginInteractor);
-        mindMapLoadingView.setLoginController(loadingController);
         return this;
     }
 
@@ -225,20 +190,26 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addMindMapView() {
-        // Initialize the ImageViewModel and ImagePostNoteViewModel
-        final ImageViewModel imageViewModel = new ImageViewModel();
+        // Initialize the ViewModels
+        final FetchImageViewModel fetchImageViewModel = new FetchImageViewModel();
         final ImagePostNoteViewModel imagePostNoteViewModel = new ImagePostNoteViewModel();
-
-        // Initialize the TextPostNoteViewModel
         final TextPostNoteViewModel textPostNoteViewModel = new TextPostNoteViewModel();
 
-        // Initialize ImagePresenter (uses ImageViewModel)
-        final ImagePresenter imagePresenter = new ImagePresenter(imageViewModel);
+        // Initialize the Presenter with its associated ViewModel
+        final FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(fetchImageViewModel);
 
-        // Use UnsplashImageInputBoundary as ImageRepository and create ImageInteractor
-        final ImageInteractor imageInteractor =
-                new ImageInteractor(new UnsplashImageInputBoundary(unsplashApiKey), imagePresenter);
-        final ImageController imageController = new ImageController(imageInteractor);
+        // Set up the repository (UnsplashImageInputBoundary implementation)
+        FetchImageRepository fetchImageRepository = new UnsplashFetchImageInputBoundary(unsplashApiKey);
+
+        // Initialize the Output Boundary (typically the presenter)
+        FetchImageOutputBoundary fetchImageOutputBoundary = fetchImagePresenter;
+
+        // Initialize the Interactor (uses Repository and Output Boundary)
+        final FetchImageInteractor fetchImageInteractor = new FetchImageInteractor(fetchImageRepository, fetchImageOutputBoundary);
+
+        // Initialize the Controller (which uses the Interactor)
+        final FetchImageController fetchImageController = new FetchImageController(fetchImageInteractor);
+
 
         // Initialize ExportController and related components
         final ExportState exportState = new ExportState();
@@ -256,7 +227,7 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
 
         // Initialize MindMapEntity
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
@@ -298,7 +269,7 @@ public class AppBuilder {
         // Initialize MindMapView
         final MindMapView mindMapView = new MindMapView(
                 cardLayout, cardPanel,
-                imageController, imageViewModel,
+                fetchImageController, fetchImageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
                 deletePostNoteController,  // Correctly placed

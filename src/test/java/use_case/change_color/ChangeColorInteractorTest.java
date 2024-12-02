@@ -1,6 +1,6 @@
 package use_case.change_color;
 
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import entity.*;
 
 import java.awt.*;
@@ -15,7 +15,7 @@ class ChangeColorInteractorTest {
     @Test
     void successTest() {
         ChangeColorInputData inputData = new ChangeColorInputData(300, 400, 150, 150, Color.CYAN);
-        InMemoryPostNoteDAO noteRepository = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject noteRepository = new InMemoryPostNoteDataAccessObject();
 
         // For the success test, we need to add Paul to the data access repository before we log in.
         MindMapEntity mindMap = new MindMapEntity("map", new ArrayList<>());
@@ -46,7 +46,7 @@ class ChangeColorInteractorTest {
     @Test
     void failureColorIsNullTest() {
         ChangeColorInputData inputData = new ChangeColorInputData(300, 400, 150, 150, null);
-        InMemoryPostNoteDAO noteRepository = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject noteRepository = new InMemoryPostNoteDataAccessObject();
 
         // For the success test, we need to add Paul to the data access repository before we log in.
         MindMapEntity mindMap = new MindMapEntity("map", new ArrayList<>());
@@ -76,7 +76,7 @@ class ChangeColorInteractorTest {
     @Test
     void failureNoteNotFoundTest() {
         ChangeColorInputData inputData = new ChangeColorInputData(400, 400, 150, 150, Color.CYAN);
-        InMemoryPostNoteDAO noteRepository = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject noteRepository = new InMemoryPostNoteDataAccessObject();
 
         // For the success test, we need to add Paul to the data access repository before we log in.
         MindMapEntity mindMap = new MindMapEntity("map", new ArrayList<>());

@@ -13,12 +13,10 @@ public class Main {
     public static void main(String[] args) {
         final AppBuilder appBuilder = new AppBuilder();
         final JFrame application = appBuilder
-                .addMindMapLoadingView()
                 .addSignupView()
                 .addLoggedInView()
                 .addMindMapView()
                 .addSignupUseCase()
-                .addLoginUseCase()
                 .addChangeTitleUseCase()
                 .addLogoutUseCase()
                 .build();

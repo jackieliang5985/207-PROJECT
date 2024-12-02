@@ -4,7 +4,6 @@ import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import use_case.add_Text_PostNote.TextPostNoteOutputData;
 import use_case.change_color.ChangeColorOutputBoundary;
 import use_case.change_color.ChangeColorOutputData;
-import use_case.change_password.ChangePasswordOutputData;
 
 public class ChangeColorPresenter implements ChangeColorOutputBoundary {
     private final TextPostNoteViewModel textPostNoteViewModel;

@@ -1,6 +1,6 @@
 package data_access;
 
-import interface_adapter.image.ImageRepository;
+import interface_adapter.fetch_image.FetchImageRepository;
 import entity.CommonImage;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemoryImageDataAccessObject implements ImageRepository {
+public class InMemoryFetchImageDataAccessObject implements FetchImageRepository {
     private final Map<String, SimpleImage> images = new HashMap<>();
 
     // Save a SimpleImage

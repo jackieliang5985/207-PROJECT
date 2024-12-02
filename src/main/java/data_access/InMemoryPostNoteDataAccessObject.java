@@ -8,11 +8,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InMemoryPostNoteDAO implements PostNoteDAO, ChangeColorNoteDataAccessInterface {
+public class InMemoryPostNoteDataAccessObject implements PostNoteDataAccessInterface, ChangeColorNoteDataAccessInterface {
     private final List<PostNoteEntity> postNotes;
 
     // Constructor to initialize the list
-    public InMemoryPostNoteDAO() {
+    public InMemoryPostNoteDataAccessObject() {
         this.postNotes = new ArrayList<>();
     }
 

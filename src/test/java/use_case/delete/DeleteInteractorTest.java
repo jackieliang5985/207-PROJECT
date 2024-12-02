@@ -1,5 +1,5 @@
 package use_case.delete;
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
 import entity.TextPostNoteEntity;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class DeleteInteractorTest {
     void successTest() {
         // Input data to delete the post note
         DeletePostNoteInputData inputData = new DeletePostNoteInputData(300, 400, 150, 150);
-        InMemoryPostNoteDAO noteRepository = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject noteRepository = new InMemoryPostNoteDataAccessObject();
 
         // Create and add a post note to the repository
         MindMapEntity mindMap = new MindMapEntity("map", new ArrayList<>());
@@ -42,7 +42,7 @@ class DeleteInteractorTest {
     void failureNoteNotFoundTest() {
         // Input data to delete a post note that does not exist
         DeletePostNoteInputData inputData = new DeletePostNoteInputData(400, 400, 150, 150);
-        InMemoryPostNoteDAO noteRepository = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject noteRepository = new InMemoryPostNoteDataAccessObject();
 
         // Create and add a post note to the repository
         MindMapEntity mindMap = new MindMapEntity("map", new ArrayList<>());

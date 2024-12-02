@@ -1,27 +1,26 @@
 package use_case.add_Image_PostNote;
 
-import data_access.PostNoteDAO;
+import data_access.PostNoteDataAccessInterface;
 import entity.ImagePostNoteEntity;
 import interface_adapter.add_Image_PostNote.ImagePostNoteData;
 import entity.MindMapEntity;
 
 public class ImagePostNoteInteractor implements ImagePostNoteInputBoundary {
     private final ImagePostNoteOutputBoundary outputBoundary;
-    private final PostNoteDAO postNoteDAO;
+    private final PostNoteDataAccessInterface postNoteDataAccessInterface;
     private final MindMapEntity mindMapEntity;
 
     // Constructor
     public ImagePostNoteInteractor(ImagePostNoteOutputBoundary outputBoundary,
-                                   PostNoteDAO postNoteDAO, MindMapEntity mindMapEntity) {
+                                   PostNoteDataAccessInterface postNoteDataAccessInterface, MindMapEntity mindMapEntity) {
         this.outputBoundary = outputBoundary;
-        this.postNoteDAO = postNoteDAO;
+        this.postNoteDataAccessInterface = postNoteDataAccessInterface;
         this.mindMapEntity = mindMapEntity;
     }
 
     @Override
     public void addImagePostNote(ImagePostNoteInputData inputData) {
-        // Create an ImagePostNoteEntity instead of a PostNoteEntity
-        ImagePostNoteEntity imagePostNoteEntity = new ImagePostNoteEntity(
+        final ImagePostNoteEntity imagePostNoteEntity = new ImagePostNoteEntity(
                 inputData.getX(),
                 inputData.getY(),
                 inputData.getWidth(),
@@ -29,11 +28,7 @@ public class ImagePostNoteInteractor implements ImagePostNoteInputBoundary {
                 mindMapEntity,
                 inputData.getImageUrl()
         );
-
-        // Add the ImagePostNoteEntity to the DAO (data persistence)
-        postNoteDAO.addPostNote(imagePostNoteEntity);
-
-        // Pass data to the presenter (output boundary)
+        postNoteDataAccessInterface.addPostNote(imagePostNoteEntity);
         outputBoundary.presentImagePostNotes(new ImagePostNoteData(inputData.getImageUrl(),
                 inputData.getX(), inputData.getY(), inputData.getColor()));
     }
