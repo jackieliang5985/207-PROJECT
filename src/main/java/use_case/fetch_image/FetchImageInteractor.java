@@ -3,8 +3,8 @@ package use_case.fetch_image;
 import java.util.List;
 
 import entity.CommonImage;
-import interface_adapter.image.FetchImagePresenter;
-import interface_adapter.image.FetchImageRepository;
+import interface_adapter.fetch_image.FetchImagePresenter;
+import interface_adapter.fetch_image.FetchImageRepository;
 
 public class FetchImageInteractor implements FetchImageInputBoundary {
     private final FetchImageRepository fetchImageRepository;

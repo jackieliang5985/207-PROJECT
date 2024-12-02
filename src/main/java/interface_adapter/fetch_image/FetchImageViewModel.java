@@ -1,4 +1,4 @@
-package interface_adapter.image;
+package interface_adapter.fetch_image;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import entity.User;
-import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.loading.LoadingUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.create_MindMap.MindMapUserDataAccessInterface;
@@ -15,7 +14,6 @@ import use_case.create_MindMap.MindMapUserDataAccessInterface;
  */
 public class InMemoryUserDataAccessObject implements MindMapUserDataAccessInterface,
         LoadingUserDataAccessInterface,
-        ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
@@ -35,12 +33,6 @@ public class InMemoryUserDataAccessObject implements MindMapUserDataAccessInterf
     @Override
     public User get(String username) {
         return users.get(username);
-    }
-
-    @Override
-    public void changePassword(User user) {
-        // Replace the old entry with the new password
-        users.put(user.getName(), user);
     }
 
     @Override

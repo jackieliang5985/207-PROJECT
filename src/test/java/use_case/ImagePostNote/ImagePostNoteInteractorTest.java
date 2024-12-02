@@ -1,6 +1,6 @@
 package use_case.ImagePostNote;
 
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
 import entity.ImagePostNoteEntity;
 import entity.PostNoteEntity;
@@ -33,7 +33,7 @@ class ImagePostNoteInteractorTest {
     @Test
     void testAddImagePostNote() {
         // Create the in-memory DAO and presenter
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
         ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
         ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
 
@@ -90,7 +90,7 @@ class ImagePostNoteInteractorTest {
         int x = 10, y = 20, width = 300, height = 200;
         Color color = Color.RED;
 
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Ensure DAO is created here
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
         ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
         ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
 
@@ -116,7 +116,7 @@ class ImagePostNoteInteractorTest {
         int x = 10, y = 20, width = 300, height = 200;
         Color color = Color.RED;
 
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Ensure DAO is created here
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Ensure DAO is created here
         ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
         ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
 
@@ -142,7 +142,7 @@ class ImagePostNoteInteractorTest {
         Color color = Color.YELLOW;
 
         // Create an in-memory DAO and presenter
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO(); // Instantiate DAO
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject(); // Instantiate DAO
         ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
         ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
 
@@ -187,7 +187,7 @@ class ImagePostNoteInteractorTest {
     void testAddMultipleImagePostNotesToDAO() {
         // Arrange
         // Create the in-memory DAO and presenter
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
         ImagePostNoteViewModel viewModel = new ImagePostNoteViewModel();
         ImagePostNotePresenter presenter = new ImagePostNotePresenter(viewModel);
 
@@ -250,7 +250,7 @@ class ImagePostNoteInteractorTest {
         Color color = Color.YELLOW;
 
         // Create an in-memory DAO and MindMapEntity
-        InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
         MindMapEntity mindMapEntity = new MindMapEntity("Test Mind Map", new ArrayList<>());
 
         // Create the view model and presenter

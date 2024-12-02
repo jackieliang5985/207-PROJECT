@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
-import data_access.InMemoryPostNoteDAO;
+import data_access.InMemoryPostNoteDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
 import interface_adapter.ViewManagerModel;
@@ -32,8 +32,8 @@ import interface_adapter.delete_note.DeletePostNoteViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
-import interface_adapter.image.*;
-import interface_adapter.image.UnsplashFetchImageInputBoundary;
+import interface_adapter.fetch_image.*;
+import interface_adapter.fetch_image.UnsplashFetchImageInputBoundary;
 import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
@@ -220,7 +220,7 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDAO postNoteDAO = new InMemoryPostNoteDAO();
+        final InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
 
         // Initialize MindMapEntity
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
