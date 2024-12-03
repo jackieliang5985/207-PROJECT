@@ -1,4 +1,4 @@
-package use_case.ImagePostNote;
+package use_case.add_Image_PostNote;
 
 import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
@@ -8,8 +8,6 @@ import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNotePresenter;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
 import org.junit.jupiter.api.Test;
-import use_case.add_Image_PostNote.ImagePostNoteInputData;
-import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.awt.Color;

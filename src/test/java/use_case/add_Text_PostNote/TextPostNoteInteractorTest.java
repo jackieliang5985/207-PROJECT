@@ -1,4 +1,4 @@
-package use_case.TextPostNote;
+package use_case.add_Text_PostNote;
 
 import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
@@ -8,8 +8,6 @@ import interface_adapter.add_Text_PostNote.TextPostNoteController;
 import interface_adapter.add_Text_PostNote.TextPostNotePresenter;
 import interface_adapter.add_Text_PostNote.TextPostNoteViewModel;
 import org.junit.jupiter.api.Test;
-import use_case.add_Text_PostNote.TextPostNoteInputData;
-import use_case.add_Text_PostNote.TextPostNoteInteractor;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.awt.Color;

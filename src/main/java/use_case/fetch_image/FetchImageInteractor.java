@@ -15,6 +15,10 @@ public class FetchImageInteractor implements FetchImageInputBoundary {
 
     @Override
     public void execute(FetchImageInputData inputData) throws Exception {
+        if (inputData == null) {
+            throw new IllegalArgumentException("inputData must not be null");
+        }
+
         final String query = inputData.getQuery();
 
         if ("error".equals(query)) {
