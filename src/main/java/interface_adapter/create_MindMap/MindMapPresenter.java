@@ -7,12 +7,15 @@ import interface_adapter.loading.LoadingViewModel;
 import use_case.create_MindMap.MindMapOutputBoundary;
 import use_case.create_MindMap.MindMapOutputData;
 
+/**
+ * The presenter for the Create Mind Map Use Case.
+ */
 public class MindMapPresenter implements MindMapOutputBoundary {
 
     private final MindMapViewModel mindMapViewModel;
     private final LoadingViewModel loadingViewModel;
     private final ViewManagerModel viewManagerModel;
-    private ViewModel<LoadedInState> loggedInViewModel;
+    private final ViewModel<LoadedInState> loggedInViewModel;
 
     public MindMapPresenter(ViewManagerModel viewManagerModel,
                             MindMapViewModel mindMapViewModel,
@@ -21,18 +24,20 @@ public class MindMapPresenter implements MindMapOutputBoundary {
         this.viewManagerModel = viewManagerModel;
         this.mindMapViewModel = mindMapViewModel;
         this.loadingViewModel = loadingViewModel;
-        this.loggedInViewModel = loggedInViewModel; // Pass it in the constructor
+        this.loggedInViewModel = loggedInViewModel;
     }
 
     @Override
     public void prepareSuccessView(MindMapOutputData response) {
         final LoadedInState loadedInState = loggedInViewModel.getState();
         loadedInState.setName(response.getName());
-        System.out.println("Updated name in presenter: " + loadedInState.getName()); // Debugging output
+        // Debugging output
+        System.out.println("Updated name in presenter: " + loadedInState.getName());
 
         // Trigger property change event for the initial name
         loggedInViewModel.setState(loadedInState);
-        loggedInViewModel.firePropertyChanged("name"); // Fire the event for the name change
+        // Fire the event for the name change
+        loggedInViewModel.firePropertyChanged("name");
 
         this.viewManagerModel.setState(loggedInViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
@@ -50,7 +55,8 @@ public class MindMapPresenter implements MindMapOutputBoundary {
         if (viewManagerModel != null) {
             viewManagerModel.setState(loadingViewModel.getViewName());
             viewManagerModel.firePropertyChanged();
-        } else {
+        }
+        else {
             System.err.println("Error: ViewManagerModel is null.");
         }
     }
