@@ -1,8 +1,8 @@
 package use_case.change_title;
 
 import interface_adapter.change_title.ChangeTitlePresenter;
-import interface_adapter.change_title.LoggedInState;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInState;
+import interface_adapter.change_title.LoadedInViewModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,19 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 class ChangeTitleInteractorTest {
 
     private ChangeTitleInteractor changeTitleInteractor;
-    private LoggedInState loggedInState;
+    private LoadedInState loadedInState;
     private ChangeTitleOutputBoundary outputBoundary;
-    private LoggedInViewModel loggedInViewModel;
+    private LoadedInViewModel loadedInViewModel;
 
     @BeforeEach
     void setUp() {
         // Initialize LoggedInState and LoggedInViewModel (real implementations)
-        loggedInState = new LoggedInState();
-        loggedInViewModel = new LoggedInViewModel();
-        loggedInViewModel.setState(loggedInState); // Set initial state
+        loadedInState = new LoadedInState();
+        loadedInViewModel = new LoadedInViewModel();
+        loadedInViewModel.setState(loadedInState); // Set initial state
 
         // Set up the output boundary and interactor
-        outputBoundary = new ChangeTitlePresenter(loggedInViewModel);  // Use the real presenter
+        outputBoundary = new ChangeTitlePresenter(loadedInViewModel);  // Use the real presenter
         changeTitleInteractor = new ChangeTitleInteractor(outputBoundary);
     }
     @Test
@@ -42,7 +42,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "New MindMap";
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data for the change title use case
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -51,8 +51,8 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify the title was updated
-        System.out.println("Current title: " + loggedInState.getName());  // Debugging output
-        assertEquals(newTitle, loggedInState.getName(), "The title should be updated to the new title.");
+        System.out.println("Current title: " + loadedInState.getName());  // Debugging output
+        assertEquals(newTitle, loadedInState.getName(), "The title should be updated to the new title.");
     }
     @Test
     void testExecute_emptyNewTitle() {
@@ -61,7 +61,7 @@ class ChangeTitleInteractorTest {
         String newTitle = ""; // Empty title is invalid
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data with the new title as empty
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -70,7 +70,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title remains unchanged (since the new title is invalid)
-        assertEquals(currentTitle, loggedInState.getName(), "The title should not change when the new title is empty.");
+        assertEquals(currentTitle, loadedInState.getName(), "The title should not change when the new title is empty.");
     }
 
     @Test
@@ -80,7 +80,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "MindMap"; // Same title, no change
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data for the title change (same title)
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -89,7 +89,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title remains unchanged
-        assertEquals(currentTitle, loggedInState.getName(), "The title should remain unchanged when the new title is the same.");
+        assertEquals(currentTitle, loadedInState.getName(), "The title should remain unchanged when the new title is the same.");
     }
 
     @Test
@@ -99,7 +99,7 @@ class ChangeTitleInteractorTest {
         String newTitle = null; // Invalid title (null)
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data with the invalid new title
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -108,7 +108,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title remains unchanged
-        assertEquals(currentTitle, loggedInState.getName(), "The title should not change when the new title is invalid (null).");
+        assertEquals(currentTitle, loadedInState.getName(), "The title should not change when the new title is invalid (null).");
     }
 
     @Test
@@ -118,7 +118,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "Old MindMap"; // Same as current title
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data with the new title as the same
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -127,7 +127,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title remains unchanged (since the new title is the same as the current one)
-        assertEquals(currentTitle, loggedInState.getName(), "The title should remain the same when the new title is the same.");
+        assertEquals(currentTitle, loadedInState.getName(), "The title should remain the same when the new title is the same.");
     }
 
     @Test
@@ -137,7 +137,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "This is a very long title that should still be accepted and updated correctly.";
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data for the change title use case
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle);
@@ -146,7 +146,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify the title was updated correctly
-        assertEquals(newTitle, loggedInState.getName(), "The title should be updated to the new long title.");
+        assertEquals(newTitle, loadedInState.getName(), "The title should be updated to the new long title.");
     }
 
     @Test
@@ -156,7 +156,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "  New MindMap  ";  // New title with leading and trailing spaces
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data for the change title use case
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle.trim());  // Remove spaces for comparison
@@ -165,7 +165,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title was updated (trimming the spaces)
-        assertEquals("New MindMap", loggedInState.getName(), "The title should be updated to the new title, trimmed.");
+        assertEquals("New MindMap", loadedInState.getName(), "The title should be updated to the new title, trimmed.");
     }
 
     @Test
@@ -175,7 +175,7 @@ class ChangeTitleInteractorTest {
         String newTitle = "   "; // New title is just spaces
 
         // Set the initial state with the current title
-        loggedInState.setName(currentTitle);
+        loadedInState.setName(currentTitle);
 
         // Create input data for the change title use case
         ChangeTitleInputData inputData = new ChangeTitleInputData(currentTitle, newTitle.trim());
@@ -184,7 +184,7 @@ class ChangeTitleInteractorTest {
         changeTitleInteractor.execute(inputData);
 
         // Assert: Verify that the title remains unchanged (since the new title is empty after trimming)
-        assertEquals(currentTitle, loggedInState.getName(), "The title should not change when the new title is just spaces.");
+        assertEquals(currentTitle, loadedInState.getName(), "The title should not change when the new title is just spaces.");
     }
 
 

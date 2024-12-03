@@ -1,8 +1,8 @@
 package interface_adapter.loading;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.change_title.LoggedInState;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInState;
+import interface_adapter.change_title.LoadedInViewModel;
 import use_case.loading.LoadingOutputBoundary;
 import use_case.loading.LoadingOutputData;
 
@@ -12,14 +12,14 @@ import use_case.loading.LoadingOutputData;
 public class LoadingPresenter implements LoadingOutputBoundary {
 
     private final LoadingViewModel loadingViewModel;
-    private final LoggedInViewModel loggedInViewModel;
+    private final LoadedInViewModel loadedInViewModel;
     private final ViewManagerModel viewManagerModel;
 
     public LoadingPresenter(ViewManagerModel viewManagerModel,
-                            LoggedInViewModel loggedInViewModel,
+                            LoadedInViewModel loadedInViewModel,
                             LoadingViewModel loadingViewModel) {
         this.viewManagerModel = viewManagerModel;
-        this.loggedInViewModel = loggedInViewModel;
+        this.loadedInViewModel = loadedInViewModel;
         this.loadingViewModel = loadingViewModel;
     }
 
@@ -27,12 +27,12 @@ public class LoadingPresenter implements LoadingOutputBoundary {
     public void prepareSuccessView(LoadingOutputData response) {
         // On success, switch to the logged in view.
 
-        final LoggedInState loggedInState = loggedInViewModel.getState();
-        loggedInState.setName(response.getUsername());
-        this.loggedInViewModel.setState(loggedInState);
-        this.loggedInViewModel.firePropertyChanged();
+        final LoadedInState loadedInState = loadedInViewModel.getState();
+        loadedInState.setName(response.getUsername());
+        this.loadedInViewModel.setState(loadedInState);
+        this.loadedInViewModel.firePropertyChanged();
 
-        this.viewManagerModel.setState(loggedInViewModel.getViewName());
+        this.viewManagerModel.setState(loadedInViewModel.getViewName());
         this.viewManagerModel.firePropertyChanged();
     }
 

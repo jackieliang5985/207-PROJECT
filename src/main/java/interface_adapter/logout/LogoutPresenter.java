@@ -1,8 +1,8 @@
 package interface_adapter.logout;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.change_title.LoggedInState;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInState;
+import interface_adapter.change_title.LoadedInViewModel;
 import interface_adapter.loading.LoadingState;
 import interface_adapter.loading.LoadingViewModel;
 import use_case.logout.LogoutOutputBoundary;
@@ -13,14 +13,14 @@ import use_case.logout.LogoutOutputData;
  */
 public class LogoutPresenter implements LogoutOutputBoundary {
 
-    private LoggedInViewModel loggedInViewModel;
+    private LoadedInViewModel loadedInViewModel;
     private ViewManagerModel viewManagerModel;
     private LoadingViewModel loadingViewModel;
 
     public LogoutPresenter(ViewManagerModel viewManagerModel,
-                          LoggedInViewModel loggedInViewModel,
+                          LoadedInViewModel loadedInViewModel,
                            LoadingViewModel loadingViewModel) {
-        this.loggedInViewModel = loggedInViewModel;
+        this.loadedInViewModel = loadedInViewModel;
         this.viewManagerModel = viewManagerModel;
         this.loadingViewModel = loadingViewModel;
     }
@@ -34,11 +34,11 @@ public class LogoutPresenter implements LogoutOutputBoundary {
         // the empty string.
 
         // 1. get the LoggedInState out of the appropriate View Model,
-        final LoggedInState loggedOutState = loggedInViewModel.getState();
+        final LoadedInState loggedOutState = loadedInViewModel.getState();
         // 2. set the username in the state to the empty string
         loggedOutState.setName("");
         // 3. set the state in the LoggedInViewModel to the updated state
-        this.loggedInViewModel.setState(loggedOutState);
+        this.loadedInViewModel.setState(loggedOutState);
         // 4. firePropertyChanged so that the View that is listening is updated.
         this.viewManagerModel.setState(loadingViewModel.getViewName());
         // dont know if this line above is useful
