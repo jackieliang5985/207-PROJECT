@@ -1,5 +1,8 @@
 package use_case.change_color;
 
+/**
+ * The output boundary for the Change Color Use Case.
+ */
 public interface ChangeColorOutputBoundary {
     /**
      * Prepares the success view for the Change Color Use Case.
