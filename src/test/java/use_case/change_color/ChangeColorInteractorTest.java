@@ -38,7 +38,7 @@ class ChangeColorInteractorTest {
 
         };
 
-        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, successPresenter, noteRepository);
+        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, successPresenter);
         interactor.execute(inputData);
 
     }
@@ -68,7 +68,7 @@ class ChangeColorInteractorTest {
 
         };
 
-        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, failurePresenter, noteRepository);
+        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, failurePresenter);
         interactor.execute(inputData);
 
     }
@@ -98,7 +98,7 @@ class ChangeColorInteractorTest {
 
         };
 
-        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, failurePresenter, noteRepository);
+        ChangeColorInputBoundary interactor = new ChangeColorInteractor(noteRepository, failurePresenter);
         interactor.execute(inputData);
 
     }

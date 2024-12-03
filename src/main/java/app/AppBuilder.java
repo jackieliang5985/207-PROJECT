@@ -256,7 +256,7 @@ public class AppBuilder {
         // Initialize ChangeColor components
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
         final ChangeColorInputBoundary changeColorInteractor =
-                new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
+                new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
         // Initialize Connection components
