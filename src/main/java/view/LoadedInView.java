@@ -1,8 +1,6 @@
 package view;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -11,13 +9,13 @@ import javax.swing.border.EmptyBorder;
 
 import app.AppBuilder;
 import interface_adapter.change_title.ChangeTitleController;
-import interface_adapter.change_title.LoggedInState;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInState;
+import interface_adapter.change_title.LoadedInViewModel;
 import interface_adapter.logout.LogoutController;
 
 public class LoadedInView extends JPanel implements PropertyChangeListener {
     private final String viewName = "logged in";
-    private final LoggedInViewModel loggedInViewModel;
+    private final LoadedInViewModel loadedInViewModel;
     private ChangeTitleController changeTitleController;
     private LogoutController logoutController;
     private final JLabel username;
@@ -25,9 +23,9 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
     private final JButton changeMindMap;
     private final JButton continueToMindMap;
 
-    public LoadedInView(LoggedInViewModel loggedInViewModel, AppBuilder appBuilder, CardLayout cardLayout, Container cardPanel) {
-        this.loggedInViewModel = loggedInViewModel;
-        this.loggedInViewModel.addPropertyChangeListener(this);
+    public LoadedInView(LoadedInViewModel loadedInViewModel, AppBuilder appBuilder, CardLayout cardLayout, Container cardPanel) {
+        this.loadedInViewModel = loadedInViewModel;
+        this.loadedInViewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -125,7 +123,7 @@ public class LoadedInView extends JPanel implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("name".equals(evt.getPropertyName())) {
-            LoggedInState state = (LoggedInState) evt.getNewValue();
+            LoadedInState state = (LoadedInState) evt.getNewValue();
             System.out.println("Property change event triggered in LoadedInView.");
             System.out.println("New Title from PropertyChangeEvent: " + state.getName());  // Debugging output
             username.setText(state.getName());  // Update the username label with the new title

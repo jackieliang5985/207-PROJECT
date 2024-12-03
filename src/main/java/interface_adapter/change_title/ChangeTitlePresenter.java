@@ -4,19 +4,19 @@ import use_case.change_title.ChangeTitleOutputBoundary;
 import use_case.change_title.ChangeTitleOutputData;
 
 public class ChangeTitlePresenter implements ChangeTitleOutputBoundary {
-    private final LoggedInViewModel loggedInViewModel;
+    private final LoadedInViewModel loadedInViewModel;
 
-    public ChangeTitlePresenter(LoggedInViewModel loggedInViewModel) {
-        this.loggedInViewModel = loggedInViewModel;
+    public ChangeTitlePresenter(LoadedInViewModel loadedInViewModel) {
+        this.loadedInViewModel = loadedInViewModel;
     }
 
     @Override
     public void prepareSuccessView(ChangeTitleOutputData outputData) {
         // Update the name in the ViewModel's state (ensure property change is fired)
-        LoggedInState state = loggedInViewModel.getState();
+        LoadedInState state = loadedInViewModel.getState();
         state.setName(outputData.getNewTitle());  // Update name to the new title
-        loggedInViewModel.setState(state);        // Set the new state
-        loggedInViewModel.firePropertyChanged();  // Notify the view
+        loadedInViewModel.setState(state);        // Set the new state
+        loadedInViewModel.firePropertyChanged();  // Notify the view
     }
 
     @Override

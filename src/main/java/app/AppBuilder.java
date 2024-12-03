@@ -22,7 +22,7 @@ import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.change_color.ChangeColorPresenter;
 import interface_adapter.change_title.ChangeTitleController;
 import interface_adapter.change_title.ChangeTitlePresenter;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
@@ -90,7 +90,7 @@ public class AppBuilder {
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
     private LoadingViewModel loadingViewModel;
-    private LoggedInViewModel loggedInViewModel;
+    private LoadedInViewModel loadedInViewModel;
     private LoadedInView loadedInView;
 
     private final Dotenv dotenv = Dotenv.configure()
@@ -122,8 +122,8 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoggedInView() {
-        loggedInViewModel = new LoggedInViewModel();
-        loadedInView = new LoadedInView(loggedInViewModel, this, cardLayout, cardPanel);
+        loadedInViewModel = new LoadedInViewModel();
+        loadedInView = new LoadedInView(loadedInViewModel, this, cardLayout, cardPanel);
         cardPanel.add(loadedInView, loadedInView.getViewName());
         return this;
     }
@@ -135,7 +135,7 @@ public class AppBuilder {
      */
     public AppBuilder addSignupUseCase() {
         final MindMapOutputBoundary mindMapOutputBoundary =
-                new MindMapPresenter(viewManagerModel, mindMapViewModel, loadingViewModel, loggedInViewModel);
+                new MindMapPresenter(viewManagerModel, mindMapViewModel, loadingViewModel, loadedInViewModel);
         final MindMapInputBoundary userSignupInteractor =
                 new MindMapInteractor(userDataAccessObject, mindMapOutputBoundary, userFactory);
         final MindMapController controller =
@@ -152,7 +152,7 @@ public class AppBuilder {
     public AppBuilder addChangeTitleUseCase() {
         // Create the ChangeTitleOutputBoundary to handle the success/failure of the title change
         final ChangeTitleOutputBoundary changeTitleOutputBoundary =
-                new ChangeTitlePresenter(loggedInViewModel);
+                new ChangeTitlePresenter(loadedInViewModel);
 
         // Create the ChangeTitleInteractor which contains the business logic for title change
         final ChangeTitleInputBoundary changeTitleInteractor =
@@ -160,7 +160,7 @@ public class AppBuilder {
 
         // Instantiate the ChangeTitleController to handle the request
         final ChangeTitleController changeTitleController =
-                new ChangeTitleController(changeTitleInteractor, loggedInViewModel);  // Pass loggedInViewModel here
+                new ChangeTitleController(changeTitleInteractor, loadedInViewModel);  // Pass loggedInViewModel here
 
         // Inject the ChangeTitleController into the LoadedInView
         loadedInView.setChangeTitleController(changeTitleController);
@@ -175,7 +175,7 @@ public class AppBuilder {
      */
     public AppBuilder addLogoutUseCase() {
         final LogoutOutputBoundary logoutOutputBoundary =
-                new LogoutPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
+                new LogoutPresenter(viewManagerModel, loadedInViewModel, loadingViewModel);
         final LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         final LogoutController logoutController =
