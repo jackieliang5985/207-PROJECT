@@ -15,6 +15,7 @@
   - [Categorizing Nodes by Color](#categorizing-nodes-by-color)
 - [User Stories](#user-stories)
 - [Installation](#installation)
+- [How to use the program](#how-to-use-the-program)
 - [License](#license)
 
 ## Team Members
@@ -49,7 +50,7 @@ This project aims to provide a **seamless and intuitive experience** for **brain
 
 ## User Stories
 
-## Creating and Exporting Mind Maps
+### Creating and Exporting Mind Maps
 
 - **User Story:** John opens a new mind map and exports his mind map after he's done.
   - **Assigned to**: Team
@@ -137,8 +138,24 @@ This project aims to provide a **seamless and intuitive experience** for **brain
     - **Presenter**: Updates the display with the chosen colors.
 
 ## Installation
+* Support for Windows, MacOS, and Linux
 * Clone the repository using the command:  
   `git clone https://github.com/jackieliang5985/207-PROJECT.git`
+* To run the program, ensure you have Java installed on your system. You can install the latest version of Java from Oracle's Java SE Downloads.
+* Java Development Kit (JDK) 11 or higher is recommended for running the program.
+
+## How to use the program
+* To begin creating your mind map, enter a title for your mind map and click on "Create New Mindmap"
+* From there, you can choose to change the title if needed, or continue to the mind map board
+* On the mind map board, all actions are accessible within a dropdown menu which can be opened up by right-clicking anywhere on the board.
+* **Add Image Post It**: Search for a desired image through text input. Select an image that shows up upon searching to add it to the board.
+* **Add Text Post It**: Enter the text you want to write on the note, and it will appear on the board with a default color of orange.
+* Notes can be repositioned by holding left-click over them and dragging them across the board.
+* **Change Color**: You must right-click over the target note to be able to perform this action. Select a color from the color chooser, which will update the color of the note accordingly.
+* **Add Connection**: You must right-click over the target note to be able to perform this action. Then, click on the note you want to connect the target note to, which will create a line connecting the two notes.
+* **Delete Post It**: You must right-click over the target note to be able to perform this action. The note, as well as any connections it is involved in will be deleted from the mind map.
+* **Save**: You can export the mind map as a .png, .jpg, or .pdf file.
+* **Logout**: Exit the mind map and return to the create new mind map page.
 
 ## License
 * See the LICENSE file for more details.
