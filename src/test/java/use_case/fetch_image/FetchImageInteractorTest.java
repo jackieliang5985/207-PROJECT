@@ -1,4 +1,4 @@
-package use_case.FetchImage;
+package use_case.fetch_image;
 
 import data_access.SimpleImage;
 import entity.CommonImage;
@@ -7,8 +7,6 @@ import interface_adapter.fetch_image.FetchImagePresenter;
 import interface_adapter.fetch_image.FetchImageViewModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import use_case.fetch_image.FetchImageInputData;
-import use_case.fetch_image.FetchImageInteractor;
 
 import java.util.List;
 
