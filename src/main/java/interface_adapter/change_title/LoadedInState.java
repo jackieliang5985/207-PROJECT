@@ -1,6 +1,6 @@
 package interface_adapter.change_title;
 
-public class LoggedInState {
+public class LoadedInState {
     private String name = "Default MindMap";  // Initial default name
     private String description = "";
 

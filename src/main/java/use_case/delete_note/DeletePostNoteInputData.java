@@ -1,5 +1,8 @@
 package use_case.delete_note;
 
+/**
+ * Input Data for the DeleteNote Use Case.
+ */
 public class DeletePostNoteInputData {
     private int x;
     private int y;

@@ -4,20 +4,21 @@ import use_case.delete_note.DeletePostNoteInputBoundary;
 import use_case.delete_note.DeletePostNoteInputData;
 import use_case.delete_note.DeletePostNoteOutputBoundary;
 
+
+/**
+ * The controller for the DeleteNote Use Case.
+ */
 public class DeletePostNoteController {
     private final DeletePostNoteInputBoundary interactor;
-    private final DeletePostNoteOutputBoundary presenter;
 
     // Constructor
-    public DeletePostNoteController(DeletePostNoteInputBoundary interactor, DeletePostNoteOutputBoundary presenter) {
+    public DeletePostNoteController(DeletePostNoteInputBoundary interactor) {
         this.interactor = interactor;
-        this.presenter = presenter;
     }
 
-    // Method to handle the deletion request
-    public void deletePostNote(int x, int y, int width, int height) {
+    public void deletePostNote(int x_coord, int y_coord, int width, int height) {
         // Create the input data object for deletion
-        DeletePostNoteInputData inputData = new DeletePostNoteInputData(x, y, width, height);
+        final DeletePostNoteInputData inputData = new DeletePostNoteInputData(x_coord, y_coord, width, height);
 
         // Call the interactor to delete the post note
         interactor.execute(inputData);

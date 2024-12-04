@@ -1,9 +1,8 @@
-package use_case.delete;
+package use_case.delete_note;
 import data_access.InMemoryPostNoteDataAccessObject;
 import entity.MindMapEntity;
 import entity.TextPostNoteEntity;
 import org.junit.jupiter.api.Test;
-import use_case.delete_note.*;
 
 import java.awt.*;
 import java.util.ArrayList;

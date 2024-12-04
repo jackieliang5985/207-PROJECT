@@ -8,10 +8,18 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 // Import all necessary components
+import data_access.ConnectionDAO;
+import data_access.InMemoryConnectionDAO;
 import data_access.InMemoryPostNoteDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
-import entity.*;
+import entity.CommonUserFactory;
+import entity.MindMapEntity;
+import entity.PostNoteEntity;
+import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.add_Connection.AddConnectionController;
+import interface_adapter.add_Connection.AddConnectionPresenter;
+import interface_adapter.add_Connection.ConnectionViewModel;
 import interface_adapter.add_Image_PostNote.ImagePostNoteController;
 import interface_adapter.add_Image_PostNote.ImagePostNotePresenter;
 import interface_adapter.add_Image_PostNote.ImagePostNoteViewModel;
@@ -22,7 +30,7 @@ import interface_adapter.change_color.ChangeColorController;
 import interface_adapter.change_color.ChangeColorPresenter;
 import interface_adapter.change_title.ChangeTitleController;
 import interface_adapter.change_title.ChangeTitlePresenter;
-import interface_adapter.change_title.LoggedInViewModel;
+import interface_adapter.change_title.LoadedInViewModel;
 import interface_adapter.create_MindMap.MindMapController;
 import interface_adapter.create_MindMap.MindMapPresenter;
 import interface_adapter.create_MindMap.MindMapViewModel;
@@ -32,7 +40,10 @@ import interface_adapter.delete_note.DeletePostNoteViewModel;
 import interface_adapter.export_mind_map.ExportController;
 import interface_adapter.export_mind_map.ExportState;
 import interface_adapter.export_mind_map.ExportViewModel;
-import interface_adapter.fetch_image.*;
+import interface_adapter.fetch_image.FetchImageController;
+import interface_adapter.fetch_image.FetchImagePresenter;
+import interface_adapter.fetch_image.FetchImageRepository;
+import interface_adapter.fetch_image.FetchImageViewModel;
 import interface_adapter.fetch_image.UnsplashFetchImageInputBoundary;
 import interface_adapter.loading.LoadingViewModel;
 import interface_adapter.logout.LogoutController;
@@ -40,6 +51,9 @@ import interface_adapter.logout.LogoutPresenter;
 import io.github.cdimascio.dotenv.Dotenv;
 import use_case.add_Image_PostNote.ImagePostNoteInteractor;
 import use_case.add_Text_PostNote.TextPostNoteInteractor;
+import use_case.add_connection.AddConnectionInputBoundary;
+import use_case.add_connection.AddConnectionInteractor;
+import use_case.add_connection.AddConnectionOutputBoundary;
 import use_case.change_color.ChangeColorInputBoundary;
 import use_case.change_color.ChangeColorInteractor;
 import use_case.change_color.ChangeColorOutputBoundary;
@@ -60,15 +74,6 @@ import view.CreateNewMindMapView;
 import view.LoadedInView;
 import view.MindMapView;
 import view.ViewManager;
-import data_access.ConnectionDAO;
-import data_access.InMemoryConnectionDAO;
-import interface_adapter.add_Connection.ConnectionViewModel;
-import interface_adapter.add_Connection.AddConnectionController;
-import interface_adapter.add_Connection.AddConnectionPresenter;
-import use_case.add_connection.AddConnectionInputBoundary;
-import use_case.add_connection.AddConnectionOutputBoundary;
-import use_case.add_connection.AddConnectionInteractor;
-
 
 /**
  * The AppBuilder class is responsible for putting together the components
@@ -81,20 +86,23 @@ public class AppBuilder {
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
     private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     private final InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
-    private final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+    private final ConnectionDAO connectionDataAccessObject = new InMemoryConnectionDAO();
     private final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
-    private final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
-    private final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
-    private final AddConnectionController addConnectionController = new AddConnectionController(addConnectionInteractor);
+    private final AddConnectionOutputBoundary addConnectionOutputBoundary =
+            new AddConnectionPresenter(connectionViewModel);
+    private final AddConnectionInputBoundary addConnectionInteractor =
+            new AddConnectionInteractor(addConnectionOutputBoundary, connectionDataAccessObject);
+    private final AddConnectionController addConnectionController =
+            new AddConnectionController(addConnectionInteractor);
 
     private CreateNewMindMapView createNewMindMapView;
     private MindMapViewModel mindMapViewModel;
     private LoadingViewModel loadingViewModel;
-    private LoggedInViewModel loggedInViewModel;
+    private LoadedInViewModel loadedInViewModel;
     private LoadedInView loadedInView;
 
     private final Dotenv dotenv = Dotenv.configure()
-            // Directory of the ..env file (default is root)
+            // Directory of the .env file (default is root)
             .directory(".")
             .load();
 
@@ -122,8 +130,8 @@ public class AppBuilder {
      * @return this builder
      */
     public AppBuilder addLoggedInView() {
-        loggedInViewModel = new LoggedInViewModel();
-        loadedInView = new LoadedInView(loggedInViewModel, this, cardLayout, cardPanel);
+        loadedInViewModel = new LoadedInViewModel();
+        loadedInView = new LoadedInView(loadedInViewModel, this, cardLayout, cardPanel);
         cardPanel.add(loadedInView, loadedInView.getViewName());
         return this;
     }
@@ -135,7 +143,7 @@ public class AppBuilder {
      */
     public AppBuilder addSignupUseCase() {
         final MindMapOutputBoundary mindMapOutputBoundary =
-                new MindMapPresenter(viewManagerModel, mindMapViewModel, loadingViewModel, loggedInViewModel);
+                new MindMapPresenter(viewManagerModel, mindMapViewModel, loadingViewModel, loadedInViewModel);
         final MindMapInputBoundary userSignupInteractor =
                 new MindMapInteractor(userDataAccessObject, mindMapOutputBoundary, userFactory);
         final MindMapController controller =
@@ -152,15 +160,15 @@ public class AppBuilder {
     public AppBuilder addChangeTitleUseCase() {
         // Create the ChangeTitleOutputBoundary to handle the success/failure of the title change
         final ChangeTitleOutputBoundary changeTitleOutputBoundary =
-                new ChangeTitlePresenter(loggedInViewModel);
+                new ChangeTitlePresenter(loadedInViewModel);
 
         // Create the ChangeTitleInteractor which contains the business logic for title change
         final ChangeTitleInputBoundary changeTitleInteractor =
                 new ChangeTitleInteractor(changeTitleOutputBoundary);
 
-        // Instantiate the ChangeTitleController to handle the request
+        // Instantiate the ChangeTitleController to handle the request; pass loadedInViewModel here
         final ChangeTitleController changeTitleController =
-                new ChangeTitleController(changeTitleInteractor, loggedInViewModel);  // Pass loggedInViewModel here
+                new ChangeTitleController(changeTitleInteractor, loadedInViewModel);
 
         // Inject the ChangeTitleController into the LoadedInView
         loadedInView.setChangeTitleController(changeTitleController);
@@ -175,7 +183,7 @@ public class AppBuilder {
      */
     public AppBuilder addLogoutUseCase() {
         final LogoutOutputBoundary logoutOutputBoundary =
-                new LogoutPresenter(viewManagerModel, loggedInViewModel, loadingViewModel);
+                new LogoutPresenter(viewManagerModel, loadedInViewModel, loadingViewModel);
         final LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         final LogoutController logoutController =
@@ -186,7 +194,6 @@ public class AppBuilder {
 
     /**
      * Adds the MindMap View to the application.
-     *
      * @return this builder
      */
     public AppBuilder addMindMapView() {
@@ -199,17 +206,17 @@ public class AppBuilder {
         final FetchImagePresenter fetchImagePresenter = new FetchImagePresenter(fetchImageViewModel);
 
         // Set up the repository (UnsplashImageInputBoundary implementation)
-        FetchImageRepository fetchImageRepository = new UnsplashFetchImageInputBoundary(unsplashApiKey);
+        final FetchImageRepository fetchImageRepository = new UnsplashFetchImageInputBoundary(unsplashApiKey);
 
         // Initialize the Output Boundary (typically the presenter)
-        FetchImageOutputBoundary fetchImageOutputBoundary = fetchImagePresenter;
+        final FetchImageOutputBoundary fetchImageOutputBoundary = fetchImagePresenter;
 
         // Initialize the Interactor (uses Repository and Output Boundary)
-        final FetchImageInteractor fetchImageInteractor = new FetchImageInteractor(fetchImageRepository, fetchImageOutputBoundary);
+        final FetchImageInteractor fetchImageInteractor =
+                new FetchImageInteractor(fetchImageRepository, fetchImageOutputBoundary);
 
         // Initialize the Controller (which uses the Interactor)
         final FetchImageController fetchImageController = new FetchImageController(fetchImageInteractor);
-
 
         // Initialize ExportController and related components
         final ExportState exportState = new ExportState();
@@ -227,16 +234,16 @@ public class AppBuilder {
         final TextPostNotePresenter textPostNotePresenter = new TextPostNotePresenter(textPostNoteViewModel);
 
         // Initialize InMemoryPostNoteDAO (or use a different PostNoteDAO implementation)
-        final InMemoryPostNoteDataAccessObject postNoteDAO = new InMemoryPostNoteDataAccessObject();
+        final InMemoryPostNoteDataAccessObject postNoteDataAccessObject = new InMemoryPostNoteDataAccessObject();
 
         // Initialize MindMapEntity
         final MindMapEntity mindMapEntity = new MindMapEntity("My Mind Map", postNotes);
 
         // Initialize the Interactors
         final ImagePostNoteInteractor imagePostNoteInteractor =
-                new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDAO, mindMapEntity);
+                new ImagePostNoteInteractor(imagePostNotePresenter, postNoteDataAccessObject, mindMapEntity);
         final TextPostNoteInteractor textPostNoteInteractor =
-                new TextPostNoteInteractor(textPostNotePresenter, postNoteDAO, mindMapEntity);
+                new TextPostNoteInteractor(textPostNotePresenter, postNoteDataAccessObject, mindMapEntity);
 
         // Initialize the Controllers
         final ImagePostNoteController imagePostNoteController =
@@ -249,21 +256,22 @@ public class AppBuilder {
         final DeletePostNoteViewModel deletePostNoteViewModel = new DeletePostNoteViewModel(deletePostNoteController);
         final DeletePostNotePresenter deletePostNotePresenter = new DeletePostNotePresenter(deletePostNoteViewModel);
         final DeletePostNoteInteractor deletePostNoteInteractor =
-                new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDAO, mindMapEntity);
+                new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDataAccessObject, mindMapEntity);
         // Initialize the DeletePostNoteController
-        deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
+        deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor);
 
         // Initialize ChangeColor components
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);
         final ChangeColorInputBoundary changeColorInteractor =
-                new ChangeColorInteractor(postNoteDAO, changeColorOutputBoundary, postNoteDAO);
+                new ChangeColorInteractor(postNoteDataAccessObject, changeColorOutputBoundary);
         final ChangeColorController changeColorController = new ChangeColorController(changeColorInteractor);
 
         // Initialize Connection components
-        final ConnectionDAO connectionDAO = new InMemoryConnectionDAO();
+        final ConnectionDAO connectionDataAccessObject = new InMemoryConnectionDAO();
         final ConnectionViewModel connectionViewModel = new ConnectionViewModel();
         final AddConnectionOutputBoundary addConnectionOutputBoundary = new AddConnectionPresenter(connectionViewModel);
-        final AddConnectionInputBoundary addConnectionInteractor = new AddConnectionInteractor(addConnectionOutputBoundary, connectionDAO);
+        final AddConnectionInputBoundary addConnectionInteractor =
+                new AddConnectionInteractor(addConnectionOutputBoundary, connectionDataAccessObject);
         final AddConnectionController connectionController = new AddConnectionController(addConnectionInteractor);
 
         // Initialize MindMapView
@@ -272,14 +280,14 @@ public class AppBuilder {
                 fetchImageController, fetchImageViewModel,
                 imagePostNoteViewModel, textPostNoteViewModel,
                 exportController, imagePostNoteController, textPostNoteController,
-                deletePostNoteController,  // Correctly placed
-                changeColorController,     // Correctly placed
-                connectionController, connectionViewModel, connectionDAO
+                deletePostNoteController,
+                changeColorController,
+                connectionController, connectionViewModel, connectionDataAccessObject
         );
 
         cardPanel.add(mindMapView, MindMapView.VIEW_NAME);
-
-        return this;  // Return the builder for method chaining
+        // Return the builder for method chaining
+        return this;
     }
 
     /**
@@ -296,7 +304,7 @@ public class AppBuilder {
      */
 
     public JFrame build() {
-        final JFrame application = new JFrame("MindMap");
+        final JFrame application = new JFrame("MapMyMind");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.add(cardPanel);
         viewManagerModel.setState(createNewMindMapView.getViewName());

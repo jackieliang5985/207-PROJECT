@@ -1,7 +1,6 @@
-package use_case.export;
+package use_case.export_mind_map;
 
 import org.junit.jupiter.api.Test;
-import use_case.export_mind_map.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
