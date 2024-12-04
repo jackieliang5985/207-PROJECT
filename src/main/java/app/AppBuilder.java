@@ -258,7 +258,7 @@ public class AppBuilder {
         final DeletePostNoteInteractor deletePostNoteInteractor =
                 new DeletePostNoteInteractor(deletePostNotePresenter, postNoteDataAccessObject, mindMapEntity);
         // Initialize the DeletePostNoteController
-        deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor, deletePostNotePresenter);
+        deletePostNoteController = new DeletePostNoteController(deletePostNoteInteractor);
 
         // Initialize ChangeColor components
         final ChangeColorOutputBoundary changeColorOutputBoundary = new ChangeColorPresenter(textPostNoteViewModel);

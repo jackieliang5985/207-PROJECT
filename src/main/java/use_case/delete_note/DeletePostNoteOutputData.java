@@ -1,8 +1,11 @@
 package use_case.delete_note;
 
+/**
+ * Output Data for the DeletePostNote Use Case.
+ */
 public class DeletePostNoteOutputData {
     private final boolean success;
-    private final String message; // Message to convey success or failure details
+    private final String message;
 
     // Constructor
     public DeletePostNoteOutputData(boolean success, String message) {

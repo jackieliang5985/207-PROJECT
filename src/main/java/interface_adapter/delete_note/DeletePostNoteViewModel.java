@@ -3,6 +3,9 @@ package interface_adapter.delete_note;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+/**
+ * The View Model for the DeleteNote View.
+ */
 public class DeletePostNoteViewModel {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
@@ -15,48 +18,68 @@ public class DeletePostNoteViewModel {
         this.controller = controller;
     }
 
-    // Getter for the delete success state
     public boolean isDeletedSuccessfully() {
         return isDeletedSuccessfully;
     }
 
-    // Setter for isDeletedSuccessfully with property change support
+    /**
+     * Sets the status of whether a note was successfully deleted.
+     *
+     * @param deletedSuccessfully true if the note was deleted successfully, false otherwise
+     */
     public void setDeletedSuccessfully(boolean deletedSuccessfully) {
-        boolean oldState = this.isDeletedSuccessfully;
+        final boolean oldState = this.isDeletedSuccessfully;
         this.isDeletedSuccessfully = deletedSuccessfully;
         support.firePropertyChange("isDeletedSuccessfully", oldState, isDeletedSuccessfully);
     }
 
-    // Getter for error messages
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    // Setter for errorMessage with property change support
+    /**
+     * Sets the error message associated with a failed operation.
+     *
+     * @param errorMessage the error message to set, or null if there is no error
+     */
     public void setErrorMessage(String errorMessage) {
-        String oldErrorMessage = this.errorMessage;
+        final String oldErrorMessage = this.errorMessage;
         this.errorMessage = errorMessage;
         support.firePropertyChange("errorMessage", oldErrorMessage, errorMessage);
     }
 
-    // Update state when the deletion succeeds
+    /**
+     * Handles the event where a note has been successfully deleted.
+     */
     public void onPostNoteDeleted() {
         setDeletedSuccessfully(true);
-        setErrorMessage(null); // Clear any previous error message
+        setErrorMessage(null);
     }
 
-    // Update state when the deletion fails
-    public void onDeleteFailed(String errorMessage) {
+    /**
+     * Handles the event where deleting a note has failed.
+     *
+     * @param error the error message explaining why the deletion failed
+     */
+    public void onDeleteFailed(String error) {
         setDeletedSuccessfully(false);
-        setErrorMessage(errorMessage);
+        setErrorMessage(error);
     }
 
-    // Method to add a property change listener
+    /**
+     * Adds a {@link PropertyChangeListener} to the listener list.
+     *
+     * @param listener the PropertyChangeListener to be added
+     */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    // Method to remove a property change listener
+    /**
+     * Removes a {@link PropertyChangeListener} from the listener list.
+     *
+     * @param listener the PropertyChangeListener to be removed
+     */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
