@@ -1,13 +1,23 @@
 package view;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -19,6 +29,26 @@ import interface_adapter.create_MindMap.MindMapViewModel;
  * The View for the Create New Mindmap Use Case.
  */
 public class CreateNewMindMapView extends JPanel implements ActionListener, PropertyChangeListener {
+    private static final String ARIAL = "Arial";
+    private static final int BORDER = 20;
+    private static final int INSET = 10;
+    private static final int REGULARFONTSIZE = 14;
+    private static final int HEADINGFONTSIZE = 20;
+    private static final int INPUTFIELDDIMENSIONWIDTH = 250;
+    private static final int INPUTFIELDDIMENSIONHEIGHT = 30;
+    private static final int BUTTONDIMENSIONWIDTH = 200;
+    private static final int BUTTONDIMENSIONHEIGHT = 40;
+    private static final int THREE = 3;
+    private static final int FIVE = 5;
+    private static final int FORTY = 40;
+    private static final int FIFTY = 50;
+    private static final int SEVENTY = 70;
+    private static final int ONEHUNDRED = 100;
+    private static final int ONEHUNDREDFOURTY = 140;
+    private static final int TWOHUNDRED = 200;
+    private static final int TWOHUNDREDFORTY = 240;
+    private static final int TWOHUNDREDFIFTYFIVE = 255;
+
     private final String viewName = "create new mindmap";
 
     private final MindMapViewModel mindMapViewModel;
@@ -35,23 +65,26 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
 
         // Main panel setup
         this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        this.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
 
         // Center panel to mimic a box
-        JPanel centerPanel = new JPanel();
+        final JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
-        centerPanel.setBackground(new Color(240, 240, 240)); // Light grey background
-        centerPanel.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 255), 2));
+        // Light grey background
+        centerPanel.setBackground(new Color(TWOHUNDREDFORTY, TWOHUNDREDFORTY, TWOHUNDREDFORTY));
+        centerPanel.setBorder(BorderFactory.createLineBorder(
+                new Color(ONEHUNDRED, ONEHUNDRED, TWOHUNDREDFIFTYFIVE), 2));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        final GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(INSET, INSET, INSET, INSET);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Title Label
         final JLabel titleLabel = new JLabel("CREATE NEW MIND MAP");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setFont(new Font(ARIAL, Font.BOLD, HEADINGFONTSIZE));
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
-        titleLabel.setForeground(new Color(40, 40, 200)); // Set color to a subtle blue
+        // Set color to a subtle blue
+        titleLabel.setForeground(new Color(FORTY, FORTY, TWOHUNDRED));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -60,73 +93,55 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
 
         // Label and input for title
         final JLabel titleInputLabel = new JLabel("Title");
-        titleInputLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        titleInputLabel.setForeground(new Color(50, 50, 50)); // Dark gray text
+        titleInputLabel.setFont(new Font(ARIAL, Font.PLAIN, REGULARFONTSIZE));
+        // Dark gray text
+        titleInputLabel.setForeground(new Color(FIFTY, FIFTY, FIFTY));
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         centerPanel.add(titleInputLabel, gbc);
 
-        titleInputField.setPreferredSize(new Dimension(250, 30)); // Resize input fields
-        titleInputField.setFont(new Font("Arial", Font.PLAIN, 14));
-        titleInputField.setBackground(new Color(255, 255, 255));
+        // Resize input fields
+        titleInputField.setPreferredSize(new Dimension(INPUTFIELDDIMENSIONWIDTH, INPUTFIELDDIMENSIONHEIGHT));
+        titleInputField.setFont(new Font(ARIAL, Font.PLAIN, REGULARFONTSIZE));
+        titleInputField.setBackground(new Color(TWOHUNDREDFIFTYFIVE, TWOHUNDREDFIFTYFIVE, TWOHUNDREDFIFTYFIVE));
         gbc.gridx = 1;
         gbc.gridy = 1;
         centerPanel.add(titleInputField, gbc);
 
         // Button for creating a new mindmap
         toCreate = new JButton("Create New Mindmap");
-        toCreate.setPreferredSize(new Dimension(200, 40));
-        toCreate.setFont(new Font("Arial", Font.BOLD, 14));
-        toCreate.setBackground(new Color(100, 200, 100)); // Green button
+        toCreate.setPreferredSize(new Dimension(BUTTONDIMENSIONWIDTH, BUTTONDIMENSIONHEIGHT));
+        toCreate.setFont(new Font(ARIAL, Font.BOLD, REGULARFONTSIZE));
+        // Green button
+        toCreate.setBackground(new Color(ONEHUNDRED, TWOHUNDRED, ONEHUNDRED));
         toCreate.setForeground(Color.WHITE);
         toCreate.setFocusPainted(false);
-        toCreate.setBorder(BorderFactory.createLineBorder(new Color(70, 140, 70), 2));
+        toCreate.setBorder(BorderFactory.createLineBorder(new Color(SEVENTY, ONEHUNDREDFOURTY, SEVENTY), 2));
 
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = THREE;
         gbc.gridwidth = 2;
         centerPanel.add(toCreate, gbc);
 
         // Cancel button
         cancel = new JButton("Cancel");
-        cancel.setPreferredSize(new Dimension(200, 40));
-        cancel.setFont(new Font("Arial", Font.BOLD, 14));
-        cancel.setBackground(new Color(255, 100, 100)); // Red button
+        cancel.setPreferredSize(new Dimension(BUTTONDIMENSIONWIDTH, BUTTONDIMENSIONHEIGHT));
+        cancel.setFont(new Font(ARIAL, Font.BOLD, REGULARFONTSIZE));
+        // Red button
+        cancel.setBackground(new Color(TWOHUNDREDFIFTYFIVE, ONEHUNDRED, ONEHUNDRED));
         cancel.setForeground(Color.WHITE);
         cancel.setFocusPainted(false);
-        cancel.setBorder(BorderFactory.createLineBorder(new Color(200, 70, 70), 2));
+        cancel.setBorder(BorderFactory.createLineBorder(new Color(TWOHUNDRED, SEVENTY, SEVENTY), 2));
 
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = FIVE;
         gbc.gridwidth = 2;
         centerPanel.add(cancel, gbc);
 
         // Action listeners
         toCreate.addActionListener(evt -> {
-            // Ensure the current state is updated before proceeding
-            final MindMapState currentState = mindMapViewModel.getState();
-
-            // Get the values directly from the text fields
-            String name = titleInputField.getText().trim();
-            String description = descriptionInputField.getText().trim();
-
-            // Update the state with the current name and description
-            currentState.setName(name);
-            // currentState.setDescription(description);
-            mindMapViewModel.setState(currentState);
-
-            // if (name.isEmpty() || description.isEmpty()) //Only if we want description idk
-
-            if (name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Title and description cannot be empty.");
-            } else {
-                if (currentState.isValidName()) {
-                    mindMapController.execute(name, description);
-                } else {
-                    JOptionPane.showMessageDialog(this, currentState.getNameError());
-                }
-            }
+            createMindMap(mindMapViewModel);
         });
 
         cancel.addActionListener(evt -> {
@@ -140,6 +155,34 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
 
         // Add the center panel to the main panel
         this.add(centerPanel, BorderLayout.CENTER);
+    }
+
+    private void createMindMap(MindMapViewModel mindMapViewModel) {
+        // Ensure the current state is updated before proceeding
+        final MindMapState currentState = mindMapViewModel.getState();
+
+        // Get the values directly from the text fields
+        final String name = titleInputField.getText().trim();
+        final String description = descriptionInputField.getText().trim();
+
+        // Update the state with the current name and description
+        currentState.setName(name);
+        // currentState.setDescription(description);
+        mindMapViewModel.setState(currentState);
+
+        // if (name.isEmpty() || description.isEmpty()) //Only if we want description idk
+
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Title and description cannot be empty.");
+        }
+        else {
+            if (currentState.isValidName()) {
+                mindMapController.execute(name, description);
+            }
+            else {
+                JOptionPane.showMessageDialog(this, currentState.getNameError());
+            }
+        }
     }
 
     private void addTitleListener() {
@@ -171,7 +214,7 @@ public class CreateNewMindMapView extends JPanel implements ActionListener, Prop
         descriptionInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
                 final MindMapState currentState = mindMapViewModel.getState();
-            // currentState.setDescription(descriptionInputField.getText());
+                // currentState.setDescription(descriptionInputField.getText());
                 mindMapViewModel.setState(currentState);
             }
 

@@ -4,7 +4,7 @@ import use_case.create_MindMap.MindMapInputBoundary;
 import use_case.create_MindMap.MindMapInputData;
 
 /**
- * Controller for the Signup Use Case.
+ * The controller for the Create Mind Map Use Case.
  */
 public class MindMapController {
 
