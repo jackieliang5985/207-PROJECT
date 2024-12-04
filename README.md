@@ -1,5 +1,7 @@
 # CSC207 Project: MapMyMind
 
+![title](MapMyMindScreenshot.png)
+
 ## Table of Contents
 - [Team Members](#team-members)
 - [Project Overview](#project-overview)
